@@ -5,18 +5,17 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-      white: '#ffffff',
-      gray10: "#F6F7F8",
-      gray30: "#D0D7DD",
-      gray50: "#8D8D8D",
-      regularBlack: "#3A3A49",
-      blue: "#4676FB",
-      deepBlue: "#001D6C",
-      red: "#DA1E28",
-      lineGray: "#E9E9E7",
-      green: "#34A853",
-      blueBackground: "#F4F7FF"
-
+        white: '#ffffff',
+        gray10: '#F6F7F8',
+        gray30: '#D0D7DD',
+        gray50: '#8D8D8D',
+        regularBlack: '#3A3A49',
+        blue: '#4676FB',
+        deepBlue: '#001D6C',
+        red: '#DA1E28',
+        lineGray: '#E9E9E7',
+        green: '#34A853',
+        blueBackground: '#F4F7FF',
       },
 
       fontFamily: {
@@ -25,23 +24,23 @@ module.exports = {
       },
 
       spacing: {
-        18: "4.5rem",
-        22: "5.5rem",
+        18: '4.5rem',
+        22: '5.5rem',
       },
 
       borderRadius: {
-        xl: "1rem",
-        '2xl': "1.25rem",
+        xl: '1rem',
+        '2xl': '1.25rem',
       },
 
       boxShadow: {
-        card: "0 4px 14px rgba(0, 0, 0, 0.08)",
+        card: '0 4px 14px rgba(0, 0, 0, 0.08)',
       },
     },
   },
 
   plugins: [
-    require('@tailwindcss/forms'),     // form 스타일 향상
-    require('@tailwindcss/typography') // prose 텍스트 스타일
+    require('@tailwindcss/forms'), // form 스타일 향상
+    require('@tailwindcss/typography'), // prose 텍스트 스타일
   ],
 };

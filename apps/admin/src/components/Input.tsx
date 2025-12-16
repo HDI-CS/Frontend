@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import type { InputType } from '../types/input';
+import { type InputType } from '../types/input';
 
 interface InputProps {
   type: InputType;

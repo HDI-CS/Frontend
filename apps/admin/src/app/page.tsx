@@ -1,9 +1,9 @@
-import Folder from '@/src/components/Folder';
+import Header from '../components/layout/Header';
 
 export default function Home() {
   return (
-    <div className="font-pretendard text-blue text-blue grid min-h-screen grid-rows-[20px_1fr_20px] items-center justify-items-center gap-16 p-8 pb-20">
-      <Folder />
+    <div className="font-pretendard text-blue text-blue grid min-h-screen">
+      <Header name="관리자페이지" isInput={false} />
     </div>
   );
 }
