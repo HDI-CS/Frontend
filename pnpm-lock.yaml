@@ -47,6 +47,9 @@ importers:
       '@hdi/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
       next:
         specifier: ^15.4.2
         version: 15.5.3(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -56,6 +59,9 @@ importers:
       react-dom:
         specifier: ^19.1.0
         version: 19.1.1(react@19.1.1)
+      zod:
+        specifier: ^4.1.11
+        version: 4.1.11
     devDependencies:
       '@hdi/eslint-config':
         specifier: workspace:*
@@ -70,7 +76,7 @@ importers:
         specifier: ^15.4.6
         version: 15.5.3
       '@tailwindcss/postcss':
-        specifier: ^4.1.5
+        specifier: ^4.1.13
         version: 4.1.13
       '@types/node':
         specifier: ^22.15.30
@@ -1948,6 +1954,7 @@ packages:
   next@15.5.3:
     resolution: {integrity: sha512-r/liNAx16SQj4D+XH/oI1dlpv9tdKJ6cONYPwwcCC46f2NjpaRWY+EKCzULfgQYV6YKXjHBchff2IZBSlZmJNw==}
     engines: {node: ^18.18.0 || ^19.8.0 || >= 20.0.0}
+    deprecated: This version has a security vulnerability. Please upgrade to a patched version. See https://nextjs.org/blog/CVE-2025-66478 for more details.
     hasBin: true
     peerDependencies:
       '@opentelemetry/api': ^1.1.0

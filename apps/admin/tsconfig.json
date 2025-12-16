@@ -7,7 +7,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"],
+      "@/src/*": ["./src/*"],
+      "@/public/*": ["./public/*"],
       "@hdi/ui": ["../../packages/ui/src"],
       "@hdi/fonts": ["../../packages/fonts/src"]
     }
