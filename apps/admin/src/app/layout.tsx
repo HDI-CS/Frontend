@@ -3,6 +3,7 @@ import '@hdi/ui/styles.css';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 
+import LayoutWrapper from '../components/layout/LayoutWrapper';
 import './globals.css';
 
 const pretendard = localFont({
@@ -30,7 +31,9 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className={`${pretendard.variable}`}>
-        <main>{children}</main>
+        <LayoutWrapper>
+          <main>{children}</main>
+        </LayoutWrapper>
       </body>
     </html>
   );
