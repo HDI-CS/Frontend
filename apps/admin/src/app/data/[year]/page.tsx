@@ -1,4 +1,6 @@
-const dataPage = () => {
-  return <>sds</>;
+
+const DataPage = () => {
+
+  return <div>d</div>;
 };
-export default dataPage;
+export default DataPage;
