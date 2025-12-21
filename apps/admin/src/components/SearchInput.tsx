@@ -1,6 +1,6 @@
-import downIcon from '@/public/common/search/downA.svg';
+// import downIcon from '@/public/common/search/downA.svg';
 import searchIcon from '@/public/common/search/search.svg';
-import upIcon from '@/public/common/search/upA.svg';
+// import upIcon from '@/public/common/search/upA.svg';
 import Image from 'next/image';
 
 interface SearchInputProps {
@@ -12,20 +12,20 @@ interface SearchInputProps {
 
 const SearchInput = ({
   search,
-  resultCount,
-  currentIndex,
-  setCurrentIndex,
+  // resultCount,
+  // currentIndex,
+  // setCurrentIndex,
 }: SearchInputProps) => {
-  const lastIndex = resultCount ?? 0;
+  // const lastIndex = resultCount ?? 0;
 
-  const handleUp = () => {
-    if (setCurrentIndex) setCurrentIndex((prev) => Math.max(1, prev - 1));
-  };
+  // const handleUp = () => {
+  //   if (setCurrentIndex) setCurrentIndex((prev) => Math.max(1, prev - 1));
+  // };
 
-  const handleDown = () => {
-    if (setCurrentIndex)
-      setCurrentIndex((prev) => Math.min(lastIndex, prev + 1));
-  };
+  // const handleDown = () => {
+  //   if (setCurrentIndex)
+  //     setCurrentIndex((prev) => Math.min(lastIndex, prev + 1));
+  // };
 
   return (
     <div className="min-w-100 flex items-center justify-between rounded-full bg-[#F6F7F8] px-4 py-2.5">
@@ -38,7 +38,7 @@ const SearchInput = ({
         />
       </div>
       <div>
-        {resultCount && currentIndex && (
+        {/* {resultCount && currentIndex && (
           <div className="flex gap-1">
             <span className="px-1 font-light text-[#A1A0A1]">
               {currentIndex} of {lastIndex}
@@ -57,7 +57,7 @@ const SearchInput = ({
               className="cursor-pointer hover:opacity-80"
             />
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

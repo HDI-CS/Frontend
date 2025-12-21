@@ -25,7 +25,7 @@ const MenuItem = ({
       >
         <ChevronRight
           className={clsx(
-            'h-4 w-4 text-[#000000] transition-transform',
+            'h-4 w-4 text-[#4676FB] transition-transform',
             open && 'rotate-90',
             active && 'text-[#ffffff]'
           )}

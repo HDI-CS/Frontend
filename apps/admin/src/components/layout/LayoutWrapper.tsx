@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+import getHeaderOptions from '@/src/utils/getHeaderOptions';
 import clsx from 'clsx';
 import SideBar from '../SideBar/SideBar';
 import Header from './Header';
@@ -20,6 +21,8 @@ export default function LayoutWrapper({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const headerOptions = getHeaderOptions(pathname);
+
   const [isNotFoundPage, setIsNotFoundPage] = useState(false);
 
   // not-found 페이지 체크를 위한 effect
@@ -53,14 +56,16 @@ export default function LayoutWrapper({
 
   return (
     <>
-      {!shouldHideHeader && <Header name="관리자페이지" />}
+      {!shouldHideHeader && (
+        <Header name="관리자페이지" isInput={headerOptions.isInput} />
+      )}
       {/* 사이드바 + 콘텐츠를 가로로 */}
       <div className="flex flex-1">
         {!shouldHideHeader && <SideBar />}
         <div className="flex-1">
           {/* SubHeader */}
           {!shouldHideHeader && showSubHeader && <SubHeader />}
-          <main className={clsx('flex-1', shouldHideHeader ? 'p-0' : 'p-4')}>
+          <main className={clsx('flex-1', shouldHideHeader ? 'p-0' : '')}>
             {children}
           </main>
         </div>

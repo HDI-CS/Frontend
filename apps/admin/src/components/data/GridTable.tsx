@@ -1,0 +1,218 @@
+import empty from '@/public/data/EmptyIMg.svg';
+import {
+  VisualDataItem,
+  VisualDataItemWithUI,
+} from '@/src/types/data/visual-data';
+import clsx from 'clsx';
+import Image from 'next/image';
+import { useState } from 'react';
+import FieldActionMenu, { FieldActionMenuItem } from '../FieldActionMenu';
+import DataDetailModal from './DataDetailModal';
+import IdSortMenu from './table/IdSortMenu';
+import Td from './table/Td';
+import Th from './table/Th';
+
+const GridTable = ({
+  rows,
+  onAddRow,
+  orderBy,
+  setOrderBy,
+}: {
+  rows: VisualDataItemWithUI[];
+  onAddRow: () => void;
+  orderBy: 'first' | 'last';
+  setOrderBy: (sort: 'first' | 'last') => void;
+}) => {
+  const [dataId, setDataId] = useState<number | null>(null);
+
+  // thead -> Id / tbody -> field 이벤트 완전히 분리
+  // 헤더(ID 정렬용)
+  const [idMenu, setIdMenu] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
+
+  // 행(Field 액션용)
+  const [rowMenu, setRowMenu] = useState<{
+    x: number;
+    y: number;
+    row: VisualDataItem;
+  } | null>(null);
+
+  // UI : 클릭된 row 하이라이트
+  const [activeRowId, setActiveRowId] = useState<number | null>(null);
+
+  // Edit
+  const [isEdit, setIsEdit] = useState(false);
+
+  // row별 동작 정의
+  const getFieldMenuItems = (row: VisualDataItem): FieldActionMenuItem[] => [
+    {
+      key: 'edit',
+      label: 'edit field',
+      onClick: () => {
+        setIsEdit(true);
+        setDataId(row.id); // code인지 id인지는 봐야됨
+      },
+    },
+    {
+      key: 'duplicate',
+      label: 'duplicate field',
+      onClick: () => {
+        console.log('duplicate field', row);
+      },
+    },
+    {
+      key: 'delete',
+      label: 'delete field',
+      variant: 'danger',
+      onClick: () => {
+        // 서버에 먼저 요청 → 성공 시 데이터를 새롭게 받음
+      },
+    },
+  ];
+
+  return (
+    <>
+      <div className="border border-t-0 border-[#E5E5E5] bg-white p-2">
+        {/* 테이블 스크롤 영역 */}
+        <div className="max-h-[680px] overflow-auto">
+          <table className="w-full border-separate border-spacing-0">
+            {/* 헤더 */}
+            <thead className="sticky top-0 z-10 bg-white">
+              <tr className="border text-left text-sm font-light text-[#8D8D8D]">
+                <Th className="w-[64px]">번호</Th>
+                <Th
+                  className="w-[90px]"
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                    setIdMenu({
+                      x: e.clientX,
+                      y: e.clientY,
+                    });
+                  }}
+                >
+                  ID
+                </Th>
+                <Th className="w-[140px]">브랜드명</Th>
+                <Th className="w-[140px]">부문·카테고리</Th>
+                <Th className="min-w-[260px]">대표 제품 카테고리</Th>
+                <Th className="min-w-[240px]">대표 제품</Th>
+                <Th className="w-[160px]">타겟(성별/연령)</Th>
+                <Th className="min-w-[180px]">홈페이지</Th>
+                <Th className="w-[120px] text-center">로고이미지</Th>
+              </tr>
+            </thead>
+
+            {/* 바디 */}
+            <tbody>
+              {rows.map((row) => (
+                <tr
+                  key={row.id}
+                  className={clsx(
+                    'group h-[66px] cursor-pointer text-sm',
+                    activeRowId === row.id
+                      ? 'bg-[#F4F7FF]'
+                      : 'hover:bg-[#F4F7FF]'
+                  )}
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                    setRowMenu({
+                      x: e.clientX,
+                      y: e.clientY,
+                      row,
+                    });
+                    setActiveRowId(row.id);
+                  }}
+                  onDoubleClick={() => {
+                    setIsEdit(false); //  읽기 모드
+                    setDataId(row.id);
+                  }}
+                >
+                  <Td className="w-[64px] text-center">{row._no}</Td>
+                  <Td className="w-[90px]">{row.code}</Td>
+                  <Td className="w-[140px]">{row.name}</Td>
+                  <Td className="w-[140px]">{row.sectorCategory}</Td>
+                  <Td className="min-w-[260px]">{row.mainProductCategory}</Td>
+                  <Td className="min-w-[240px]">{row.mainProduct}</Td>
+                  <Td className="w-[160px]">{row.target}</Td>
+                  <Td className="min-w-[180px]">
+                    <a
+                      href={
+                        row.referenceUrl.startsWith('http')
+                          ? row.referenceUrl
+                          : `https://${row.referenceUrl}`
+                      }
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-[#4B5563] underline-offset-2 hover:underline"
+                    >
+                      {row.referenceUrl}
+                    </a>
+                  </Td>
+                  <Td className="w-[120px] text-center">
+                    <Image
+                      src={row.logoImage ? row.logoImage : empty}
+                      alt={`${row.name} logo`}
+                      className="mx-auto h-[44px] w-[44px] rounded object-cover"
+                    />
+                  </Td>
+                </tr>
+              ))}
+
+              {/* 하단 + 추가 행 (스샷 느낌) */}
+              <tr>
+                <Td className="flex w-[64px] items-center justify-center hover:bg-[#F4F7FF]">
+                  <button
+                    onClick={onAddRow}
+                    className="flex h-[28px] w-[28px] items-center justify-center rounded text-center text-3xl text-[#4676FB]"
+                    aria-label="add row"
+                  >
+                    +
+                  </button>
+                </Td>
+                <Td colSpan={8} />
+              </tr>
+            </tbody>
+          </table>
+
+          {idMenu && (
+            <IdSortMenu
+              x={idMenu.x}
+              y={idMenu.y}
+              onClose={() => setIdMenu(null)}
+              orderBy={orderBy}
+              setOrderBy={setOrderBy}
+            />
+          )}
+          {rowMenu && (
+            <FieldActionMenu
+              x={rowMenu.x}
+              y={rowMenu.y}
+              items={getFieldMenuItems(rowMenu.row)}
+              onClose={() => {
+                setRowMenu(null);
+                setActiveRowId(null);
+              }}
+              position="fixed"
+            />
+          )}
+        </div>
+
+        {/* 우클릭 -> 편집모드 */}
+        {dataId && (
+          <DataDetailModal
+            dataId={dataId}
+            isEdit={isEdit}
+            onClose={() => {
+              setIsEdit(false);
+              setDataId(null);
+              setActiveRowId(null); // ui용
+            }}
+          />
+        )}
+      </div>
+    </>
+  );
+};
+export default GridTable;

@@ -1,73 +1,144 @@
 'use client';
 
+import fileBlue from '@/public/common/folder/fileBlue.svg';
+import fileWhite from '@/public/common/folder/fileWhite.svg';
+import optionBlue from '@/public/common/folder/optionsBlue.svg';
+import optionWhite from '@/public/common/folder/optionWhite.svg';
+
 import clsx from 'clsx';
 import Image from 'next/image';
+import FieldActionMenu, { FieldActionMenuItem } from './FieldActionMenu';
 
 interface FolderProps {
   name: string;
   modified: string;
   created: string;
   isManage?: boolean;
+  isActive?: boolean;
+
+  isMenuOpen?: boolean;
+  onToggleMenu?: () => void;
+  onCloseMenu?: () => void;
+
+  onClick?: () => void;
+  getFieldMenuItems?: () => FieldActionMenuItem[];
 }
 
-const Folder = ({ name, modified, created, isManage }: FolderProps) => {
+const Folder = ({
+  name,
+  modified,
+  created,
+  isManage = false,
+  isActive,
+  onClick,
+  getFieldMenuItems,
+  isMenuOpen,
+  onToggleMenu,
+  onCloseMenu,
+}: FolderProps) => {
+  const menuItems = getFieldMenuItems?.() ?? [];
+
   return (
     <div
+      onClick={onClick}
       className={clsx(
-        'group flex w-full cursor-pointer justify-between border border-[#E9EFF4] p-6 shadow transition-colors',
-        'bg-white hover:border-[#FFFFFF] hover:bg-[#4676FB]'
+        'group relative flex h-20 w-full cursor-pointer items-center justify-between border p-6 transition-colors duration-150',
+        isActive || isMenuOpen
+          ? 'border-white bg-[#4676FB]'
+          : 'border-[#E9EFF4] bg-white hover:border-white hover:bg-[#4676FB]'
       )}
     >
-      <div className="gap-25 flex">
+      <div className="gap-25 flex items-center">
         <div className="flex items-center gap-8">
-          {/* 아이콘 */}
+          {/*폴더 아이콘 */}
           <div className="relative h-6 w-6">
-            {/* 기본 (Blue) */}
             <Image
-              src="/folder/fileBlue.svg"
+              src={fileBlue}
               alt="folder"
               width={24}
               height={24}
-              className="absolute opacity-100 transition-opacity group-hover:opacity-0"
+              className={clsx(
+                'absolute transition-opacity',
+                isActive ? 'opacity-0' : 'opacity-100',
+                !isActive && 'group-hover:opacity-0'
+              )}
             />
-            {/* Hover (White) */}
+
             <Image
-              src="/folder/fileWhite.svg"
+              src={fileWhite}
               alt="folder"
               width={24}
               height={24}
-              className="absolute opacity-0 transition-opacity group-hover:opacity-100"
+              className={clsx(
+                'absolute transition-opacity',
+                isActive ? 'opacity-100' : 'opacity-0',
+                !isActive && 'group-hover:opacity-100'
+              )}
             />
           </div>
 
           {/* 폴더명 */}
-          <span className="text-[#4676FB] transition-colors group-hover:text-white">
+          <span
+            className={clsx(
+              'w-25 font-light transition-colors group-hover:text-white',
+              isMenuOpen ? 'text-[#ffffff]' : 'text-[#4676FB]'
+            )}
+          >
             {name}
           </span>
         </div>
 
-        <span className="text-gray-400 transition-colors group-hover:text-white">
+        <span
+          className={clsx(
+            'flex items-center text-base transition-colors group-hover:text-white',
+            isMenuOpen ? 'text-[#ffffff]' : 'text-[#3A3A49]'
+          )}
+        >
           {modified}
         </span>
-        <span className="text-gray-400 transition-colors group-hover:text-white">
+        <span
+          className={clsx(
+            'flex items-center text-base transition-colors group-hover:text-white',
+            isMenuOpen ? 'text-[#ffffff]' : 'text-[#3A3A49]'
+          )}
+        >
+          {' '}
           {created}
         </span>
       </div>
 
       {/* 옵션 아이콘 */}
-      {isManage && (
-        <div className="relative h-6 w-6">
+      {isManage && onToggleMenu && (
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleMenu();
+          }}
+          className="relative flex h-5 w-5 items-center"
+        >
           <Image
-            src="/folder/optionsBlue.svg"
+            src={optionBlue}
             alt="option"
             fill
             className="opacity-100 transition-opacity group-hover:opacity-0"
           />
           <Image
-            src="/folder/optionWhite.svg"
+            src={optionWhite}
             alt="option"
             fill
             className="opacity-0 transition-opacity group-hover:opacity-100"
+          />
+        </div>
+      )}
+      {isMenuOpen && onCloseMenu && getFieldMenuItems && (
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="absolute right-5 top-6 mt-2"
+        >
+          <FieldActionMenu
+            items={menuItems}
+            onClose={onCloseMenu}
+            position="absolute"
           />
         </div>
       )}
