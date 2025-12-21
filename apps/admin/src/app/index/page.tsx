@@ -13,7 +13,7 @@ const IndexPage = () => {
   return (
     <div className="font-pretendard text-blue text-blue pl-47 pr-90 mt-14 grid min-h-screen">
       <div className="flex flex-col gap-5">
-        <div className="flex text-[#4676FB]">
+        <div className="text-primary-blue flex">
           <p className="ml-21 w-25">Folder</p>
           <span className="ml-25 w-25">Last Modified</span>
           <span className="ml-31 w-25">Created</span>
