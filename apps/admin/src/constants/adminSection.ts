@@ -1,6 +1,24 @@
 export type AdminSectionType = 'DATA' | 'EVALUATION' | 'EXPERT';
 
-export const ADMIN_SECTIONS = {
+export type AdminYear = {
+  key: string;
+  label: string;
+  route: string;
+  createdAt: string;
+  lastModifiedAt: string;
+};
+export type AdminSection = {
+  key: string;
+  label: string;
+  route: string;
+  createdAt: string;
+  lastModifiedAt: string;
+  years: AdminYear[];
+};
+
+export type AdminSections = Record<AdminSectionType, AdminSection>;
+
+export const ADMIN_SECTIONS: AdminSections = {
   DATA: {
     key: 'DATA',
     label: '데이터 관리',

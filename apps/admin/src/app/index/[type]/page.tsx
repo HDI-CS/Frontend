@@ -1,8 +1,8 @@
 'use client';
-import plusBtn from '@/public/common/folder/plusBtn.svg';
-import Folder from '@/src/components/Folder';
+import FolderList from '@/src/components/FolderList';
+import FolderModals from '@/src/components/FolderModals';
 import { ADMIN_SECTIONS } from '@/src/constants/adminSection';
-import Image from 'next/image';
+import { useFolderManager } from '@/src/hooks/useFolderManager';
 import { useParams, useRouter } from 'next/navigation';
 
 const sectionKeyMap = {
@@ -14,6 +14,20 @@ const sectionKeyMap = {
 const IndexPage = () => {
   const router = useRouter();
   const params = useParams();
+
+  const {
+    pressedKey,
+    openMenuKey,
+    add,
+    editName,
+    editFolderName,
+    setPressedKey,
+    setOpenMenuKey,
+    setAdd,
+    setEditName,
+    setEditFolderName,
+    getFieldMenuItems,
+  } = useFolderManager();
 
   const sectionParam = params.type as keyof typeof sectionKeyMap | undefined;
 
@@ -31,30 +45,53 @@ const IndexPage = () => {
   const items = section.years ?? [];
 
   return (
-    <div className="font-pretendard text-blue text-blue grid min-h-screen">
+    <div className="font-pretendard text-blue text-blue pl-47 mt-14 grid min-h-screen pr-80">
       <div className="flex flex-col gap-5">
         <div className="flex text-[#4676FB]">
           <p className="ml-21 w-25">Folder</p>
           <span className="ml-25 w-25">Last Modified</span>
           <span className="ml-31 w-25">Created</span>
         </div>
-        {items.map((item) => (
-          <Folder
-            key={item.key}
-            name={item.label}
-            modified={item.lastModifiedAt}
-            created={item.createdAt}
-            onClick={() => router.push(item.route)}
-            isManage={true}
-          />
-        ))}
-        <div className="flex w-full justify-center">
-          <Image
-            src={plusBtn}
-            alt="plus"
-            className="cursor-pointer hover:opacity-60"
-          />
+        {/* Folder List */}
+        <FolderList
+          items={items}
+          pressedKey={pressedKey}
+          openMenuKey={openMenuKey}
+          onSelect={(item) => {
+            setPressedKey(item.key);
+            router.push(item.route);
+          }}
+          onToggleMenu={(key) =>
+            setOpenMenuKey((prev) => (prev === key ? null : key))
+          }
+          onCloseMenu={() => setOpenMenuKey(null)}
+          getFieldMenuItems={getFieldMenuItems}
+        />
+        {/* ADD BTN */}
+        <div className="flex w-full cursor-pointer items-center justify-center">
+          <div
+            className={
+              'border-1 h-fulll border-[#E9EFF4] text-center text-3xl font-light text-[#4676FB] hover:bg-[#4676FB] hover:text-[#ffffff]'
+            }
+          >
+            <p
+              onClick={() => setAdd(true)}
+              className="-mt-1 flex h-5 w-5 items-center justify-center p-8"
+            >
+              +
+            </p>
+          </div>
         </div>
+
+        {/* Modals */}
+        <FolderModals
+          add={add}
+          editName={editName}
+          editFolderName={editFolderName}
+          setEditFolderName={setEditFolderName}
+          onCloseAdd={() => setAdd(false)}
+          onCloseEdit={() => setEditName(false)}
+        />
       </div>
     </div>
   );
