@@ -28,7 +28,7 @@ const IdSortMenu = ({
     >
       <button
         onClick={() => {
-          setOrderBy('last');
+          setOrderBy('first');
           console.log(orderBy);
         }}
         className="block w-full px-4 py-2 text-left hover:bg-gray-100"
@@ -37,7 +37,7 @@ const IdSortMenu = ({
       </button>
       <button
         onClick={() => {
-          setOrderBy('first');
+          setOrderBy('last');
           console.log(orderBy);
         }}
         className="block w-full px-4 py-2 text-left hover:bg-gray-100"
