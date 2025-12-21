@@ -26,6 +26,7 @@
     "@hdi/tailwind-config": "workspace:*",
     "@hdi/typescript-config": "workspace:*",
     "@next/eslint-plugin-next": "^15.4.6",
+    "@tailwindcss/forms": "^0.5.11",
     "@tailwindcss/postcss": "^4.1.13",
     "@types/node": "^22.15.30",
     "@types/react": "^19.1.0",
