@@ -42,7 +42,7 @@ const Folder = ({
     <div
       onClick={onClick}
       className={clsx(
-        'group relative flex h-20 w-full cursor-pointer items-center justify-between border p-6 transition-colors duration-150',
+        'shadow-card group relative flex h-20 w-full cursor-pointer items-center justify-between border p-6 transition-colors duration-150',
         isActive || isMenuOpen
           ? 'border-white bg-[#4676FB]'
           : 'border-[#E9EFF4] bg-white hover:border-white hover:bg-[#4676FB]'

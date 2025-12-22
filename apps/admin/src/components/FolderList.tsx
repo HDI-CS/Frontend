@@ -1,9 +1,9 @@
 import Folder from '@/src/components/Folder';
-import { AdminYear } from '../constants/adminSection';
+import { AdminEvaluationPhase, AdminYear } from '../constants/adminSection';
 import { GetFieldMenuItems } from '../hooks/useFolderManager';
 
 interface FolderListProps {
-  items: AdminYear[];
+  items: AdminYear[] | AdminEvaluationPhase[];
   pressedKey: string | null;
   openMenuKey: string | null;
   onSelect: (item: AdminYear) => void;

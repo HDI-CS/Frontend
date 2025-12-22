@@ -17,6 +17,8 @@ export const useFolderManager = () => {
   // 생성 / 수정 모달
   const [add, setAdd] = useState(false);
   const [editName, setEditName] = useState(false);
+  const [editSurvey, setEditSurvey] = useState(false);
+  const [editFolderName, setEditFolderName] = useState('');
 
   // 수정 대상
   const [editTarget, setEditTarget] = useState<{
@@ -24,7 +26,6 @@ export const useFolderManager = () => {
     name: string;
   } | null>(null);
 
-  const [editFolderName, setEditFolderName] = useState('');
 
   // 수정 대상 바뀌면 input 값 동기화
   useEffect(() => {
@@ -33,7 +34,7 @@ export const useFolderManager = () => {
     }
   }, [editTarget]);
 
-  // 드롭다운 메뉴 정의
+  // /index/data 드롭다운 메뉴 정의
   const getFieldMenuItems: GetFieldMenuItems = (item) => [
     {
       key: 'edit file',
@@ -52,6 +53,36 @@ export const useFolderManager = () => {
     },
   ];
 
+  // index/evaluation/year 드롭다운 메뉴 정의
+  const getFieldEvaluationMenuItems: GetFieldMenuItems = (item) => [
+    {
+      key: 'edit file',
+      label: 'edit file name',
+      onClick: () => {
+        setEditTarget({ key: item.key, name: item.label });
+        setEditName(true);
+        setOpenMenuKey(null);
+      },
+    },
+    {
+      key: 'edit survey',
+      label: 'edit 평가문항',
+      onClick: () => {
+        setEditTarget({ key: item.key, name: item.label }); // API 구현 후 수정 필요
+        setEditSurvey(true);
+        setOpenMenuKey(null);
+      },
+    },
+    {
+      key: 'delete',
+      label: 'delete file',
+      variant: 'danger',
+      onClick: () => {
+        // delete api
+      },
+    },
+  ];
+
   return {
     // state
     pressedKey,
@@ -60,6 +91,7 @@ export const useFolderManager = () => {
     editName,
     editTarget,
     editFolderName,
+    editSurvey,
 
     // setters
     setPressedKey,
@@ -68,8 +100,10 @@ export const useFolderManager = () => {
     setEditName,
     setEditTarget,
     setEditFolderName,
+    setEditSurvey,
 
     // actions
     getFieldMenuItems,
+    getFieldEvaluationMenuItems,
   };
 };
