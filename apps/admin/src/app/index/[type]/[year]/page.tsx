@@ -1,13 +1,10 @@
 'use client';
 import AddBtn from '@/src/components/common/AddBtn';
 import AddEvaluation from '@/src/components/evaluation/AddEvaluation';
+import EditDuration from '@/src/components/evaluation/EditDuration';
 import FolderList from '@/src/components/FolderList';
 import ModalComponent from '@/src/components/ModalComponent';
 import { ADMIN_SECTIONS } from '@/src/constants/adminSection';
-import {
-  SUBJECT_QUESTION,
-  SURVEY_QUESTIONS,
-} from '@/src/constants/surveyQuestions';
 import DataPage from '@/src/features/data/DataYearPage';
 import { useFolderManager } from '@/src/hooks/useFolderManager';
 import { useParams, useRouter } from 'next/navigation';
@@ -27,15 +24,16 @@ const IndexPage = () => {
     openMenuKey,
     add,
     editName,
-    editFolderName,
     editSurvey,
+    editFolderName,
+
     setPressedKey,
     setOpenMenuKey,
     setAdd,
     setEditName,
-    setEditFolderName,
     setEditSurvey,
-    getFieldEvaluationMenuItems,
+    setEditFolderName,
+    getFieldEvaluationRangeMenuItems,
   } = useFolderManager();
 
   const sectionParam = params.type as keyof typeof sectionKeyMap | undefined;
@@ -50,6 +48,7 @@ const IndexPage = () => {
   }
   const section = ADMIN_SECTIONS[sectionKey];
   const yearParam = params.year as string | undefined;
+  const isEvaluation = sectionParam === 'evaluation';
 
   const year = section.years.find((y) => y.route.endsWith(`/${yearParam}`));
 
@@ -59,16 +58,18 @@ const IndexPage = () => {
   if (sectionParam === 'data') return <DataPage />;
 
   return (
-    <div className="font-pretendard text-blue text-blue pl-47 mt-14 grid min-h-screen pr-80">
+    <div className="font-pretendard text-blue text-blue pl-47 pr-50 mt-14 grid min-h-screen">
       <div className="flex flex-col gap-5">
         <div className="flex text-[#4676FB]">
           <p className="ml-21 w-25">Folder</p>
           <span className="ml-25 w-25">Last Modified</span>
           <span className="ml-31 w-25">Created</span>
+          <span className="ml-31 w-25">Duration</span>
         </div>
         {/* Folder List */}
         <FolderList
           items={phases}
+          isPhase={true}
           pressedKey={pressedKey}
           openMenuKey={openMenuKey}
           onSelect={(item) => {
@@ -79,10 +80,10 @@ const IndexPage = () => {
             setOpenMenuKey((prev) => (prev === key ? null : key))
           }
           onCloseMenu={() => setOpenMenuKey(null)}
-          getFieldMenuItems={getFieldEvaluationMenuItems}
+          getFieldMenuItems={getFieldEvaluationRangeMenuItems}
         />
         {/* ADD BTN */}
-        <AddBtn isEvaluation={true} setAdd={setAdd} />
+        <AddBtn isEvaluation={isEvaluation} setAdd={setAdd} />
 
         {/* Modals */}
         {add && <AddEvaluation onClose={() => setAdd(false)} />}
@@ -100,14 +101,7 @@ const IndexPage = () => {
             />
           </ModalComponent>
         )}
-        {editSurvey && (
-          <AddEvaluation
-            onClose={() => setEditSurvey(false)}
-            isEdit={true}
-            qusetionsData={SURVEY_QUESTIONS}
-            subjectiveData={SUBJECT_QUESTION}
-          />
-        )}
+        {editSurvey && <EditDuration name={editFolderName} onClose={() => setEditSurvey(false)} />}
       </div>
     </div>
   );

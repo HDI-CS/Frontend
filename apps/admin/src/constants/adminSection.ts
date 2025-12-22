@@ -26,6 +26,7 @@ export type AdminEvaluationPhase = {
   route: string;
   createdAt: string;
   lastModifiedAt: string;
+  duration: string; // 서버에서 데이터 주는 방식에 따라 시작-끝 기간 나눌수도
 };
 
 export const ADMIN_SECTIONS: AdminSections = {
@@ -73,6 +74,7 @@ export const ADMIN_SECTIONS: AdminSections = {
             route: '/index/evaluation/year1/phase1',
             createdAt: '2021-11-03 22:00',
             lastModifiedAt: '2021-11-03 22:00',
+            duration: '2021-11-03 - 2021-11-03',
           },
           {
             key: 'PHASE_2',
@@ -80,6 +82,7 @@ export const ADMIN_SECTIONS: AdminSections = {
             route: '/index/evaluation/year1/phase2',
             createdAt: '2021-11-03 22:00',
             lastModifiedAt: '2021-11-03 22:00',
+            duration: '2021-11-03 - 2021-11-03',
           },
         ],
       },
@@ -96,6 +99,7 @@ export const ADMIN_SECTIONS: AdminSections = {
             route: '/index/evaluation/year2/phase1',
             createdAt: '2021-11-03 22:00',
             lastModifiedAt: '2021-11-03 22:00',
+            duration: '2021-11-03 - 2021-11-03',
           },
         ],
       },

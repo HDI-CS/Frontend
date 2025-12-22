@@ -26,7 +26,6 @@ export const useFolderManager = () => {
     name: string;
   } | null>(null);
 
-
   // 수정 대상 바뀌면 input 값 동기화
   useEffect(() => {
     if (editTarget) {
@@ -53,7 +52,7 @@ export const useFolderManager = () => {
     },
   ];
 
-  // index/evaluation/year 드롭다운 메뉴 정의
+  // index/evaluation/ 드롭다운 메뉴 정의
   const getFieldEvaluationMenuItems: GetFieldMenuItems = (item) => [
     {
       key: 'edit file',
@@ -67,6 +66,36 @@ export const useFolderManager = () => {
     {
       key: 'edit survey',
       label: 'edit 평가문항',
+      onClick: () => {
+        setEditTarget({ key: item.key, name: item.label }); // API 구현 후 수정 필요
+        setEditSurvey(true);
+        setOpenMenuKey(null);
+      },
+    },
+    {
+      key: 'delete',
+      label: 'delete file',
+      variant: 'danger',
+      onClick: () => {
+        // delete api
+      },
+    },
+  ];
+
+  // index/evaluation/year 드롭다운 메뉴 정의
+  const getFieldEvaluationRangeMenuItems: GetFieldMenuItems = (item) => [
+    {
+      key: 'edit file',
+      label: 'edit file name',
+      onClick: () => {
+        setEditTarget({ key: item.key, name: item.label });
+        setEditName(true);
+        setOpenMenuKey(null);
+      },
+    },
+    {
+      key: 'edit survey',
+      label: 'edit date range',
       onClick: () => {
         setEditTarget({ key: item.key, name: item.label }); // API 구현 후 수정 필요
         setEditSurvey(true);
@@ -105,5 +134,6 @@ export const useFolderManager = () => {
     // actions
     getFieldMenuItems,
     getFieldEvaluationMenuItems,
+    getFieldEvaluationRangeMenuItems,
   };
 };

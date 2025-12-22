@@ -1,8 +1,13 @@
 'use client';
 import AddBtn from '@/src/components/common/AddBtn';
+import AddEvaluation from '@/src/components/evaluation/AddEvaluation';
 import FolderList from '@/src/components/FolderList';
 import FolderModals from '@/src/components/FolderModals';
 import { ADMIN_SECTIONS } from '@/src/constants/adminSection';
+import {
+  SUBJECT_QUESTION,
+  SURVEY_QUESTIONS,
+} from '@/src/constants/surveyQuestions';
 import { useFolderManager } from '@/src/hooks/useFolderManager';
 import { useParams, useRouter } from 'next/navigation';
 
@@ -21,16 +26,20 @@ const IndexPage = () => {
     openMenuKey,
     add,
     editName,
+    editSurvey,
     editFolderName,
     setPressedKey,
     setOpenMenuKey,
     setAdd,
     setEditName,
+    setEditSurvey,
     setEditFolderName,
     getFieldMenuItems,
+    getFieldEvaluationMenuItems,
   } = useFolderManager();
 
   const sectionParam = params.type as keyof typeof sectionKeyMap | undefined;
+  const isEvaluation = sectionParam === 'evaluation';
 
   if (!sectionParam) {
     return null; // or loading / redirect
@@ -56,6 +65,7 @@ const IndexPage = () => {
         {/* Folder List */}
         <FolderList
           items={items}
+          isPhase={false}
           pressedKey={pressedKey}
           openMenuKey={openMenuKey}
           onSelect={(item) => {
@@ -66,10 +76,12 @@ const IndexPage = () => {
             setOpenMenuKey((prev) => (prev === key ? null : key))
           }
           onCloseMenu={() => setOpenMenuKey(null)}
-          getFieldMenuItems={getFieldMenuItems}
+          getFieldMenuItems={
+            isEvaluation ? getFieldEvaluationMenuItems : getFieldMenuItems
+          }
         />
         {/* ADD BTN */}
-        <AddBtn setAdd={setAdd} />
+        <AddBtn isEvaluation={isEvaluation} setAdd={setAdd} />
 
         {/* Modals */}
         <FolderModals
@@ -80,6 +92,15 @@ const IndexPage = () => {
           onCloseAdd={() => setAdd(false)}
           onCloseEdit={() => setEditName(false)}
         />
+        
+        {editSurvey && (
+          <AddEvaluation
+            onClose={() => setEditSurvey(false)}
+            isEdit={true}
+            qusetionsData={SURVEY_QUESTIONS}
+            subjectiveData={SUBJECT_QUESTION}
+          />
+        )}
       </div>
     </div>
   );
