@@ -101,7 +101,12 @@ const IndexPage = () => {
             />
           </ModalComponent>
         )}
-        {editSurvey && <EditDuration name={editFolderName} onClose={() => setEditSurvey(false)} />}
+        {editSurvey && (
+          <EditDuration
+            name={editFolderName}
+            onClose={() => setEditSurvey(false)}
+          />
+        )}
       </div>
     </div>
   );
