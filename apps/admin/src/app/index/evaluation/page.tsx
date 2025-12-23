@@ -9,7 +9,7 @@ import {
   SURVEY_QUESTIONS,
 } from '@/src/constants/surveyQuestions';
 import { useFolderManager } from '@/src/hooks/useFolderManager';
-import {  useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 const IndexPage = () => {
   const router = useRouter();

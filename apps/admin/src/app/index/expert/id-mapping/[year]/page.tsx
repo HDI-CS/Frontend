@@ -3,7 +3,7 @@ import AddBtn from '@/src/components/common/AddBtn';
 import AddEvaluation from '@/src/components/evaluation/AddEvaluation';
 import FolderList from '@/src/components/FolderList';
 import FolderModals from '@/src/components/FolderModals';
-import { ID_MAPPING_FOLDERS } from '@/src/constants/expert';
+import { MAPPING_PHASE_FOLDER } from '@/src/constants/expert';
 import {
   SUBJECT_QUESTION,
   SURVEY_QUESTIONS,
@@ -30,7 +30,7 @@ const IndexPage = () => {
     getFieldMenuItems,
   } = useFolderManager();
 
-  const items = ID_MAPPING_FOLDERS ?? [];
+  const items = MAPPING_PHASE_FOLDER ?? [];
 
   return (
     <div className="font-pretendard text-blue text-blue pl-47 mt-14 grid min-h-screen pr-80">

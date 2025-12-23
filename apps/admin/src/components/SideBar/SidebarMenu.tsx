@@ -25,6 +25,9 @@ const ROUTES = {
     ROOT: '/index/expert',
     PROFILE: '/index/expert/profile',
     MAPPING: '/index/expert/id-mapping',
+    MAPPING_YEAR1: '/index/expert/id-mapping/year1',
+    MAPPING_YEAR2: '/index/expert/id-mapping/year2',
+    MAPPING_YEAR1_PHASE1: '/index/expert/id-mapping/year1/phase1',
   },
 };
 
@@ -70,6 +73,8 @@ const SidebarMenu = () => {
   );
 
   const openExpert = ROUTE_GROUPS.EXPERT.some((r) => pathname.startsWith(r));
+  const openMapping = pathname.startsWith(ROUTES.EXPERT.MAPPING);
+  const openMappingYear1 = pathname.startsWith(ROUTES.EXPERT.MAPPING_YEAR1);
 
   return (
     <div className="flex flex-col">
@@ -143,11 +148,33 @@ const SidebarMenu = () => {
             active={pathname === ROUTES.EXPERT.PROFILE}
             onClick={() => router.push(ROUTES.EXPERT.PROFILE)}
           />
-          <SubMenuItem
+          {/* 평가 데이터 ID */}
+          <MenuItem
             label="평가 데이터 ID"
+            open={openMapping}
             active={pathname === ROUTES.EXPERT.MAPPING}
             onClick={() => router.push(ROUTES.EXPERT.MAPPING)}
-          />
+          >
+            {/* N차년도 */}
+
+            <MenuItem
+              label="1차년도"
+              open={openMappingYear1}
+              active={pathname === ROUTES.EXPERT.MAPPING_YEAR1}
+              onClick={() => router.push(ROUTES.EXPERT.MAPPING_YEAR1)}
+            >
+              <SubMenuItem
+                label="1차수"
+                active={pathname === ROUTES.EXPERT.MAPPING_YEAR1_PHASE1}
+                onClick={() => router.push(ROUTES.EXPERT.MAPPING_YEAR1_PHASE1)}
+              />{' '}
+            </MenuItem>
+            <MenuItem
+              label="2차년도"
+              active={pathname.startsWith(ROUTES.EXPERT.MAPPING_YEAR2)}
+              onClick={() => router.push(ROUTES.EXPERT.MAPPING_YEAR2)}
+            />
+          </MenuItem>
         </MenuItem>
       </MenuItem>
     </div>

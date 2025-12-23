@@ -4,7 +4,5 @@ export default function IndexLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-      <main className="">{children}</main>
-  );
+  return <main className="">{children}</main>;
 }

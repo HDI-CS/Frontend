@@ -19,7 +19,7 @@ const MenuItem = ({
       <div
         onClick={onClick}
         className={clsx(
-          'flex cursor-pointer items-center gap-1 px-3 py-2 text-sm',
+          'text-neutral-regularBlack text-regular16 flex cursor-pointer items-center gap-1 px-3 py-2.5',
           active && 'bg-[#4676FB] text-white'
         )}
       >

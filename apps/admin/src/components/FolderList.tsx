@@ -1,5 +1,6 @@
 import Folder from '@/src/components/Folder';
 import { AdminEvaluationPhase, AdminYear } from '../constants/adminSection';
+import { IdMappingFolder } from '../constants/expert';
 import { GetFieldMenuItems } from '../hooks/useFolderManager';
 
 interface FolderListProps {
@@ -26,8 +27,8 @@ const FolderList = ({
   getFieldMenuItems,
 }: FolderListProps) => {
   const isPhaseItem = (
-    item: AdminYear | AdminEvaluationPhase
-  ): item is AdminEvaluationPhase => {
+    item: AdminYear | AdminEvaluationPhase | IdMappingFolder
+  ): item is AdminEvaluationPhase | IdMappingFolder => {
     return 'duration' in item;
   };
 
