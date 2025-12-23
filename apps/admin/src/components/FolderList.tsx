@@ -7,6 +7,7 @@ interface FolderListProps {
   items: AdminYear[] | AdminEvaluationPhase[];
   pressedKey: string | null;
   openMenuKey: string | null;
+  isManage?: boolean;
   onSelect: (item: AdminYear) => void;
   onToggleMenu: (key: string) => void;
   onCloseMenu: () => void;
@@ -18,6 +19,7 @@ const FolderList = ({
   items,
   pressedKey,
   openMenuKey,
+  isManage = true,
   onSelect,
   onToggleMenu,
   onCloseMenu,
@@ -39,7 +41,7 @@ const FolderList = ({
           created={item.createdAt}
           duration={isPhaseItem(item) ? item.duration : ''}
           isActive={pressedKey === item.key}
-          isManage
+          isManage={isManage}
           isPhase={isPhase}
           isMenuOpen={openMenuKey === item.key}
           onToggleMenu={() => onToggleMenu(item.key)}

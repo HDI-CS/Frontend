@@ -9,17 +9,10 @@ import {
   SURVEY_QUESTIONS,
 } from '@/src/constants/surveyQuestions';
 import { useFolderManager } from '@/src/hooks/useFolderManager';
-import { useParams, useRouter } from 'next/navigation';
-
-const sectionKeyMap = {
-  data: 'DATA',
-  evaluation: 'EVALUATION',
-  expert: 'EXPERT',
-} as const;
+import {  useRouter } from 'next/navigation';
 
 const IndexPage = () => {
   const router = useRouter();
-  const params = useParams();
 
   const {
     pressedKey,
@@ -34,24 +27,10 @@ const IndexPage = () => {
     setEditName,
     setEditSurvey,
     setEditFolderName,
-    getFieldMenuItems,
     getFieldEvaluationMenuItems,
   } = useFolderManager();
 
-  const sectionParam = params.type as keyof typeof sectionKeyMap | undefined;
-  const isEvaluation = sectionParam === 'evaluation';
-
-  if (!sectionParam) {
-    return null; // or loading / redirect
-  }
-
-  const sectionKey = sectionKeyMap[sectionParam];
-
-  if (!sectionKey) {
-    return null; // 잘못된 URL 접근
-  }
-
-  const section = ADMIN_SECTIONS[sectionKey];
+  const section = ADMIN_SECTIONS['EVALUATION'];
   const items = section.years ?? [];
 
   return (
@@ -76,12 +55,10 @@ const IndexPage = () => {
             setOpenMenuKey((prev) => (prev === key ? null : key))
           }
           onCloseMenu={() => setOpenMenuKey(null)}
-          getFieldMenuItems={
-            isEvaluation ? getFieldEvaluationMenuItems : getFieldMenuItems
-          }
+          getFieldMenuItems={getFieldEvaluationMenuItems}
         />
         {/* ADD BTN */}
-        <AddBtn isEvaluation={isEvaluation} setAdd={setAdd} />
+        <AddBtn isEvaluation={true} setAdd={setAdd} />
 
         {/* Modals */}
         <FolderModals

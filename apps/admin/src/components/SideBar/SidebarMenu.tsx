@@ -21,11 +21,20 @@ const ROUTES = {
     YEAR2: '/index/evaluation/year2',
   },
 
-  EXPERT: '/index/expert',
+  EXPERT: {
+    ROOT: '/index/expert',
+    PROFILE: '/index/expert/profile',
+    MAPPING: '/index/expert/id-mapping',
+  },
 };
 
 const ROUTE_GROUPS = {
-  ROOT: [ROUTES.ROOT, ROUTES.DATA.ROOT, ROUTES.EVALUATION.ROOT, ROUTES.EXPERT],
+  ROOT: [
+    ROUTES.ROOT,
+    ROUTES.DATA.ROOT,
+    ROUTES.EVALUATION.ROOT,
+    ROUTES.EXPERT.ROOT,
+  ],
 
   DATA: Object.values(ROUTES.DATA),
 
@@ -39,7 +48,7 @@ const ROUTE_GROUPS = {
 
   EVALUATION_YEAR2: [ROUTES.EVALUATION.YEAR2],
 
-  EXPERT: [ROUTES.EXPERT],
+  EXPERT: Object.values(ROUTES.EXPERT),
 };
 
 const SidebarMenu = () => {
@@ -59,6 +68,8 @@ const SidebarMenu = () => {
   const openYear2 = ROUTE_GROUPS.EVALUATION_YEAR2.some((r) =>
     pathname.startsWith(r)
   );
+
+  const openExpert = ROUTE_GROUPS.EXPERT.some((r) => pathname.startsWith(r));
 
   return (
     <div className="flex flex-col">
@@ -88,6 +99,7 @@ const SidebarMenu = () => {
           />
         </MenuItem>
 
+        {/* 평가 관리  */}
         <MenuItem
           label="평가 관리"
           open={openEvaluation}
@@ -118,11 +130,25 @@ const SidebarMenu = () => {
             onClick={() => router.push(ROUTES.EVALUATION.YEAR2)}
           />
         </MenuItem>
+
+        {/* 전문가 관리  */}
         <MenuItem
           label="전문가 관리"
-          active={pathname === ROUTES.EXPERT}
-          onClick={() => router.push(ROUTES.EXPERT)}
-        />
+          open={openExpert}
+          active={pathname === ROUTES.EXPERT.ROOT}
+          onClick={() => router.push(ROUTES.EXPERT.ROOT)}
+        >
+          <SubMenuItem
+            label="전문가 인적사항"
+            active={pathname === ROUTES.EXPERT.PROFILE}
+            onClick={() => router.push(ROUTES.EXPERT.PROFILE)}
+          />
+          <SubMenuItem
+            label="평가 데이터 ID"
+            active={pathname === ROUTES.EXPERT.MAPPING}
+            onClick={() => router.push(ROUTES.EXPERT.MAPPING)}
+          />
+        </MenuItem>
       </MenuItem>
     </div>
   );

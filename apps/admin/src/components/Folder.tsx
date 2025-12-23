@@ -84,7 +84,7 @@ const Folder = ({
           {/* 폴더명 */}
           <span
             className={clsx(
-              'w-25 font-light transition-colors group-hover:text-white',
+              'w-26 font-light transition-colors group-hover:text-white ',
               isMenuOpen ? 'text-[#ffffff]' : 'text-[#4676FB]'
             )}
           >
