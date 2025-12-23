@@ -64,21 +64,26 @@ export default function LayoutWrapper({
     SUB_HEADER_RULES.get(pathname) === getPathDepth(pathname);
 
   return (
-    <>
+    <div className="h-screen overflow-x-hidden">
+      {/*  기본 가로 스크롤 차단 */}
       {!shouldHideHeader && (
         <Header name="관리자페이지" isInput={headerOptions.isInput} />
       )}
       {/* 사이드바 + 콘텐츠를 가로로 */}
       <div className="flex flex-1">
         {!shouldHideHeader && <SideBar />}
-        <div className="flex-1">
+        <div className="min-w-0 flex-1">
           {/* SubHeader */}
           {!shouldHideHeader && showSubHeader && <SubHeader />}
-          <main className={clsx('flex-1', shouldHideHeader ? 'p-0' : '')}>
+          <main
+            className={clsx('min-w-0 flex-1', shouldHideHeader ? 'p-0' : '')}
+          >
             {children}
           </main>
         </div>
       </div>
-    </>
+    </div>
   );
 }
+
+// 스크롤이 들어가야 하는 flex 자식에 min-w-0를 꼭 줘야 함.

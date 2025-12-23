@@ -8,7 +8,7 @@ interface AddBtnProps {
 
 const AddBtn = ({ setAdd, isEvaluation = false }: AddBtnProps) => {
   return (
-    <div className="flex w-full mt-7.5 cursor-pointer items-center justify-center">
+    <div className="mt-7.5 flex w-full cursor-pointer items-center justify-center">
       <div
         onClick={() => setAdd(true)}
         className={
@@ -24,7 +24,6 @@ const AddBtn = ({ setAdd, isEvaluation = false }: AddBtnProps) => {
           +
         </p>
         {isEvaluation && <p className="text-regular16">평가 추가하기</p>}
-        
       </div>
     </div>
   );

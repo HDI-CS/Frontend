@@ -11,7 +11,7 @@ const IndexPage = () => {
   const sections = Object.values(ADMIN_SECTIONS);
 
   return (
-    <div className="font-pretendard text-blue text-blue pl-47 pr-80 mt-14 grid min-h-screen">
+    <div className="font-pretendard text-blue text-blue pl-47 mt-14 grid min-h-screen pr-80">
       <div className="flex flex-col gap-5">
         <div className="text-primary-blue flex">
           <p className="ml-21 w-25">Folder</p>
@@ -24,7 +24,7 @@ const IndexPage = () => {
             name={section.label}
             modified={section.lastModifiedAt}
             created={section.createdAt}
-            duration=''
+            duration=""
             isPhase={false}
             isActive={pressedKey === section.key}
             onClick={() => {

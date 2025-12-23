@@ -92,7 +92,7 @@ const IndexPage = () => {
           onCloseAdd={() => setAdd(false)}
           onCloseEdit={() => setEditName(false)}
         />
-        
+
         {editSurvey && (
           <AddEvaluation
             onClose={() => setEditSurvey(false)}

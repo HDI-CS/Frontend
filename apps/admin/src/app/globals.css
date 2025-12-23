@@ -9,7 +9,7 @@
 @theme {
   --color-primary-blue: #4676fb;
   --color-primary-deepBlue: #001d6c;
-  --color-neutral-regulatBlack: #3a3a49;
+  --color-neutral-regularBlack: #3a3a49;
   --color-neutral-white: #ffffff;
   --color-neutral-gray: #8d8d8d;
   --color-neutral-gray30: #d0d7dd;
@@ -53,7 +53,7 @@
     font-weight: 400;
   }
   .text-regular10 {
-    font-size: 14px;
+    font-size: 10px;
     line-height: 1.1;
     letter-spacing: 0px;
     font-weight: 400;
