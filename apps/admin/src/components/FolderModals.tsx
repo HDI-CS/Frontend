@@ -20,13 +20,23 @@ const FolderModals = ({
   return (
     <>
       {add && (
-        <ModalComponent title="폴더 이름" button="생성" onClose={onCloseAdd}>
+        <ModalComponent
+          title="폴더 이름"
+          button="생성"
+          onClose={onCloseAdd}
+          onSubmit={onCloseAdd}
+        >
           <input className="border-1 w-full rounded border-[#E9E9E7] p-3 text-[#3A3A49]" />
         </ModalComponent>
       )}
 
       {editName && (
-        <ModalComponent title="폴더 이름" button="저장" onClose={onCloseEdit}>
+        <ModalComponent
+          title="폴더 이름"
+          button="저장"
+          onClose={onCloseEdit}
+          onSubmit={onCloseEdit}
+        >
           <input
             value={editFolderName}
             onChange={(e) => setEditFolderName(e.target.value)}

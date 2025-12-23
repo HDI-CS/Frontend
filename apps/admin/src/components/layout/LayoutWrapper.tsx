@@ -13,7 +13,14 @@ import SubHeader from './SubHeader';
 const HIDE_HEADER_ROUTES = ['/auth'];
 
 // SubHeader 보여주는 라우터들
-const SUB_HEADER_ROUTES = ['/index'];
+const SUB_HEADER_RULES = new Map<string, number>([
+  ['/index', 1],
+  ['/index/data', 2],
+  ['/index/expert', 2],
+  ['/index/evaluation', 2],
+  ['/index/evaluation/year1', 3],
+  ['/index/evaluation/year2', 3],
+]);
 
 export default function LayoutWrapper({
   children,
@@ -49,10 +56,12 @@ export default function LayoutWrapper({
     HIDE_HEADER_ROUTES.some((route) => pathname.startsWith(route)) ||
     isNotFoundPage;
 
-  // subHeader는 /index 하위 라우터에서만
-  const showSubHeader = SUB_HEADER_ROUTES.some((route) =>
-    pathname.startsWith(route)
-  );
+  // subHeader
+  const getPathDepth = (pathname: string) =>
+    pathname.split('/').filter(Boolean).length;
+
+  const showSubHeader =
+    SUB_HEADER_RULES.get(pathname) === getPathDepth(pathname);
 
   return (
     <>

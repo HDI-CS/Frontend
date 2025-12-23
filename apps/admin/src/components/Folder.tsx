@@ -13,7 +13,9 @@ interface FolderProps {
   name: string;
   modified: string;
   created: string;
+  duration: string;
   isManage?: boolean;
+  isPhase: boolean;
   isActive?: boolean;
 
   isMenuOpen?: boolean;
@@ -28,7 +30,9 @@ const Folder = ({
   name,
   modified,
   created,
+  duration,
   isManage = false,
+  isPhase,
   isActive,
   onClick,
   getFieldMenuItems,
@@ -42,7 +46,7 @@ const Folder = ({
     <div
       onClick={onClick}
       className={clsx(
-        'group relative flex h-20 w-full cursor-pointer items-center justify-between border p-6 transition-colors duration-150',
+        'shadow-card group relative flex h-20 w-full cursor-pointer items-center justify-between border p-6 transition-colors duration-150',
         isActive || isMenuOpen
           ? 'border-white bg-[#4676FB]'
           : 'border-[#E9EFF4] bg-white hover:border-white hover:bg-[#4676FB]'
@@ -105,6 +109,19 @@ const Folder = ({
           {' '}
           {created}
         </span>
+        <div>
+          {isPhase && (
+            <span
+              className={clsx(
+                'flex items-center text-base transition-colors group-hover:text-white',
+                isMenuOpen ? 'text-[#ffffff]' : 'text-[#3A3A49]'
+              )}
+            >
+              {duration}
+            </span>
+          )}
+        </div>
+        {}
       </div>
 
       {/* 옵션 아이콘 */}

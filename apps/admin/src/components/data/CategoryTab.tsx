@@ -50,6 +50,7 @@ const CategoryTab = ({ categories, activeKey, onChange }: CategoryTabProps) => {
           button="저장"
           title="카테고리"
           onClose={() => setOpen(false)}
+          onSubmit={() => setOpen(false)}
         >
           카테고리
         </ModalComponent>
