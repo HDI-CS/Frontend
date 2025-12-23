@@ -1,5 +1,6 @@
 import Folder from '@/src/components/Folder';
 import { AdminEvaluationPhase, AdminYear } from '../constants/adminSection';
+import { IdMappingFolder } from '../constants/expert';
 import { GetFieldMenuItems } from '../hooks/useFolderManager';
 
 interface FolderListProps {
@@ -7,6 +8,7 @@ interface FolderListProps {
   items: AdminYear[] | AdminEvaluationPhase[];
   pressedKey: string | null;
   openMenuKey: string | null;
+  isManage?: boolean;
   onSelect: (item: AdminYear) => void;
   onToggleMenu: (key: string) => void;
   onCloseMenu: () => void;
@@ -18,14 +20,15 @@ const FolderList = ({
   items,
   pressedKey,
   openMenuKey,
+  isManage = true,
   onSelect,
   onToggleMenu,
   onCloseMenu,
   getFieldMenuItems,
 }: FolderListProps) => {
   const isPhaseItem = (
-    item: AdminYear | AdminEvaluationPhase
-  ): item is AdminEvaluationPhase => {
+    item: AdminYear | AdminEvaluationPhase | IdMappingFolder
+  ): item is AdminEvaluationPhase | IdMappingFolder => {
     return 'duration' in item;
   };
 
@@ -39,7 +42,7 @@ const FolderList = ({
           created={item.createdAt}
           duration={isPhaseItem(item) ? item.duration : ''}
           isActive={pressedKey === item.key}
-          isManage
+          isManage={isManage}
           isPhase={isPhase}
           isMenuOpen={openMenuKey === item.key}
           onToggleMenu={() => onToggleMenu(item.key)}

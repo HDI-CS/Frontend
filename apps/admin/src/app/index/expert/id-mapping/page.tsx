@@ -3,23 +3,16 @@ import AddBtn from '@/src/components/common/AddBtn';
 import AddEvaluation from '@/src/components/evaluation/AddEvaluation';
 import FolderList from '@/src/components/FolderList';
 import FolderModals from '@/src/components/FolderModals';
-import { ADMIN_SECTIONS } from '@/src/constants/adminSection';
+import { ID_MAPPING_FOLDERS } from '@/src/constants/expert';
 import {
   SUBJECT_QUESTION,
   SURVEY_QUESTIONS,
 } from '@/src/constants/surveyQuestions';
 import { useFolderManager } from '@/src/hooks/useFolderManager';
-import { useParams, useRouter } from 'next/navigation';
-
-const sectionKeyMap = {
-  data: 'DATA',
-  evaluation: 'EVALUATION',
-  expert: 'EXPERT',
-} as const;
+import { useRouter } from 'next/navigation';
 
 const IndexPage = () => {
   const router = useRouter();
-  const params = useParams();
 
   const {
     pressedKey,
@@ -35,37 +28,23 @@ const IndexPage = () => {
     setEditSurvey,
     setEditFolderName,
     getFieldMenuItems,
-    getFieldEvaluationMenuItems,
   } = useFolderManager();
 
-  const sectionParam = params.type as keyof typeof sectionKeyMap | undefined;
-  const isEvaluation = sectionParam === 'evaluation';
-
-  if (!sectionParam) {
-    return null; // or loading / redirect
-  }
-
-  const sectionKey = sectionKeyMap[sectionParam];
-
-  if (!sectionKey) {
-    return null; // 잘못된 URL 접근
-  }
-
-  const section = ADMIN_SECTIONS[sectionKey];
-  const items = section.years ?? [];
+  const items = ID_MAPPING_FOLDERS ?? [];
 
   return (
     <div className="font-pretendard text-blue text-blue pl-47 mt-14 grid min-h-screen pr-80">
       <div className="flex flex-col gap-5">
         <div className="flex text-[#4676FB]">
           <p className="ml-21 w-25">Folder</p>
-          <span className="ml-25 w-25">Last Modified</span>
-          <span className="ml-31 w-25">Created</span>
+          <p className="ml-25 w-25">Last Modified</p>
+          <p className="ml-31 w-25">Created</p>
+          <p className="ml-31 w-25">Duration</p>
         </div>
         {/* Folder List */}
         <FolderList
           items={items}
-          isPhase={false}
+          isPhase={true}
           pressedKey={pressedKey}
           openMenuKey={openMenuKey}
           onSelect={(item) => {
@@ -76,12 +55,10 @@ const IndexPage = () => {
             setOpenMenuKey((prev) => (prev === key ? null : key))
           }
           onCloseMenu={() => setOpenMenuKey(null)}
-          getFieldMenuItems={
-            isEvaluation ? getFieldEvaluationMenuItems : getFieldMenuItems
-          }
+          getFieldMenuItems={getFieldMenuItems}
         />
         {/* ADD BTN */}
-        <AddBtn isEvaluation={isEvaluation} setAdd={setAdd} />
+        <AddBtn isEvaluation={false} setAdd={setAdd} />
 
         {/* Modals */}
         <FolderModals

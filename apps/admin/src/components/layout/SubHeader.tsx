@@ -7,6 +7,7 @@ const LABEL_MAP: Record<string, string> = {
   expert: '전문가 관리',
   year1: '1차년도',
   year2: '2차년도',
+  'id-mapping': '평가 데이터 ID',
 };
 const SubHeader = () => {
   const pathname = usePathname();

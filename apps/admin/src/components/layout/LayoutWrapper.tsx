@@ -20,6 +20,8 @@ const SUB_HEADER_RULES = new Map<string, number>([
   ['/index/evaluation', 2],
   ['/index/evaluation/year1', 3],
   ['/index/evaluation/year2', 3],
+  ['/index/expert/id-mapping', 3],
+  ['/index/expert/id-mapping/year1', 4],
 ]);
 
 export default function LayoutWrapper({

@@ -13,7 +13,7 @@ const Td = ({
     <td
       colSpan={colSpan}
       className={clsx(
-        'border-b border-[#EFEFEF] px-3 py-3 align-middle text-[#111827]',
+        'border-b border-[#EFEFEF]  align-middle text-[#111827]',
         'border-r last:border-r-0',
         className
       )}

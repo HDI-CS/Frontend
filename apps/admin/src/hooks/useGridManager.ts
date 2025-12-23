@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { FieldActionMenuItem } from '../components/FieldActionMenu';
+import { IdMappingType } from '../constants/expert';
 import { ExpertResponse } from '../constants/surveyQuestions';
 import { VisualDataItem } from '../types/data/visual-data';
 
@@ -42,6 +43,8 @@ export const useFolderManager = () => {
 
   // modal용 state
   const [selectedRow, setSelectedRow] = useState<ExpertResponse | null>(null);
+  const [selectedExpertRow, setSelectedExpertRow] =
+    useState<IdMappingType | null>(null);
 
   // Edit <Boolean>
   const [isEdit, setIsEdit] = useState(false);
@@ -118,6 +121,7 @@ export const useFolderManager = () => {
     orderBy,
     selectedRow,
     showQuestion,
+    selectedExpertRow,
 
     // setters
     setDataId,
@@ -130,6 +134,7 @@ export const useFolderManager = () => {
     setOrderBy,
     setSelectedRow,
     setShowQuestion,
+    setSelectedExpertRow,
 
     // actions
     getFieldExpertMenuItems,
