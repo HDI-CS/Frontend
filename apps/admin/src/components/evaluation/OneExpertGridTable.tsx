@@ -10,7 +10,7 @@ import {
   SURVEY_QUESTIONS,
 } from '@/src/constants/surveyQuestions';
 import useGridManager from '@/src/hooks/useGridManager';
-import { truncateText } from '@/src/utils/s';
+import { truncateText } from '@/src/utils/truncateText';
 import clsx from 'clsx';
 import Image from 'next/image';
 import IdSortMenu from '../data/table/IdSortMenu';

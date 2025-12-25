@@ -31,6 +31,19 @@ const ROUTES = {
   },
 };
 
+// const ROUTES = {
+//   DATA: {
+//     YEAR: (yearId: number) => `/index/data/year/${yearId}`,
+//   },
+//   EVALUATION: {
+//     YEAR: (yearId: number) => `/index/evaluation/year/${yearId}`,
+//     ROUND: (yearId: number, roundId: number) =>
+//       `/index/evaluation/year/${yearId}/round/${roundId}`,
+//   },
+// };
+
+
+
 const ROUTE_GROUPS = {
   ROOT: [
     ROUTES.ROOT,
@@ -57,6 +70,7 @@ const ROUTE_GROUPS = {
 const SidebarMenu = () => {
   const pathname = usePathname();
   const router = useRouter();
+  // const { data: years, isLoading } = useEvaluationFolders();
 
   const openRoot = ROUTE_GROUPS.ROOT.some((r) => pathname.startsWith(r));
   const openData = ROUTE_GROUPS.DATA.some((r) => pathname.startsWith(r));
