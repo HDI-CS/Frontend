@@ -42,8 +42,6 @@ const ROUTES = {
 //   },
 // };
 
-
-
 const ROUTE_GROUPS = {
   ROOT: [
     ROUTES.ROOT,
