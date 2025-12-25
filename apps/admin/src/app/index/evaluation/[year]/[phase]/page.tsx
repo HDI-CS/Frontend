@@ -7,7 +7,7 @@ import { useState } from 'react';
 const PhasePage = () => {
   const [activeId, setActiveId] = useState<number | null>(null);
   return (
-    <div className="bg-system-blueBg min-h-screen p-1.5">
+    <div className="bg-system-blueBg p-1.5">
       <AllExpertGridTable
         activeId={activeId}
         setActiveId={setActiveId}

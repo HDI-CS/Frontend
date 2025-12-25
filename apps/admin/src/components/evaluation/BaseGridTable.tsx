@@ -3,9 +3,9 @@ interface BaseGridTableProps {
 }
 
 const BaseGridTable = ({ children }: BaseGridTableProps) => (
-  <div className="border border-[#E5E5E5] bg-white p-2">
+  <div className="flex h-full flex-col border border-[#E5E5E5] bg-white p-2">
     {/* 너비 넘어갈 시 가로 스크롤 */}
-    <div className="w-full overflow-x-auto">
+    <div className="max-h-[680px] w-full flex-1 overflow-auto">
       <table className="min-w-max border-separate border-spacing-0 whitespace-nowrap">
         {children}
       </table>

@@ -138,7 +138,7 @@ const DataPage = () => {
   }, [localData, activeCategory, sort]);
 
   return (
-    <div className="min-h-screen bg-[#F4F7FF] px-2 pt-1.5">
+    <div className=" bg-[#F4F7FF] px-2 pt-1.5">
       <div className="">
         {/* 상단 */}
         <div className="flex items-center justify-between border-b border-[#E5E5E5]">

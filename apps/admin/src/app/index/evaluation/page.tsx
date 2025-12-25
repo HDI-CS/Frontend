@@ -34,7 +34,7 @@ const IndexPage = () => {
   const items = section.years ?? [];
 
   return (
-    <div className="font-pretendard text-blue text-blue pl-47 mt-14 grid min-h-screen pr-80">
+    <div className="font-pretendard text-blue text-blue pl-47 mt-14 grid pr-80">
       <div className="flex flex-col gap-5">
         <div className="flex text-[#4676FB]">
           <p className="ml-21 w-25">Folder</p>
