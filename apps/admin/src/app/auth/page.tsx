@@ -1,40 +1,22 @@
 'use client';
 
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+
+import { HongikUnivLogo } from '@hdi/ui';
 
 import { Button } from '@/src/components/Button';
 import { Input } from '@/src/components/Input';
+import { useLogin } from '@/src/hooks/useLogin';
 import { LoginRequest } from '@/src/schemas/auth';
-import { HongikUnivLogo } from '@hdi/ui';
-// import { useLogin } from '@/hooks/useLogin';
 
 export default function AuthPage() {
   const [formData, setFormData] = useState<LoginRequest>({
     email: '',
     password: '',
   });
-  const [error, setError] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [isPending, setIsPending] = useState(false);
 
-  // (추후 수정) 로그인 시 이동
-  const router = useRouter();
-  // const loginMutation = useLogin();
-  const handlePublishingFn = () => {
-    setIsPending(true);
-
-    setTimeout(() => {
-      setIsSuccess(true);
-      setError(false);
-
-      setTimeout(() => {
-        router.push('/index');
-      }, 2000);
-    }, 1000);
-  };
-  ////
+  const loginMutation = useLogin();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -46,7 +28,7 @@ export default function AuthPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // loginMutation.mutate(formData);
+    loginMutation.mutate(formData);
   };
 
   return (
@@ -59,7 +41,7 @@ export default function AuthPage() {
         priority
       />
       <form className="w-90 flex flex-col gap-6" onSubmit={handleSubmit}>
-        {error && (
+        {loginMutation.error && (
           <div className="w-full rounded-md border border-red-200 bg-red-50 p-4 text-red-700">
             <div className="flex items-center gap-2">
               <svg
@@ -75,11 +57,11 @@ export default function AuthPage() {
               </svg>
               <span className="font-medium">로그인 실패</span>
             </div>
-            <p className="mt-1 text-sm">{error}</p>
+            <p className="mt-1 text-sm">{loginMutation.error.message}</p>
           </div>
         )}
 
-        {isSuccess && (
+        {loginMutation.isSuccess && (
           <div className="w-full rounded-md border border-green-200 bg-green-50 p-4 text-green-700">
             <div className="flex items-center gap-2">
               <svg
@@ -119,11 +101,11 @@ export default function AuthPage() {
           />
         </section>
         <Button
-          text={isPending ? '로그인 중...' : '로그인'}
-          onClick={handlePublishingFn}
+          text={loginMutation.isPending ? '로그인 중...' : '로그인'}
+          onClick={() => {}}
           className="w-full bg-blue-700 py-3.5 text-white disabled:bg-gray-400"
           type="submit"
-          disabled={isPending}
+          disabled={loginMutation.isPending}
         />
       </form>
     </div>

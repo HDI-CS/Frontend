@@ -1,4 +1,4 @@
-import { apiClient } from '@/lib/axios';
+import { apiClient } from '@/src/lib/axios';
 import {
   LoginRequest,
   LoginRequestSchema,
@@ -8,7 +8,7 @@ import {
   LogoutResponseSchema,
   MeResponse,
   MeResponseSchema,
-} from '@/schemas/auth';
+} from '@/src/schemas/auth';
 
 export const login = async (
   credentials: LoginRequest
@@ -26,15 +26,21 @@ export const login = async (
 };
 
 export const logout = async (): Promise<LogoutResponse> => {
-  const response = await apiClient.post<LogoutResponse>('/auth/logout');
+  const response = await apiClient.post<LogoutResponse>('/user/auth/logout');
 
   // 응답 데이터 검증
   return LogoutResponseSchema.parse(response.data);
 };
 
-export const getMe = async (): Promise<MeResponse> => {
-  const response = await apiClient.get('/user/auth/me');
+//
+export const getUserMe = async (): Promise<MeResponse> => {
+  const response = await apiClient.get('/api/v1/user/auth/me');
 
   // 응답 데이터 검증
+  return MeResponseSchema.parse(response.data); // 평가 페이지 수정 필요
+};
+
+export const getAdminMe = async (): Promise<MeResponse> => {
+  const response = await apiClient.get('/api/v1/admin/auth/me'); // 평가 페이지 수정 필요
   return MeResponseSchema.parse(response.data);
 };
