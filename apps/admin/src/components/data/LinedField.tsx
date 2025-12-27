@@ -41,7 +41,7 @@ const LinedField = ({
         <>
           <span
             className={clsx(
-              'w-37 mb-0 text-base',
+              'w-37 text-bold16 mb-0',
               activeField === label
                 ? 'border-1 rounded border-[#4676FB] p-1 font-normal'
                 : 'text-[#3A3A49]'

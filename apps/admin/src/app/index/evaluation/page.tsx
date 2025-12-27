@@ -2,7 +2,6 @@
 import AddBtn from '@/src/components/common/AddBtn';
 import AddEvaluation from '@/src/components/evaluation/AddEvaluation';
 import FolderList from '@/src/components/FolderList';
-import FolderModals from '@/src/components/FolderModals';
 import { ADMIN_SECTIONS } from '@/src/constants/adminSection';
 import {
   SUBJECT_QUESTION,
@@ -18,15 +17,11 @@ const IndexPage = () => {
     pressedKey,
     openMenuKey,
     add,
-    editName,
     editSurvey,
-    editFolderName,
     setPressedKey,
     setOpenMenuKey,
     setAdd,
-    setEditName,
     setEditSurvey,
-    setEditFolderName,
     getFieldEvaluationMenuItems,
   } = useFolderManager();
 
@@ -34,7 +29,7 @@ const IndexPage = () => {
   const items = section.years ?? [];
 
   return (
-    <div className="font-pretendard text-blue text-blue pl-47 mt-14 grid pr-80">
+    <div className="font-pretendard text-blue text-blue pl-47 mt-14 grid min-h-screen pr-80">
       <div className="flex flex-col gap-5">
         <div className="flex text-[#4676FB]">
           <p className="ml-21 w-25">Folder</p>
@@ -61,14 +56,7 @@ const IndexPage = () => {
         <AddBtn isEvaluation={true} setAdd={setAdd} />
 
         {/* Modals */}
-        <FolderModals
-          add={add}
-          editName={editName}
-          editFolderName={editFolderName}
-          setEditFolderName={setEditFolderName}
-          onCloseAdd={() => setAdd(false)}
-          onCloseEdit={() => setEditName(false)}
-        />
+        {add && <AddEvaluation onClose={() => setAdd(false)} />}
 
         {editSurvey && (
           <AddEvaluation

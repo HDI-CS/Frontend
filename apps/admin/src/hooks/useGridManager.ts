@@ -45,6 +45,12 @@ export const useFolderManager = () => {
   const [selectedRow, setSelectedRow] = useState<ExpertResponse | null>(null);
   const [selectedExpertRow, setSelectedExpertRow] =
     useState<IdMappingType | null>(null);
+  const [selectedDataRow, setSelectedDataRow] = useState<VisualDataItem | null>(
+    null
+  );
+
+// 왜씀?
+  const [selectedRowId, setSelectedRowId] = useState<number | null>(null);
 
   // Edit <Boolean>
   const [isEdit, setIsEdit] = useState(false);
@@ -53,31 +59,31 @@ export const useFolderManager = () => {
   const [showQuestion, setShowQuestion] = useState(false);
 
   // row별 동작 정의
-  // const getFieldMenuItems = (row: VisualDataItem): FieldActionMenuItem[] => [
-  //   {
-  //     key: 'edit',
-  //     label: 'edit field',
-  //     onClick: () => {
-  //       setIsEdit(true);
-  //       setDataId(row.id); // code인지 id인지는 봐야됨
-  //     },
-  //   },
-  //   {
-  //     key: 'duplicate',
-  //     label: 'duplicate field',
-  //     onClick: () => {
-  //       console.log('duplicate field', row);
-  //     },
-  //   },
-  //   {
-  //     key: 'delete',
-  //     label: 'delete field',
-  //     variant: 'danger',
-  //     onClick: () => {
-  //       // 서버에 먼저 요청 → 성공 시 데이터를 새롭게 받음
-  //     },
-  //   },
-  // ];
+  const getFieldMenuItems = (row: VisualDataItem): FieldActionMenuItem[] => [
+    {
+      key: 'edit',
+      label: 'edit field',
+      onClick: () => {
+        setIsEdit(true);
+        setDataId(row.id); // code인지 id인지는 봐야됨
+      },
+    },
+    {
+      key: 'duplicate',
+      label: 'duplicate field',
+      onClick: () => {
+        console.log('duplicate field', row);
+      },
+    },
+    {
+      key: 'delete',
+      label: 'delete field',
+      variant: 'danger',
+      onClick: () => {
+        // 서버에 먼저 요청 → 성공 시 데이터를 새롭게 받음
+      },
+    },
+  ];
 
   // row별 동작 정의
   const getFieldExpertMenuItems = (
@@ -89,7 +95,7 @@ export const useFolderManager = () => {
       onClick: () => {
         setIsEdit(true);
         setDataId(row.id); // code인지 id인지는 봐야됨
-        setSelectedRow(row);
+        setSelectedRow(row);  // 하나의 평가자의 응답 데이터 저장
       },
     },
     {
@@ -122,6 +128,8 @@ export const useFolderManager = () => {
     selectedRow,
     showQuestion,
     selectedExpertRow,
+    selectedDataRow,
+    selectedRowId,
 
     // setters
     setDataId,
@@ -135,8 +143,11 @@ export const useFolderManager = () => {
     setSelectedRow,
     setShowQuestion,
     setSelectedExpertRow,
+    setSelectedDataRow,
+    setSelectedRowId,
 
     // actions
+    getFieldMenuItems,
     getFieldExpertMenuItems,
   };
 };

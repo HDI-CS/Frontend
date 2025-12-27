@@ -131,12 +131,12 @@ const SidebarMenu = () => {
           >
             <SubMenuItem
               label="1차 평가"
-              active={pathname === ROUTES.EVALUATION.YEAR1_PHASE1}
+              active={pathname.startsWith(ROUTES.EVALUATION.YEAR1_PHASE1)}
               onClick={() => router.push(ROUTES.EVALUATION.YEAR1_PHASE1)}
             />
             <SubMenuItem
               label="2차 평가"
-              active={pathname === ROUTES.EVALUATION.YEAR1_PHASE2}
+              active={pathname.startsWith(ROUTES.EVALUATION.YEAR1_PHASE2)}
               onClick={() => router.push(ROUTES.EVALUATION.YEAR1_PHASE2)}
             />
           </MenuItem>
