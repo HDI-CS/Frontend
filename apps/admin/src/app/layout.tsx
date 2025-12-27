@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 
 import LayoutWrapper from '../components/layout/LayoutWrapper';
+import QueryProvider from '../components/providers/QueryProvider';
 import './globals.css';
 
 const pretendard = localFont({
@@ -31,9 +32,11 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className={`${pretendard.variable}`}>
-        <LayoutWrapper>
-          <main>{children}</main>
-        </LayoutWrapper>
+        <QueryProvider>
+          <LayoutWrapper>
+            <main>{children}</main>
+          </LayoutWrapper>
+        </QueryProvider>
       </body>
     </html>
   );
