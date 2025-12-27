@@ -87,7 +87,7 @@ apiClient.interceptors.response.use(
     // 401 에러 시 쿠키 제거 및 로그인 페이지로 리다이렉트
     // 단, 로그인 직후 일부 API에서는 새로고침하지 않음
     if (error.response?.status === 401) {
-      const isLoginEndpoint = error.config?.url?.includes('/auth/');
+      const isLoginEndpoint = error.config?.url?.includes('/auth/login');
 
       console.log('🔒 401 에러 상세 분석:', {
         isLoginEndpoint,

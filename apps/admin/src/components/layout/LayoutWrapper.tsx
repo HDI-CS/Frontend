@@ -66,7 +66,7 @@ export default function LayoutWrapper({
     SUB_HEADER_RULES.get(pathname) === getPathDepth(pathname);
 
   return (
-    <div className="h-screen overflow-x-hidden">
+    <div className="">
       {/*  기본 가로 스크롤 차단 */}
       {!shouldHideHeader && (
         <Header name="관리자페이지" isInput={headerOptions.isInput} />
@@ -78,7 +78,10 @@ export default function LayoutWrapper({
           {/* SubHeader */}
           {!shouldHideHeader && showSubHeader && <SubHeader />}
           <main
-            className={clsx('min-w-0 flex-1', shouldHideHeader ? 'p-0' : '')}
+            className={clsx(
+              'flex-1 overflow-hidden',
+              shouldHideHeader ? 'p-0' : ''
+            )}
           >
             {children}
           </main>

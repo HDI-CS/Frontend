@@ -1,67 +1,58 @@
 'use client';
-import {
-  VisualDataItem,
-  VisualDataItemWithUI,
-} from '@/src/types/data/visual-data';
+import useGridManager from '@/src/hooks/useGridManager';
+import { VisualDataItemWithUI } from '@/src/types/data/visual-data';
 import clsx from 'clsx';
 import Image from 'next/image';
-import { useState } from 'react';
-import FieldActionMenu, { FieldActionMenuItem } from '../FieldActionMenu';
+import FieldActionMenu from '../FieldActionMenu';
 import DataDetailModal from './DataDetailModal';
 
 export default function GalleryView({
-  items,
+  rows,
+  lastIndex,
   onAdd,
 }: {
-  items: VisualDataItemWithUI[];
+  rows: VisualDataItemWithUI[];
+  lastIndex: number;
   onAdd: () => void;
 }) {
-  const [dataId, setDataId] = useState<number | null>(null);
+  const {
+    dataId,
+    activeRowId,
+    // selectedRowId,
+    isEdit,
+    rowMenu,
 
-  // Edit
-  const [isEdit, setIsEdit] = useState(false);
+    setDataId,
+    setActiveRowId,
+    setIsEdit,
+    setRowMenu,
+    // setSelectedRowId,
+    getFieldMenuItems,
+  } = useGridManager();
 
-  // 행(Field 액션용)
-  const [rowMenu, setRowMenu] = useState<{
-    x: number;
-    y: number;
-    row: VisualDataItem;
-  } | null>(null);
+  const currentIndex =
+    dataId == null ? -1 : rows.findIndex((r) => r.id === dataId);
 
-  // UI : 클릭된 row 하이라이트
-  const [activeRowId, setActiveRowId] = useState<number | null>(null);
+  const isFirst = currentIndex <= 0;
+  const isLast = currentIndex === -1 || currentIndex >= rows.length - 1;
 
-  // row별 동작 정의
-  const getFieldMenuItems = (row: VisualDataItem): FieldActionMenuItem[] => [
-    {
-      key: 'edit',
-      label: 'edit field',
-      onClick: () => {
-        setIsEdit(true);
-        setDataId(row.id);
-      },
-    },
-    {
-      key: 'duplicate',
-      label: 'duplicate field',
-      onClick: () => {
-        console.log('duplicate field', row);
-        // 서버에 먼저 요청 → 성공 시 데이터를 새롭게 받음
-      },
-    },
-    {
-      key: 'delete',
-      label: 'delete field',
-      variant: 'danger',
-      onClick: () => {
-        // 서버에 먼저 요청 → 성공 시 데이터를 새롭게 받음
-      },
-    },
-  ];
+  const handlePrev = () => {
+    const prev = rows[currentIndex - 1];
+    if (!prev) return;
+
+    setDataId(prev.id);
+  };
+
+  const handleNext = () => {
+    const next = rows[currentIndex + 1];
+    if (!next) return;
+
+    setDataId(next.id);
+  };
 
   return (
     <div className="grid grid-cols-5 gap-4">
-      {items.map((row, index) => (
+      {rows.map((row, index) => (
         <div
           key={row.id}
           onContextMenu={(e) => {
@@ -128,6 +119,7 @@ export default function GalleryView({
       {/* 우클릭 -> 편집모드 */}
       {dataId && (
         <DataDetailModal
+          rows={rows}
           dataId={dataId}
           isEdit={isEdit}
           onClose={() => {
@@ -135,6 +127,13 @@ export default function GalleryView({
             setDataId(null);
             setActiveRowId(null); // ui용
           }}
+          currentIndex={currentIndex}
+          totalLength={rows.length}
+          lastIndex={lastIndex}
+          onPrev={handlePrev}
+          onNext={handleNext}
+          isFirst={isFirst}
+          isLast={isLast}
         />
       )}
     </div>

@@ -49,7 +49,11 @@ const ResultModal = ({
   // const [subjective, setSubjective] = useState(
   //   subjectiveData?.text ? subjectiveData.text : ''
   // );
-
+  
+  // 화살표 관리
+  const isFirst = currentIndex <= 0;
+  const isLast = currentIndex >= totalLength - 1;
+  
   const LinedField = ({
     value,
     label,
@@ -84,9 +88,6 @@ const ResultModal = ({
     );
   };
 
-  // 화살표 관리
-  const isFirst = currentIndex <= 0;
-  const isLast = currentIndex >= totalLength - 1;
 
   return (
     <>

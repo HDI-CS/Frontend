@@ -10,6 +10,7 @@ import GridTable from '@/src/components/data/GridTable';
 import SortModal from '@/src/components/data/SortModal';
 import ViewToggle from '@/src/components/data/ViewToggle';
 import { VisualDataItem } from '@/src/types/data/visual-data';
+import clsx from 'clsx';
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -137,6 +138,9 @@ const DataPage = () => {
     return sorted.map((r, idx) => ({ ...r, _no: idx + 1 }));
   }, [localData, activeCategory, sort]);
 
+  // 화살표 disabled 관리
+  const lastIndex = (DUMMY_CATEGORIES[1]?.data?.length ?? 0) - 1;
+
   return (
     <div className="min-h-screen bg-[#F4F7FF] px-2 pt-1.5">
       <div className="">
@@ -153,19 +157,22 @@ const DataPage = () => {
           <ViewToggle activeTab={activeTab} setActiveTab={setActiveTab} />
 
           <div className="flex gap-3">
-            {activeTab === 'gallery' && (
-              <>
-                <button className="relative flex h-[32px] w-[32px] items-center justify-center rounded border border-[#E5E5E5] bg-white">
-                  <Image
-                    onClick={() => setSortBtn((prev) => !prev)}
-                    src={sortIcon}
-                    alt="sort"
-                    className="hover:opacity-50"
-                  />
-                  {sortBtn && <SortModal sort={sort} setSort={setSort} />}
-                </button>
-              </>
-            )}
+            {/* 정렬 버튼 & 모달 */}
+            <button
+              className={clsx(
+                'relative flex h-[32px] w-[32px] items-center justify-center rounded border border-[#E5E5E5] bg-white',
+                activeTab === 'gallery' ? 'visible' : 'invisible'
+              )}
+            >
+              <Image
+                onClick={() => setSortBtn((prev) => !prev)}
+                src={sortIcon}
+                alt="sort"
+                className="hover:opacity-50"
+              />
+              {sortBtn && <SortModal sort={sort} setSort={setSort} />}
+            </button>
+
             {/* Excel */}
             <button className="flex h-[32px] w-[32px] items-center justify-center rounded border border-[#E5E5E5] bg-white hover:opacity-50">
               <Image src={excelIcon} alt="excel" width={16} height={16} />
@@ -180,10 +187,19 @@ const DataPage = () => {
             onAddRow={handleAddRow}
             orderBy={sort}
             setOrderBy={setSort}
+            // currentIndex={currentIndex}
+            lastIndex={lastIndex}
+
+            // onPrev={handlePrev}
+            // onNext={handleNext}
           />
         ) : (
           <div className="border border-t-0 border-[#E9E9E7] bg-white p-3">
-            <GalleryView items={displayRows} onAdd={handleAddRow} />
+            <GalleryView
+              rows={displayRows}
+              onAdd={handleAddRow}
+              lastIndex={lastIndex}
+            />
           </div>
         )}
       </div>

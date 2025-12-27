@@ -16,7 +16,7 @@ const ViewToggle = ({ activeTab, setActiveTab }: ViewToggle) => {
       <button
         onClick={() => setActiveTab('grid')}
         className={clsx(
-          'flex h-[32px] w-[88px] items-center justify-center gap-1 rounded border border-[#E9E9E7] text-sm font-bold',
+          'flex h-[32px] w-[88px] cursor-pointer items-center justify-center gap-1 rounded border border-[#E9E9E7] text-sm font-bold',
           activeTab === 'grid'
             ? 'bg-white text-[#4676FB]'
             : 'bg-[#F6F7F8] text-black hover:opacity-60'
@@ -34,7 +34,7 @@ const ViewToggle = ({ activeTab, setActiveTab }: ViewToggle) => {
       <button
         onClick={() => setActiveTab('gallery')}
         className={clsx(
-          'flex h-[32px] w-[96px] items-center justify-center gap-1 rounded border border-[#E9E9E7] text-sm font-bold',
+          'flex h-[32px] w-[96px] cursor-pointer items-center justify-center gap-1 rounded border border-[#E9E9E7] text-sm font-bold',
           activeTab === 'gallery'
             ? 'bg-white text-[#4676FB]'
             : 'bg-[#F6F7F8] text-black hover:opacity-60'

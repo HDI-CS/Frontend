@@ -6,7 +6,7 @@ export const UserTypeSchema = z.enum([
   'PRODUCT',
   'BRAND',
   'VISUAL',
-  'INDUSRTY',
+  'INDUSTRY',
 ]);
 
 // 사용자 정보 스키마
