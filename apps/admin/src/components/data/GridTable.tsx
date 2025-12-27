@@ -1,12 +1,9 @@
 import empty from '@/public/data/EmptyIMg.svg';
-import {
-  VisualDataItem,
-  VisualDataItemWithUI,
-} from '@/src/types/data/visual-data';
+import useGridManager from '@/src/hooks/useGridManager';
+import { VisualDataItemWithUI } from '@/src/types/data/visual-data';
 import clsx from 'clsx';
 import Image from 'next/image';
-import { useState } from 'react';
-import FieldActionMenu, { FieldActionMenuItem } from '../FieldActionMenu';
+import FieldActionMenu from '../FieldActionMenu';
 import DataDetailModal from './DataDetailModal';
 import IdSortMenu from './table/IdSortMenu';
 import Td from './table/Td';
@@ -17,60 +14,52 @@ const GridTable = ({
   onAddRow,
   orderBy,
   setOrderBy,
+  lastIndex,
 }: {
   rows: VisualDataItemWithUI[];
-  onAddRow: () => void;
   orderBy: 'first' | 'last';
+  isEdit?: boolean; // field 수정 가능한지 아닌지
+  lastIndex: number;
+
+  onAddRow: () => void;
   setOrderBy: (sort: 'first' | 'last') => void;
 }) => {
-  const [dataId, setDataId] = useState<number | null>(null);
+  const {
+    dataId,
+    activeRowId,
+    // selectedRowId,
+    isEdit,
+    idMenu,
+    rowMenu,
 
-  // thead -> Id / tbody -> field 이벤트 완전히 분리
-  // 헤더(ID 정렬용)
-  const [idMenu, setIdMenu] = useState<{
-    x: number;
-    y: number;
-  } | null>(null);
+    setDataId,
+    setActiveRowId,
+    setIsEdit,
+    setIdMenu,
+    setRowMenu,
+    // setSelectedRowId,
+    getFieldMenuItems,
+  } = useGridManager();
 
-  // 행(Field 액션용)
-  const [rowMenu, setRowMenu] = useState<{
-    x: number;
-    y: number;
-    row: VisualDataItem;
-  } | null>(null);
+  const currentIndex =
+    dataId == null ? -1 : rows.findIndex((r) => r.id === dataId);
 
-  // UI : 클릭된 row 하이라이트
-  const [activeRowId, setActiveRowId] = useState<number | null>(null);
+  const isFirst = currentIndex <= 0;
+  const isLast = currentIndex === -1 || currentIndex >= rows.length - 1;
 
-  // Edit
-  const [isEdit, setIsEdit] = useState(false);
+  const handlePrev = () => {
+    const prev = rows[currentIndex - 1];
+    if (!prev) return;
 
-  // row별 동작 정의
-  const getFieldMenuItems = (row: VisualDataItem): FieldActionMenuItem[] => [
-    {
-      key: 'edit',
-      label: 'edit field',
-      onClick: () => {
-        setIsEdit(true);
-        setDataId(row.id); // code인지 id인지는 봐야됨
-      },
-    },
-    {
-      key: 'duplicate',
-      label: 'duplicate field',
-      onClick: () => {
-        console.log('duplicate field', row);
-      },
-    },
-    {
-      key: 'delete',
-      label: 'delete field',
-      variant: 'danger',
-      onClick: () => {
-        // 서버에 먼저 요청 → 성공 시 데이터를 새롭게 받음
-      },
-    },
-  ];
+    setDataId(prev.id);
+  };
+
+  const handleNext = () => {
+    const next = rows[currentIndex + 1];
+    if (!next) return;
+
+    setDataId(next.id);
+  };
 
   return (
     <>
@@ -130,8 +119,8 @@ const GridTable = ({
                   }}
                 >
                   <Td className="w-[64px] text-center">{row._no}</Td>
-                  <Td className="w-[90px]">{row.code}</Td>
-                  <Td className="w-[140px]">{row.name}</Td>
+                  <Td className="w-[90px] px-3">{row.code}</Td>
+                  <Td className="w-[140px] px-3">{row.name}</Td>
                   <Td className="w-[140px]">{row.sectorCategory}</Td>
                   <Td className="min-w-[260px]">{row.mainProductCategory}</Td>
                   <Td className="min-w-[240px]">{row.mainProduct}</Td>
@@ -165,7 +154,7 @@ const GridTable = ({
                 <Td className="flex w-[64px] items-center justify-center hover:bg-[#F4F7FF]">
                   <button
                     onClick={onAddRow}
-                    className="flex h-[28px] w-[28px] items-center justify-center rounded text-center text-3xl text-[#4676FB]"
+                    className="flex h-full w-[28px] items-center justify-center rounded py-5 text-center text-3xl text-[#4676FB]"
                     aria-label="add row"
                   >
                     +
@@ -202,6 +191,7 @@ const GridTable = ({
         {/* 우클릭 -> 편집모드 */}
         {dataId && (
           <DataDetailModal
+            rows={rows}
             dataId={dataId}
             isEdit={isEdit}
             onClose={() => {
@@ -209,6 +199,13 @@ const GridTable = ({
               setDataId(null);
               setActiveRowId(null); // ui용
             }}
+            currentIndex={currentIndex}
+            totalLength={rows.length}
+            lastIndex={lastIndex}
+            onPrev={handlePrev}
+            onNext={handleNext}
+            isFirst={isFirst}
+            isLast={isLast}
           />
         )}
       </div>

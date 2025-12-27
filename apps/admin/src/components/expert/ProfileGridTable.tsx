@@ -27,6 +27,7 @@ const ProfileGridTable = () => {
     });
   };
 
+  // 새로운 행 추가 시 넣을 임시 데이터 값
   const createEmptyRow = (): ExpertProfile => ({
     id: Date.now(), // 임시 ID
     name: '',
@@ -48,6 +49,8 @@ const ProfileGridTable = () => {
           <Image src={excelIcon} alt="excel" width={16} height={16} />
         </button>{' '}
       </div>
+
+      {/* 전문가 인적사항 테이블 */}
       <BaseGridTable>
         <thead className="text-neutral-gray bg-white">
           <tr className="hover:bg-system-blueBg cursor-pointer">
