@@ -30,6 +30,11 @@ const IndexPage = () => {
     getFieldMenuItems,
   } = useFolderManager();
 
+  // 년도 조회 api
+  // const type = useAuthStore((s) => s.type);
+  // const { data, isLoading } = useDataYears(type);
+  // if (isLoading) return <Skeleton />;
+
   const section = ADMIN_SECTIONS['DATA'];
   const items = section.years ?? [];
 

@@ -1,9 +1,11 @@
 'use client';
 import empty from '@/public/data/EmptyIMg.svg';
-import { RequestEditDataDto } from '@/src/types/data';
-import { VisualDataItemWithUI } from '@/src/types/data/visual-data';
+import { DataItemWithIndex } from '@/src/features/data/DataYearPage';
+import { useDataByDatasetId } from '@/src/hooks/data/useDatasetsByYear';
+import { useUpdateDataset } from '@/src/hooks/data/useUpdateDataset';
+import { UpdateDatasetRequest } from '@/src/schemas/data';
+import { useAuthStore } from '@/src/store/authStore';
 import clsx from 'clsx';
-import type { StaticImageData } from 'next/image';
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -11,7 +13,7 @@ import ModalComponent from '../ModalComponent';
 import LinedField from './LinedField';
 
 interface DataDetailModalProps {
-  rows: VisualDataItemWithUI[];
+  row?: DataItemWithIndex;
   dataId: number | null; //  id
   currentIndex: number;
   totalLength: number;
@@ -25,22 +27,20 @@ interface DataDetailModalProps {
   onNext: () => void;
 }
 
-// 더미 데이터 (상세 조회 API로 대체 예정)
-const dummyItem: VisualDataItemWithUI = {
-  id: 1,
-  _no: 0,
-  code: '0101',
-  name: '스타벅스',
-  sectorCategory: 'cafe',
-  mainProductCategory: '식품>음료>커피',
-  mainProduct: '아메리카노',
-  target: '전연령',
-  referenceUrl: 'www.starbucks.co.kr',
-  logoImage: empty,
+const EMPTY_ITEM: UpdateDatasetRequest = {
+  code: '',
+  name: '',
+  sectorCategory: '',
+  mainProductCategory: '',
+  mainProduct: '',
+  target: '',
+  referenceUrl: '',
+  originalLogoImage: null,
+  visualDataCategory: '',
 };
 
 const DataDetailModal = ({
-  rows,
+  row,
   dataId,
   isEdit,
   isFirst,
@@ -49,17 +49,55 @@ const DataDetailModal = ({
   onPrev,
   onNext,
 }: DataDetailModalProps) => {
+  const { type } = useAuthStore();
+
+  useEffect(() => {
+    // 스크롤 잠금
+    const originalStyle = window.getComputedStyle(document.body).overflow;
+    document.body.style.overflow = 'hidden';
+
+    // 언마운트 시 원복
+    return () => {
+      document.body.style.overflow = originalStyle;
+    };
+  }, []);
+
+  // 데이터 상세 조회 훅
+  const { data, isLoading, isError } = useDataByDatasetId({
+    type: type,
+    datasetId: Number(dataId),
+  });
+
+  const [logoFile, setLogoFile] = useState<File | null>();
+
+  // 데이터 수정을 위한 훅
+  const { mutate: updateDataset } = useUpdateDataset({
+    type: type ?? 'VISUAL',
+  });
+
   const [activeField, setActvieField] = useState<string | null>(null);
-  const item = rows.find((row) => row.id === dataId) ?? dummyItem;
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  // const item = rows.find((row) => row.id === dataId) ?? dummyItem;
+
+  // 로딩 전까지는 더미 아이템
+  const item: UpdateDatasetRequest | null = useMemo(() => {
+    if (isLoading || !data?.result) {
+      return EMPTY_ITEM;
+    }
+    return data.result;
+  }, [isLoading, data]);
 
   const {
     register,
     handleSubmit,
     setValue,
-    watch,
+    reset,
     formState: { dirtyFields },
-  } = useForm<RequestEditDataDto>({
-    defaultValues: {
+  } = useForm<UpdateDatasetRequest>();
+
+  useEffect(() => {
+    reset({
       code: item.code,
       name: item.name,
       sectorCategory: item.sectorCategory,
@@ -67,21 +105,15 @@ const DataDetailModal = ({
       mainProduct: item.mainProduct,
       target: item.target,
       referenceUrl: item.referenceUrl,
-      logoImage: null, // File | null
-    },
-  });
+      originalLogoImage: item.originalLogoImage,
+      visualDataCategory: item.visualDataCategory,
+    });
+  }, [item, reset]);
 
-  const logoFile = watch('logoImage');
-
-  const logoPreviewSrc = useMemo<string | StaticImageData>(() => {
-    if (logoFile instanceof File) {
-      return URL.createObjectURL(logoFile); // string
-    }
-    return item.logoImage; // StaticImageData
-  }, [logoFile, item.logoImage]);
+  if (isError) return;
 
   /*  텍스트 필드 렌더링 */
-  const renderField = (label: string, field: keyof RequestEditDataDto) => (
+  const renderField = (label: string, field: keyof UpdateDatasetRequest) => (
     <LinedField label={label} activeField={activeField}>
       {isEdit ? (
         <input
@@ -98,45 +130,40 @@ const DataDetailModal = ({
     </LinedField>
   );
 
-  const onSubmit = (data: RequestEditDataDto) => {
-    const formData = new FormData();
+  const onSubmit = (data: UpdateDatasetRequest) => {
+    if (!dataId) return;
+    const requestData: Partial<UpdateDatasetRequest> = {};
 
-    (Object.keys(dirtyFields) as (keyof RequestEditDataDto)[]).forEach(
+    (Object.keys(dirtyFields) as (keyof UpdateDatasetRequest)[]).forEach(
       (key) => {
         const value = data[key];
 
-        if (value === null || value === undefined) return;
-
-        if (key === 'logoImage' && value instanceof File) {
-          formData.append('logoImage', value);
-        } else {
-          formData.append(key, String(value));
-        }
+        if (value === undefined || value === null) return;
+        requestData[key] = value;
       }
     );
 
     // 수정 api
-
-    console.log('FormData:', [...formData.entries()]);
+    updateDataset(
+      {
+        id: dataId,
+        requestData,
+        logoFile: logoFile,
+      },
+      {
+        onSuccess: () => {
+          onClose();
+        },
+      }
+    );
   };
-
-  useEffect(() => {
-    // 스크롤 잠금
-    const originalStyle = window.getComputedStyle(document.body).overflow;
-    document.body.style.overflow = 'hidden';
-
-    // 언마운트 시 원복
-    return () => {
-      document.body.style.overflow = originalStyle;
-    };
-  }, []);
 
   return (
     <ModalComponent
-      title={String(item.id)}
+      title={String(row?._no)}
       onClose={onClose}
       onSubmit={onClose}
-      allow={true}
+      allow={!isEdit}
       isPrevDisabled={isFirst}
       isNextDisabled={isLast}
       onPrev={onPrev}
@@ -150,18 +177,6 @@ const DataDetailModal = ({
         className={clsx('min-w-150 flex flex-col gap-4 bg-white')}
       >
         {/* 내용이 많아지면 여기만 스크롤 */}
-
-        {/* <ul className="flex w-full flex-col gap-4 text-xl font-bold text-[#3A3A49]">
-            <li className="border-b-1 mb-0 flex w-full justify-between border-[#E9E9E7] pb-2">
-              <span className="">{item.id}</span>
-              <Image
-                onClick={onClose}
-                src={blueClose}
-                alt="close"
-                className="cursor-pointer"
-              />
-            </li> */}
-
         {renderField('ID', 'code')}
         {renderField('브랜드명', 'name')}
         {renderField('부문·카테고리', 'sectorCategory')}
@@ -171,6 +186,7 @@ const DataDetailModal = ({
         {renderField('홈페이지', 'referenceUrl')}
 
         {/*이미지 업로드는 api 연결 구현 시*/}
+        {/* {renderField('로고 이미지', 'logoImage')} */}
         <LinedField label="로고 이미지" activeField={activeField} isImg={true}>
           {isEdit && (
             <input
@@ -180,7 +196,13 @@ const DataDetailModal = ({
               className="hidden"
               onChange={(e) => {
                 const file = e.target.files?.[0] ?? null;
-                setValue('logoImage', file, { shouldDirty: true });
+                if (!file) return;
+
+                setLogoFile(file);
+                setPreviewUrl(URL.createObjectURL(file));
+                setValue('originalLogoImage', file?.name, {
+                  shouldDirty: true,
+                });
               }}
             />
           )}
@@ -188,16 +210,31 @@ const DataDetailModal = ({
             htmlFor={isEdit ? 'logo-upload' : undefined}
             className={clsx('flex justify-center', isEdit && 'cursor-pointer')}
           >
-            <div className="flex justify-center">
+            <div className="flex flex-col justify-center gap-10">
               <Image
-                src={logoPreviewSrc}
+                src={
+                  previewUrl
+                    ? previewUrl
+                    : row?.logoImage
+                      ? row.logoImage
+                      : empty
+                }
                 alt="logo"
                 width={160}
                 height={160}
-                className={isEdit ? 'transition hover:opacity-80' : ''}
+                className={isEdit ? 'border transition hover:opacity-80' : ''}
               />
             </div>
           </label>
+          <div
+            className="cursor-pointer"
+            onClick={() => {
+              setLogoFile(null);
+              console.log(logoFile);
+            }}
+          >
+            {'이미지 삭제'}
+          </div>
         </LinedField>
 
         {isEdit && (

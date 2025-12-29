@@ -2,6 +2,7 @@ import excelIcon from '@/public/data/Excel.svg';
 import { ID_MAPPING_DUMMY, IdMappingType } from '@/src/constants/expert';
 import useGridManager from '@/src/hooks/useGridManager';
 
+import { useAuthStore } from '@/src/store/authStore';
 import clsx from 'clsx';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
@@ -12,12 +13,13 @@ import IdAssignmentModal from './IdAssignmentModal';
 import IdNumberBtn from './IdNumberBtn';
 
 const IdMappingTable = () => {
+  const { type } = useAuthStore();
   const {
     activeRowId,
     setActiveRowId,
     selectedExpertRow,
     setSelectedExpertRow,
-  } = useGridManager();
+  } = useGridManager(type!);
 
   const [mappingData, setMappingData] = useState<IdMappingType[]>([]);
 

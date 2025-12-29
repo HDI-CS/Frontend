@@ -1,6 +1,8 @@
 import empty from '@/public/data/EmptyIMg.svg';
+import { DataItemWithIndex } from '@/src/features/data/DataYearPage';
 import useGridManager from '@/src/hooks/useGridManager';
-import { VisualDataItemWithUI } from '@/src/types/data/visual-data';
+import { UserType } from '@/src/schemas/auth';
+import { useAuthStore } from '@/src/store/authStore';
 import clsx from 'clsx';
 import Image from 'next/image';
 import FieldActionMenu from '../FieldActionMenu';
@@ -16,7 +18,7 @@ const GridTable = ({
   setOrderBy,
   lastIndex,
 }: {
-  rows: VisualDataItemWithUI[];
+  rows: DataItemWithIndex[];
   orderBy: 'first' | 'last';
   isEdit?: boolean; // field 수정 가능한지 아닌지
   lastIndex: number;
@@ -24,10 +26,10 @@ const GridTable = ({
   onAddRow: () => void;
   setOrderBy: (sort: 'first' | 'last') => void;
 }) => {
+  const { type } = useAuthStore();
   const {
     dataId,
     activeRowId,
-    // selectedRowId,
     isEdit,
     idMenu,
     rowMenu,
@@ -37,9 +39,8 @@ const GridTable = ({
     setIsEdit,
     setIdMenu,
     setRowMenu,
-    // setSelectedRowId,
     getFieldMenuItems,
-  } = useGridManager();
+  } = useGridManager(type!);
 
   const currentIndex =
     dataId == null ? -1 : rows.findIndex((r) => r.id === dataId);
@@ -60,6 +61,8 @@ const GridTable = ({
 
     setDataId(next.id);
   };
+
+  const rowItem = rows.find((r) => r.id === dataId);
 
   return (
     <>
@@ -144,6 +147,8 @@ const GridTable = ({
                       src={row.logoImage ? row.logoImage : empty}
                       alt={`${row.name} logo`}
                       className="mx-auto h-[44px] w-[44px] rounded object-cover"
+                      width={10}
+                      height={10}
                     />
                   </Td>
                 </tr>
@@ -191,7 +196,7 @@ const GridTable = ({
         {/* 우클릭 -> 편집모드 */}
         {dataId && (
           <DataDetailModal
-            rows={rows}
+            row={rowItem}
             dataId={dataId}
             isEdit={isEdit}
             onClose={() => {

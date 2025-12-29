@@ -8,6 +8,9 @@ const IndexPage = () => {
   const router = useRouter();
   const [pressedKey, setPressedKey] = useState<string | null>(null);
 
+  // 전체 평가 조회 api
+  // const { data, isLoading, isError } = useEvaluationFolders('visual');
+
   const sections = Object.values(ADMIN_SECTIONS);
 
   return (

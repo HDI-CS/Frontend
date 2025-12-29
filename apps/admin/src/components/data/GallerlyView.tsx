@@ -1,6 +1,8 @@
 'use client';
+import empty from '@/public/data/EmptyIMg.svg';
+import { DataItemWithIndex } from '@/src/features/data/DataYearPage';
 import useGridManager from '@/src/hooks/useGridManager';
-import { VisualDataItemWithUI } from '@/src/types/data/visual-data';
+import { useAuthStore } from '@/src/store/authStore';
 import clsx from 'clsx';
 import Image from 'next/image';
 import FieldActionMenu from '../FieldActionMenu';
@@ -11,10 +13,12 @@ export default function GalleryView({
   lastIndex,
   onAdd,
 }: {
-  rows: VisualDataItemWithUI[];
+  rows: DataItemWithIndex[];
   lastIndex: number;
   onAdd: () => void;
 }) {
+  const { type } = useAuthStore();
+
   const {
     dataId,
     activeRowId,
@@ -28,7 +32,7 @@ export default function GalleryView({
     setRowMenu,
     // setSelectedRowId,
     getFieldMenuItems,
-  } = useGridManager();
+  } = useGridManager(type!);
 
   const currentIndex =
     dataId == null ? -1 : rows.findIndex((r) => r.id === dataId);
@@ -49,6 +53,7 @@ export default function GalleryView({
 
     setDataId(next.id);
   };
+  const rowItem = rows.find((r) => r.id === dataId);
 
   return (
     <div className="grid grid-cols-5 gap-4">
@@ -78,13 +83,14 @@ export default function GalleryView({
             {index + 1}
           </div>
           {/* 로고 */}
-          <div className="flex items-stretch gap-2">
+          <div className="h-35 flex items-stretch gap-2">
             <span className="w-[3.18px] rounded-full bg-[#E5E5E5]" />
 
             <Image
-              src={row.logoImage}
+              src={row.logoImage ? row.logoImage : empty}
               alt={row.name}
               width={200}
+              height={100}
               className="object-contain"
             />
           </div>
@@ -119,7 +125,7 @@ export default function GalleryView({
       {/* 우클릭 -> 편집모드 */}
       {dataId && (
         <DataDetailModal
-          rows={rows}
+          row={rowItem}
           dataId={dataId}
           isEdit={isEdit}
           onClose={() => {

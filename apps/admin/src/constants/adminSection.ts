@@ -40,14 +40,14 @@ export const ADMIN_SECTIONS: AdminSections = {
       {
         key: 'YEAR_1',
         label: '1차년도',
-        route: '/index/data/year1',
+        route: '/index/data/1',
         createdAt: '2021-11-03 22:00',
         lastModifiedAt: '2021-11-03 22:00',
       },
       {
         key: 'YEAR_2',
         label: '2차년도',
-        route: '/index/data/year2',
+        route: '/index/data/2',
         createdAt: '2021-11-03 22:00',
         lastModifiedAt: '2021-11-03 22:00',
       },
@@ -64,14 +64,14 @@ export const ADMIN_SECTIONS: AdminSections = {
       {
         key: 'YEAR_1',
         label: '1차년도',
-        route: '/index/evaluation/year1',
+        route: '/index/evaluation/1',
         createdAt: '2021-11-03 22:00',
         lastModifiedAt: '2021-11-03 22:00',
         phases: [
           {
             key: 'PHASE_1',
             label: '1차평가',
-            route: '/index/evaluation/year1/phase1',
+            route: '/index/evaluation/1/phase1',
             createdAt: '2021-11-03 22:00',
             lastModifiedAt: '2021-11-03 22:00',
             duration: '2021-11-03 - 2021-11-03',
@@ -79,7 +79,7 @@ export const ADMIN_SECTIONS: AdminSections = {
           {
             key: 'PHASE_2',
             label: '2차평가',
-            route: '/index/evaluation/year1/phase2',
+            route: '/index/evaluation/1/phase2',
             createdAt: '2021-11-03 22:00',
             lastModifiedAt: '2021-11-03 22:00',
             duration: '2021-11-03 - 2021-11-03',
@@ -89,14 +89,14 @@ export const ADMIN_SECTIONS: AdminSections = {
       {
         key: 'YEAR_2',
         label: '2차년도',
-        route: '/index/evaluation/year2',
+        route: '/index/evaluation/2',
         createdAt: '2021-11-03 22:00',
         lastModifiedAt: '2021-11-03 22:00',
         phases: [
           {
             key: 'PHASE_1',
             label: '1차평가',
-            route: '/index/evaluation/year2/phase1',
+            route: '/index/evaluation/2/phase1',
             createdAt: '2021-11-03 22:00',
             lastModifiedAt: '2021-11-03 22:00',
             duration: '2021-11-03 - 2021-11-03',

@@ -9,25 +9,25 @@ const ROUTES = {
 
   DATA: {
     ROOT: '/index/data',
-    YEAR1: '/index/data/year1',
-    YEAR2: '/index/data/year2',
+    YEAR1: '/index/data/1',
+    YEAR2: '/index/data/2',
   },
 
   EVALUATION: {
     ROOT: '/index/evaluation',
-    YEAR1: '/index/evaluation/year1',
-    YEAR1_PHASE1: '/index/evaluation/year1/phase1',
-    YEAR1_PHASE2: '/index/evaluation/year1/phase2',
-    YEAR2: '/index/evaluation/year2',
+    YEAR1: '/index/evaluation/1',
+    YEAR1_PHASE1: '/index/evaluation/1/phase1',
+    YEAR1_PHASE2: '/index/evaluation/1/phase2',
+    YEAR2: '/index/evaluation/2',
   },
 
   EXPERT: {
     ROOT: '/index/expert',
     PROFILE: '/index/expert/profile',
     MAPPING: '/index/expert/id-mapping',
-    MAPPING_YEAR1: '/index/expert/id-mapping/year1',
-    MAPPING_YEAR2: '/index/expert/id-mapping/year2',
-    MAPPING_YEAR1_PHASE1: '/index/expert/id-mapping/year1/phase1',
+    MAPPING_YEAR1: '/index/expert/id-mapping/1',
+    MAPPING_YEAR2: '/index/expert/id-mapping/1',
+    MAPPING_YEAR1_PHASE1: '/index/expert/id-mapping/1/phase1',
   },
 };
 
