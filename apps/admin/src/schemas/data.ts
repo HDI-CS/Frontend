@@ -127,10 +127,11 @@ export const DeleteDatasetResponseSchema = z.object({
   result: z.null(),
 });
 
-export const BasicResponseSchema = z.object({
-  code: z.number(),
-  message: z.string(),
-});
+// export const DownloadExcelResponseSchema = z.object({
+//   code: z.number(),
+//   message: z.string(),
+
+// });
 
 // 타입 추출
 export type Year = z.infer<typeof YearSchema>;
@@ -164,5 +165,3 @@ export type UpdateDatasetResponse = z.infer<typeof UpdateDatasetResponseSchema>;
 
 export type DeleteDatasetRequest = z.infer<typeof DeleteDatasetRequestSchema>;
 export type DeleteDatasetResponse = z.infer<typeof DeleteDatasetResponseSchema>;
-
-export type BasicResponse = z.infer<typeof BasicResponseSchema>;

@@ -1,7 +1,6 @@
 import empty from '@/public/data/EmptyIMg.svg';
 import { DataItemWithIndex } from '@/src/features/data/DataYearPage';
 import useGridManager from '@/src/hooks/useGridManager';
-import { UserType } from '@/src/schemas/auth';
 import { useAuthStore } from '@/src/store/authStore';
 import clsx from 'clsx';
 import Image from 'next/image';

@@ -16,6 +16,7 @@ import {
   DataItem,
   DataItems,
 } from '@/src/schemas/data';
+import { downloadExcel } from '@/src/services/data';
 import { useSearchStore } from '@/src/store/searchStore';
 import clsx from 'clsx';
 import Image from 'next/image';
@@ -134,6 +135,35 @@ const DataPage = ({
     // 화살표 disabled 관리
     const lastIndex = displayRows.length - 1;
 
+    {
+      /* 엑셀 다운로드 */
+    }
+    const handleDownload = async () => {
+      const res = await downloadExcel({ type, yearId });
+
+      const blob = new Blob([res.data], {
+        type: res.headers['content-type'],
+      });
+
+      // 파일명 추출 (서버가 내려준 filename 사용)
+      const disposition = res.headers['content-disposition'];
+      const filenameMatch = disposition?.match(/filename\*=UTF-8''(.+)/);
+      const filename = filenameMatch
+        ? decodeURIComponent(filenameMatch[1])
+        : 'visual_data.xlsx';
+
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    };
+
     return (
       <div className="min-h-screen bg-[#F4F7FF] px-2 pt-1.5">
         <div className="">
@@ -167,7 +197,10 @@ const DataPage = ({
               </button>
 
               {/* Excel */}
-              <button className="flex h-[32px] w-[32px] items-center justify-center rounded border border-[#E5E5E5] bg-white hover:opacity-50">
+              <button
+                onClick={handleDownload}
+                className="flex h-[32px] w-[32px] items-center justify-center rounded border border-[#E5E5E5] bg-white hover:opacity-50"
+              >
                 <Image src={excelIcon} alt="excel" width={16} height={16} />
               </button>
             </div>

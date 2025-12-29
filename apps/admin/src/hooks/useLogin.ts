@@ -41,7 +41,7 @@ export const useLogin = () => {
             staleTime: 0,
           });
         }
-        
+
         // 타입 전역 사용을 위한 설정
         setType(data.result.userType);
         console.log('🔄 서버 세션 동기화 완료');

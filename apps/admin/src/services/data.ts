@@ -216,3 +216,18 @@ export const searchDataset = async ({
   // 응답 데이터 검증
   return GetDataByKeywordyResponseSchema.parse(response.data);
 };
+
+export const downloadExcel = async ({
+  type,
+  yearId,
+}: {
+  type: UserType;
+  yearId: number;
+}) => {
+  return apiClient.get(
+    `/api/v1/admin/${type.toLowerCase()}/data/years/${yearId}/datasets/export`,
+    {
+      responseType: 'blob', // 이건 JSON이 아니라 binary라서 파싱 대상 아님
+    }
+  );
+};

@@ -44,4 +44,3 @@ export const getAdminMe = async (): Promise<MeResponse> => {
   const response = await apiClient.get('/api/v1/admin/auth/me'); // 평가 페이지 수정 필요
   return MeResponseSchema.parse(response.data);
 };
-
