@@ -51,7 +51,7 @@ export const useLogin = () => {
       }
 
       // 성공 후 index 리다이렉트
-      router.push('/index');
+      router.push(`/${data.result.userType.toLowerCase()}`);
     },
     onError: (error) => {
       console.error('로그인 실패:', error);

@@ -1,6 +1,6 @@
 import { datasetQueryKeys } from '@/src/queries/dataQuery';
 import { UserType } from '@/src/schemas/auth';
-import { duplicateDataset } from '@/src/services/data';
+import { duplicateDataset } from '@/src/services/data/common';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface UseDuplicateDatasetParams {

@@ -1,7 +1,8 @@
-import { datasetQueryKeys } from '@/src/queries/dataQuery';
 import { UserType } from '@/src/schemas/auth';
-import { GetDataByKeywordyResponse } from '@/src/schemas/data';
-import { searchDataset } from '@/src/services/data';
+import { searchIndustrialDataset } from '@/src/services/data/industry';
+import { searchVisualDataset } from '@/src/services/data/visual';
+import { SearchDataResponse } from '@/src/types/data/visual-data';
+
 import { useQuery } from '@tanstack/react-query';
 
 interface useSearchDatasetsParams {
@@ -15,9 +16,15 @@ export const useSearchDatasets = ({
   keyword,
   category,
 }: useSearchDatasetsParams) => {
-  return useQuery<GetDataByKeywordyResponse>({
-    queryKey: datasetQueryKeys.search(type, keyword, category),
-    queryFn: () => searchDataset({ type, keyword, category }),
-    enabled: Boolean(type) && keyword.trim().length >= 2, // 검색은 최소 2글자
+  return useQuery<SearchDataResponse>({
+    queryKey: ['search', 'visual', keyword, category],
+    queryFn: () => {
+      if (type === 'VISUAL') {
+        return searchVisualDataset({ keyword, category });
+      }
+
+      return searchIndustrialDataset({ keyword, category });
+    },
+    enabled: keyword.trim().length >= 2,
   });
 };

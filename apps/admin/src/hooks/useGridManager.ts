@@ -3,7 +3,6 @@ import { FieldActionMenuItem } from '../components/FieldActionMenu';
 import { IdMappingType } from '../constants/expert';
 import { ExpertResponse } from '../constants/surveyQuestions';
 import { UserType } from '../schemas/auth';
-import { DataItem } from '../schemas/data';
 import { VisualDataItem } from '../types/data/visual-data';
 import { useDeleteDataset } from './data/useDeleteDataset';
 import { useDuplicateDataset } from './data/useDuplicateDataset';
@@ -23,7 +22,7 @@ export const useFolderManager = (type: UserType) => {
   const [rowMenu, setRowMenu] = useState<{
     x: number;
     y: number;
-    row: DataItem;
+    rowId: number;
   } | null>(null);
 
   const [rowExpertMenu, setRowExpertMenu] = useState<{
@@ -67,20 +66,20 @@ export const useFolderManager = (type: UserType) => {
   const { mutate: duplicateDataset } = useDuplicateDataset({ type });
 
   // row별 동작 정의
-  const getFieldMenuItems = (row: DataItem): FieldActionMenuItem[] => [
+  const getFieldMenuItems = (rowId: number): FieldActionMenuItem[] => [
     {
       key: 'edit',
       label: 'edit field',
       onClick: () => {
         setIsEdit(true);
-        setDataId(row.id); // code인지 id인지는 봐야됨
+        setDataId(rowId); // code인지 id인지는 봐야됨
       },
     },
     {
       key: 'duplicate',
       label: 'duplicate field',
       onClick: () => {
-        duplicateDataset([row.id]);
+        duplicateDataset([rowId]);
       },
     },
     {
@@ -89,7 +88,7 @@ export const useFolderManager = (type: UserType) => {
       variant: 'danger',
       onClick: () => {
         // 서버에 먼저 요청 → 성공 시 데이터를 새롭게 받음
-        deleteDataset([row.id]);
+        deleteDataset([rowId]);
       },
     },
   ];

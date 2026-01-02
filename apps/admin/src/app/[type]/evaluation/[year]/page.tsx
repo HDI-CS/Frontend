@@ -4,13 +4,18 @@ import AddEvaluation from '@/src/components/evaluation/AddEvaluation';
 import EditDuration from '@/src/components/evaluation/EditDuration';
 import FolderList from '@/src/components/FolderList';
 import ModalComponent from '@/src/components/ModalComponent';
-import { ADMIN_SECTIONS } from '@/src/constants/adminSection';
+import { mapEvaluationPhaseToFolders } from '@/src/features/data/rowMeta';
+import { useEvaluationYears } from '@/src/hooks/evaluation/useEvaluationYears';
 import { useFolderManager } from '@/src/hooks/useFolderManager';
-import { useParams, useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 const IndexPage = () => {
   const router = useRouter();
-  const params = useParams();
+  const pathname = usePathname();
+
+  const type = pathname.startsWith('/industry') ? 'INDUSTRY' : 'VISUAL';
+  const segments = pathname.split('/').filter(Boolean);
+  const year = segments[2];
 
   const {
     pressedKey,
@@ -29,12 +34,18 @@ const IndexPage = () => {
     getFieldEvaluationRangeMenuItems,
   } = useFolderManager();
 
-  const section = ADMIN_SECTIONS['EVALUATION'];
-  const yearParam = params.year as string | undefined;
+  const { data } = useEvaluationYears(type);
+  const rounds =
+    data?.result.find((y) => y.yearId === Number(year))?.rounds ?? [];
 
-  const year = section.years.find((y) => y.route.endsWith(`/${yearParam}`));
 
-  const phases = year?.phases ?? [];
+  const roundsFolders = rounds
+    ? mapEvaluationPhaseToFolders(
+        year ?? '1',
+        rounds,
+        `/${type.toLowerCase()}/evaluation`
+      )
+    : [];
 
   return (
     <div className="font-pretendard text-blue text-blue pl-47 pr-50 mt-14 grid min-h-screen">
@@ -47,7 +58,7 @@ const IndexPage = () => {
         </div>
         {/* Folder List */}
         <FolderList
-          items={phases}
+          items={roundsFolders}
           isPhase={true}
           pressedKey={pressedKey}
           openMenuKey={openMenuKey}

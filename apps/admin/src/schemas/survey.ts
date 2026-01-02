@@ -43,4 +43,11 @@ export const EvaluationYearsResponseSchema = z.object({
 
 // 타입 추출
 export type EvaluationRound = z.infer<typeof EvaluationRoundSchema>;
+export type RoundsSchema = z.infer<typeof RoundsSchema>;
+
 export type EvaluationYear = z.infer<typeof EvaluationYearSchema>;
+export type EvaluationYears = z.infer<typeof YearsSchema>;
+
+export type EvaluationYearsResponse = z.infer<
+  typeof EvaluationYearsResponseSchema
+>;

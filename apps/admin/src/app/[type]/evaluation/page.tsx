@@ -2,41 +2,39 @@
 import AddBtn from '@/src/components/common/AddBtn';
 import AddEvaluation from '@/src/components/evaluation/AddEvaluation';
 import FolderList from '@/src/components/FolderList';
-import FolderModals from '@/src/components/FolderModals';
-import { ADMIN_SECTIONS } from '@/src/constants/adminSection';
 import {
   SUBJECT_QUESTION,
   SURVEY_QUESTIONS,
 } from '@/src/constants/surveyQuestions';
+import { mapEvaluationYearsToFolders } from '@/src/features/data/rowMeta';
+import { useEvaluationYears } from '@/src/hooks/evaluation/useEvaluationYears';
 import { useFolderManager } from '@/src/hooks/useFolderManager';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 const IndexPage = () => {
   const router = useRouter();
+  const pathname = usePathname();
+
+  const type = pathname.startsWith('/industry') ? 'INDUSTRY' : 'VISUAL';
 
   const {
     pressedKey,
     openMenuKey,
     add,
-    editName,
     editSurvey,
-    editFolderName,
     setPressedKey,
     setOpenMenuKey,
     setAdd,
-    setEditName,
     setEditSurvey,
-    setEditFolderName,
-    getFieldMenuItems,
+    getFieldEvaluationMenuItems,
   } = useFolderManager();
-
-  // 년도 조회 api
-  // const type = useAuthStore((s) => s.type);
-  // const { data, isLoading } = useDataYears(type);
-  // if (isLoading) return <Skeleton />;
-
-  const section = ADMIN_SECTIONS['DATA'];
-  const items = section.years ?? [];
+  const { data } = useEvaluationYears(type);
+  const yearFolders = data?.result
+    ? mapEvaluationYearsToFolders(
+        data.result,
+        `/${type.toLowerCase()}/evaluation`
+      )
+    : [];
 
   return (
     <div className="font-pretendard text-blue text-blue pl-47 mt-14 grid min-h-screen pr-80">
@@ -48,7 +46,7 @@ const IndexPage = () => {
         </div>
         {/* Folder List */}
         <FolderList
-          items={items}
+          items={yearFolders}
           isPhase={false}
           pressedKey={pressedKey}
           openMenuKey={openMenuKey}
@@ -60,20 +58,13 @@ const IndexPage = () => {
             setOpenMenuKey((prev) => (prev === key ? null : key))
           }
           onCloseMenu={() => setOpenMenuKey(null)}
-          getFieldMenuItems={getFieldMenuItems}
+          getFieldMenuItems={getFieldEvaluationMenuItems}
         />
         {/* ADD BTN */}
-        <AddBtn isEvaluation={false} setAdd={setAdd} />
+        <AddBtn isEvaluation={true} setAdd={setAdd} />
 
         {/* Modals */}
-        <FolderModals
-          add={add}
-          editName={editName}
-          editFolderName={editFolderName}
-          setEditFolderName={setEditFolderName}
-          onCloseAdd={() => setAdd(false)}
-          onCloseEdit={() => setEditName(false)}
-        />
+        {add && <AddEvaluation onClose={() => setAdd(false)} />}
 
         {editSurvey && (
           <AddEvaluation

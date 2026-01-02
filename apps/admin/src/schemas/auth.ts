@@ -3,11 +3,10 @@ import { z } from 'zod';
 // 어드민 역할 스키마
 export const UserRoleSchema = z.enum(['USER', 'ADMIN']);
 export const UserTypeSchema = z.enum([
-  'PRODUCT',
-  'BRAND',
   'VISUAL',
   'INDUSTRY',
 ]);
+
 
 // 어드민 정보 스키마
 export const UserSchema = z.object({

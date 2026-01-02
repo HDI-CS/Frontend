@@ -1,31 +1,34 @@
-import empty from '@/public/data/EmptyIMg.svg';
-import { DataItemWithIndex } from '@/src/features/data/DataYearPage';
 import useGridManager from '@/src/hooks/useGridManager';
-import { useAuthStore } from '@/src/store/authStore';
+import { UserType } from '@/src/schemas/auth';
+import { ColumnDef, VisualRow, WithIndex } from '@/src/types/data/visual-data';
 import clsx from 'clsx';
-import Image from 'next/image';
 import FieldActionMenu from '../FieldActionMenu';
 import DataDetailModal from './DataDetailModal';
 import IdSortMenu from './table/IdSortMenu';
 import Td from './table/Td';
 import Th from './table/Th';
 
-const GridTable = ({
+interface GridTableProps<T extends { id: number }> {
+  type: UserType;
+  rows: WithIndex<T>[];
+  columns: ColumnDef<WithIndex<T>>[];
+  lastIndex: number;
+  orderBy: 'first' | 'last';
+  activeCategory: string;
+  setOrderBy: (sort: 'first' | 'last') => void;
+  onAddRow: () => void;
+}
+
+const GridTable = <T extends { id: number }>({
+  type,
   rows,
+  columns,
   onAddRow,
   orderBy,
   setOrderBy,
   lastIndex,
-}: {
-  rows: DataItemWithIndex[];
-  orderBy: 'first' | 'last';
-  isEdit?: boolean; // field 수정 가능한지 아닌지
-  lastIndex: number;
-
-  onAddRow: () => void;
-  setOrderBy: (sort: 'first' | 'last') => void;
-}) => {
-  const { type } = useAuthStore();
+  activeCategory,
+}: GridTableProps<T>) => {
   const {
     dataId,
     activeRowId,
@@ -61,8 +64,6 @@ const GridTable = ({
     setDataId(next.id);
   };
 
-  const rowItem = rows.find((r) => r.id === dataId);
-
   return (
     <>
       <div className="border border-t-0 border-[#E5E5E5] bg-white p-2">
@@ -72,26 +73,27 @@ const GridTable = ({
             {/* 헤더 */}
             <thead className="sticky top-0 z-10 bg-white">
               <tr className="border text-left text-sm font-light text-[#8D8D8D]">
-                <Th className="w-[64px]">번호</Th>
-                <Th
-                  className="w-[90px]"
-                  onContextMenu={(e) => {
-                    e.preventDefault();
-                    setIdMenu({
-                      x: e.clientX,
-                      y: e.clientY,
-                    });
-                  }}
-                >
-                  ID
-                </Th>
-                <Th className="w-[140px]">브랜드명</Th>
-                <Th className="w-[140px]">부문·카테고리</Th>
-                <Th className="min-w-[260px]">대표 제품 카테고리</Th>
-                <Th className="min-w-[240px]">대표 제품</Th>
-                <Th className="w-[160px]">타겟(성별/연령)</Th>
-                <Th className="min-w-[180px]">홈페이지</Th>
-                <Th className="w-[120px] text-center">로고이미지</Th>
+                {columns.map((col) =>
+                  col.key === 'code' ? (
+                    <Th
+                      key={col.key}
+                      className={col.thClassName}
+                      onContextMenu={(e) => {
+                        e.preventDefault();
+                        setIdMenu({
+                          x: e.clientX,
+                          y: e.clientY,
+                        });
+                      }}
+                    >
+                      {col.header}
+                    </Th>
+                  ) : (
+                    <Th key={col.key} className={col.thClassName}>
+                      {col.header}
+                    </Th>
+                  )
+                )}
               </tr>
             </thead>
 
@@ -111,7 +113,7 @@ const GridTable = ({
                     setRowMenu({
                       x: e.clientX,
                       y: e.clientY,
-                      row,
+                      rowId: row.id,
                     });
                     setActiveRowId(row.id);
                   }}
@@ -120,36 +122,11 @@ const GridTable = ({
                     setDataId(row.id);
                   }}
                 >
-                  <Td className="w-[64px] text-center">{row._no}</Td>
-                  <Td className="w-[90px] px-3">{row.code}</Td>
-                  <Td className="w-[140px] px-3">{row.name}</Td>
-                  <Td className="w-[140px]">{row.sectorCategory}</Td>
-                  <Td className="min-w-[260px]">{row.mainProductCategory}</Td>
-                  <Td className="min-w-[240px]">{row.mainProduct}</Td>
-                  <Td className="w-[160px]">{row.target}</Td>
-                  <Td className="min-w-[180px]">
-                    <a
-                      href={
-                        row.referenceUrl.startsWith('http')
-                          ? row.referenceUrl
-                          : `https://${row.referenceUrl}`
-                      }
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-[#4B5563] underline-offset-2 hover:underline"
-                    >
-                      {row.referenceUrl}
-                    </a>
-                  </Td>
-                  <Td className="w-[120px] text-center">
-                    <Image
-                      src={row.logoImage ? row.logoImage : empty}
-                      alt={`${row.name} logo`}
-                      className="mx-auto h-[44px] w-[44px] rounded object-cover"
-                      width={10}
-                      height={10}
-                    />
-                  </Td>
+                  {columns.map((col) => (
+                    <Td key={col.key} className={col.className}>
+                      {col.cell(row)}
+                    </Td>
+                  ))}
                 </tr>
               ))}
 
@@ -182,7 +159,7 @@ const GridTable = ({
             <FieldActionMenu
               x={rowMenu.x}
               y={rowMenu.y}
-              items={getFieldMenuItems(rowMenu.row)}
+              items={getFieldMenuItems(rowMenu.rowId)}
               onClose={() => {
                 setRowMenu(null);
                 setActiveRowId(null);
@@ -193,25 +170,63 @@ const GridTable = ({
         </div>
 
         {/* 우클릭 -> 편집모드 */}
-        {dataId && (
-          <DataDetailModal
-            row={rowItem}
-            dataId={dataId}
-            isEdit={isEdit}
-            onClose={() => {
-              setIsEdit(false);
-              setDataId(null);
-              setActiveRowId(null); // ui용
-            }}
-            currentIndex={currentIndex}
-            totalLength={rows.length}
-            lastIndex={lastIndex}
-            onPrev={handlePrev}
-            onNext={handleNext}
-            isFirst={isFirst}
-            isLast={isLast}
-          />
-        )}
+        {dataId &&
+          (type === 'VISUAL'
+            ? (() => {
+                const visualRow = rows.find((r) => r.id === dataId) as
+                  | WithIndex<VisualRow>
+                  | undefined;
+
+                if (!visualRow) return null;
+                return (
+                  <DataDetailModal<VisualRow, 'VISUAL'>
+                    type={'VISUAL'}
+                    row={visualRow}
+                    dataId={dataId}
+                    activeCategory={activeCategory}
+                    isEdit={isEdit}
+                    onClose={() => {
+                      setIsEdit(false);
+                      setDataId(null);
+                      setActiveRowId(null); // ui용
+                    }}
+                    currentIndex={currentIndex}
+                    totalLength={rows.length}
+                    lastIndex={lastIndex}
+                    onPrev={handlePrev}
+                    onNext={handleNext}
+                    isFirst={isFirst}
+                    isLast={isLast}
+                  />
+                );
+              })()
+            : (() => {
+                const industryRow = rows.find((r) => r.id === dataId);
+
+                if (!industryRow) return null;
+
+                return (
+                  <DataDetailModal
+                    type={'INDUSTRY'}
+                    row={industryRow}
+                    dataId={dataId}
+                    activeCategory={activeCategory}
+                    isEdit={isEdit}
+                    onClose={() => {
+                      setIsEdit(false);
+                      setDataId(null);
+                      setActiveRowId(null); // ui용
+                    }}
+                    currentIndex={currentIndex}
+                    totalLength={rows.length}
+                    lastIndex={lastIndex}
+                    onPrev={handlePrev}
+                    onNext={handleNext}
+                    isFirst={isFirst}
+                    isLast={isLast}
+                  />
+                );
+              })())}
       </div>
     </>
   );

@@ -9,34 +9,27 @@ import SortModal from '@/src/components/data/SortModal';
 import ViewToggle from '@/src/components/data/ViewToggle';
 import { useCreateDataset } from '@/src/hooks/data/useCreateVisualDataset';
 import { useSearchDatasets } from '@/src/hooks/data/useSearchDatasets';
-import { UserType } from '@/src/schemas/auth';
-import {
-  CreateDatasetRequest,
-  DataCategoryGroups,
-  DataItem,
-  DataItems,
-} from '@/src/schemas/data';
-import { downloadExcel } from '@/src/services/data';
+import { IndustrialDataItem } from '@/src/schemas/industry-data';
+import { VisualDataItem } from '@/src/schemas/visual-data';
+import { downloadExcel } from '@/src/services/data/common';
 import { useSearchStore } from '@/src/store/searchStore';
+import {
+  DatasetByCategory,
+  DatasetItems,
+  IndustrialRow,
+  mapIndustryToUIItem,
+  mapVisualToUIItem,
+  VisualRow,
+  WithIndex,
+} from '@/src/types/data/visual-data';
+
+import { DataPageProps } from '@/src/app/[type]/data/[year]/page';
 import clsx from 'clsx';
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
+import { rowMeta } from './rowMeta';
 
-export interface DataItemWithIndex extends DataItem {
-  _no: number;
-}
-
-interface DataPageProps {
-  type: UserType;
-  yearId: number;
-  categories?: DataCategoryGroups;
-}
-
-const DataPage = ({
-  type = 'VISUAL',
-  yearId = 1,
-  categories = [],
-}: DataPageProps) => {
+const DataPage = ({ type, yearId = 1, categories = [] }: DataPageProps) => {
   const [activeTab, setActiveTab] = useState<'grid' | 'gallery'>('grid');
   const [sortBtn, setSortBtn] = useState(false);
   const [sort, setSort] = useState<'first' | 'last'>('first');
@@ -54,35 +47,32 @@ const DataPage = ({
 
   const keyword = useSearchStore((s) => s.keyword);
   const { data } = useSearchDatasets({
-    type,
+    type: type ?? 'VISUAL',
     keyword,
     category: activeCategory,
   });
 
-  // useEffect(() => {
-  //   setResultCount(searchData.length);
-  // }, [searchData, setResultCount]);
-
   {
     /* 초기 데이터 세팅 */
-  }
+  } // 카테고리 단위 데이터는 “무조건 배열”로 고정
 
-  const localData = useMemo(() => {
-    const searchData = data?.result ?? [];
-    const init: Record<string, DataItems> = {};
+  const localData = useMemo<DatasetByCategory>(() => {
+    const init: DatasetByCategory = {};
+
     for (const c of categories) {
       init[c.categoryName] = c.data ?? [];
     }
 
-    // 검색 중이면
-    if (keyword && searchData) {
+    if (keyword.length && data?.result) {
+      const normalizedSearchData: DatasetItems = Array.isArray(data.result)
+        ? data.result
+        : [data.result];
+
       return {
         ...init,
-        [activeCategory]: searchData,
+        [activeCategory]: normalizedSearchData,
       };
     }
-
-    // 기본 데이터
     return init;
   }, [keyword, activeCategory, categories, data]);
 
@@ -93,25 +83,56 @@ const DataPage = ({
       label: c.categoryName,
     }));
 
-    const { mutate: createDataset } = useCreateDataset({
-      type,
-      yearId,
-    });
+    const { mutate: createDataset } = useCreateDataset();
 
+    // 생성
     const handleAddRow = () => {
-      const newItem: CreateDatasetRequest = {
-        code: '',
-        name: '',
-        sectorCategory: '',
-        mainProductCategory: '',
-        mainProduct: '',
-        target: '',
-        referenceUrl: '',
-        originalLogoImage: null,
-        visualDataCategory: activeCategory,
-      };
+      if (type === 'VISUAL') {
+        createDataset({
+          type: 'VISUAL',
+          yearId,
+          categoryName: activeCategory,
+          requestData: {
+            code: '',
+            name: '',
+            sectorCategory: '',
+            mainProductCategory: '',
+            mainProduct: '',
+            target: '',
+            referenceUrl: '',
+            originalLogoImage: null,
+            visualDataCategory: activeCategory,
+          },
+        });
+        return;
+      }
 
-      createDataset(newItem);
+      if (type === 'INDUSTRY') {
+        createDataset({
+          type: 'INDUSTRY',
+          yearId,
+          categoryName: activeCategory,
+          requestData: {
+            code: '',
+            productName: '',
+            companyName: '',
+            modelName: '',
+            price: '',
+            material: '',
+            size: '',
+            weight: '',
+            referenceUrl: '',
+            registeredAt: '',
+            productPath: '',
+            productTypeName: '',
+            // 이미지들은 초기엔 없음
+            originalDetailImagePath: null,
+            originalFrontImagePath: null,
+            originalSideImagePath: null,
+          },
+        });
+        return;
+      }
     };
 
     // 테이블 정리 함수
@@ -119,18 +140,20 @@ const DataPage = ({
       const activeData = localData[activeCategory] ?? [];
 
       const sorted = [...activeData].sort((a, b) => {
-        // 1. code 없는 애는 무조건 뒤로
         if (!a.code && b.code) return 1;
         if (a.code && !b.code) return -1;
 
-        // 2. 둘 다 있으면 기존 정렬
         return sort === 'first'
           ? a.code.localeCompare(b.code)
           : b.code.localeCompare(a.code);
       });
 
-      return sorted.map((r, idx) => ({ ...r, _no: idx + 1 }));
-    }, [localData, activeCategory, sort]);
+      return sorted.map((item, idx) =>
+        type === 'VISUAL'
+          ? mapVisualToUIItem(item as VisualDataItem, idx)
+          : mapIndustryToUIItem(item as IndustrialDataItem, idx)
+      );
+    }, [localData, activeCategory, sort, type]);
 
     // 화살표 disabled 관리
     const lastIndex = displayRows.length - 1;
@@ -139,7 +162,7 @@ const DataPage = ({
       /* 엑셀 다운로드 */
     }
     const handleDownload = async () => {
-      const res = await downloadExcel({ type, yearId });
+      const res = await downloadExcel({ type: type ?? 'VISUAL', yearId });
 
       const blob = new Blob([res.data], {
         type: res.headers['content-type'],
@@ -208,20 +231,54 @@ const DataPage = ({
 
           {/* content */}
           {activeTab === 'grid' ? (
-            <GridTable
-              rows={displayRows}
-              onAddRow={handleAddRow}
-              orderBy={sort}
-              setOrderBy={setSort}
-              lastIndex={lastIndex}
-            />
+            type === 'VISUAL' ? (
+              <GridTable<VisualRow>
+                type={'VISUAL'}
+                rows={displayRows as WithIndex<VisualRow>[]}
+                columns={rowMeta.VISUAL.columns}
+                onAddRow={handleAddRow}
+                orderBy={sort}
+                setOrderBy={setSort}
+                lastIndex={lastIndex}
+                activeCategory={activeCategory}
+              />
+            ) : (
+              <GridTable<IndustrialRow>
+                type={'INDUSTRY'}
+                rows={displayRows as WithIndex<IndustrialRow>[]}
+                columns={rowMeta.INDUSTRY.columns}
+                onAddRow={handleAddRow}
+                orderBy={sort}
+                setOrderBy={setSort}
+                lastIndex={lastIndex}
+                activeCategory={activeCategory}
+              />
+            )
           ) : (
             <div className="border border-t-0 border-[#E9E9E7] bg-white p-3">
-              <GalleryView
-                rows={displayRows}
-                onAdd={handleAddRow}
-                lastIndex={lastIndex}
-              />
+              {type === 'VISUAL' ? (
+                <GalleryView<VisualRow>
+                  type={'VISUAL'}
+                  rows={displayRows as WithIndex<VisualRow>[]}
+                  galleryFields={rowMeta.VISUAL.galleryFields}
+                  onAdd={handleAddRow}
+                  orderBy={sort}
+                  setOrderBy={setSort}
+                  lastIndex={lastIndex}
+                  activeCategory={activeCategory}
+                />
+              ) : (
+                <GalleryView<IndustrialRow>
+                  type={'INDUSTRY'}
+                  rows={displayRows as WithIndex<IndustrialRow>[]}
+                  galleryFields={rowMeta.INDUSTRY.galleryFields}
+                  orderBy={sort}
+                  setOrderBy={setSort}
+                  onAdd={handleAddRow}
+                  lastIndex={lastIndex}
+                  activeCategory={activeCategory}
+                />
+              )}
             </div>
           )}
         </div>

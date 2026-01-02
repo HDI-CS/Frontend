@@ -1,27 +1,23 @@
 import { datasetQueryKeys } from '@/src/queries/dataQuery';
-import { UserType } from '@/src/schemas/auth';
-import { UpdateDatasetRequest } from '@/src/schemas/data';
-import { updateDataset } from '@/src/services/data';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { UpdateVisualDatasetRequest } from '@/src/schemas/visual-data';
+import { updateVisualDataset } from '@/src/services/data/visual';
 
-interface UseUpdateDatasetParams {
-  type: UserType;
-}
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface UpdateDatasetVariables {
   id: number;
-  requestData: UpdateDatasetRequest;
+  requestData: UpdateVisualDatasetRequest;
   logoFile?: File | null;
 }
 
-export const useUpdateDataset = ({ type }: UseUpdateDatasetParams) => {
+export const useUpdateDataset = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ id, requestData, logoFile }: UpdateDatasetVariables) =>
-      updateDataset({
+      updateVisualDataset({
         id,
-        type,
+
         requestData,
         logoFile: logoFile ? logoFile : null,
       }),

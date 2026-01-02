@@ -1,5 +1,7 @@
 import z from 'zod';
 
+export type VisualCategory = 'COSMETIC' | 'FB';
+
 // 연도 스키마
 export const YearSchema = z.object({
   id: z.number(),
@@ -7,8 +9,8 @@ export const YearSchema = z.object({
 });
 export const YearsSchema = z.array(YearSchema);
 
-// 데이터 셋 기본 스키마
-export const DataItemSchema = z.object({
+// 시디 데이터 셋 기본 스키마
+export const VisualDataItemSchema = z.object({
   id: z.number(),
   code: z.string(),
   name: z.string(),
@@ -20,14 +22,16 @@ export const DataItemSchema = z.object({
   logoImage: z.string().nullable(),
 });
 
-export const DataItemsSchema = z.array(DataItemSchema);
+export const VisualDatasItemSchema = z.array(VisualDataItemSchema);
 
 // 데이터 카테고리 스키마
-export const DataCategoryGroupSchema = z.object({
+export const VisualDataCategoryGroupSchema = z.object({
   categoryName: z.string(),
-  data: DataItemsSchema,
+  data: VisualDatasItemSchema,
 });
-export const DataCategoryGroupsSchema = z.array(DataCategoryGroupSchema);
+export const VisualDataCategoryGroupsSchema = z.array(
+  VisualDataCategoryGroupSchema
+);
 
 // 연도 목록 조회 응답 스키마
 export const YearListResponseSchema = z.object({
@@ -37,24 +41,24 @@ export const YearListResponseSchema = z.object({
 });
 
 // 데이터셋 리스트 조회 응답 스키마
-export const GetDataByCategoryResponseSchema = z.object({
+export const GetVisualDataByCategoryResponseSchema = z.object({
   code: z.number(),
   message: z.string(),
-  result: DataCategoryGroupsSchema,
+  result: VisualDataCategoryGroupsSchema,
 });
 
 // 데이터셋 카테고리별 검색 조회 응답 스키마
-export const GetDataByKeywordyResponseSchema = z.object({
+export const GetVisualDataByKeywordyResponseSchema = z.object({
   code: z.number(),
   message: z.string(),
-  result: DataItemsSchema,
+  result: VisualDatasItemSchema,
 });
 
 // 데이터셋 상세 조회 응답 스키마
-export const GetDetailtDataByCategoryResponseSchema = z.object({
+export const GetDetailVisualDataByCategoryResponseSchema = z.object({
   code: z.number(),
   message: z.string(),
-  result: DataItemSchema,
+  result: VisualDataItemSchema,
 });
 
 // 이미지 객체 스키마
@@ -63,7 +67,7 @@ export const UploadUrlSchema = z.object({
 });
 
 // 데이터셋 생성 요청 스키마
-export const CreateDatasetRequestSchema = z.object({
+export const CreateVisualDatasetRequestSchema = z.object({
   code: z.string(),
   name: z.string(),
   sectorCategory: z.string(),
@@ -88,7 +92,7 @@ export const DuplicateDatasetRequestSchema = z.object({
 });
 
 // 시각 디자인 데이터셋 수정 요청 스키마
-export const UpdateDatasetRequestSchema = z
+export const UpdateVisualDatasetRequestSchema = z
   .object({
     code: z.string(),
     name: z.string(),
@@ -136,21 +140,27 @@ export const DeleteDatasetResponseSchema = z.object({
 // 타입 추출
 export type Year = z.infer<typeof YearSchema>;
 export type Years = z.infer<typeof YearsSchema>;
-export type DataItem = z.infer<typeof DataItemSchema>;
-export type DataItems = z.infer<typeof DataItemsSchema>;
-export type DataCategoryGroup = z.infer<typeof DataCategoryGroupSchema>;
-export type DataCategoryGroups = z.infer<typeof DataCategoryGroupsSchema>;
+export type VisualDataItem = z.infer<typeof VisualDataItemSchema>;
+export type VisualDatasItem = z.infer<typeof VisualDatasItemSchema>;
+export type VisualDataCategoryGroup = z.infer<
+  typeof VisualDataCategoryGroupSchema
+>;
+export type VisualDataCategoryGroups = z.infer<
+  typeof VisualDataCategoryGroupsSchema
+>;
 
-export type GetDataByKeywordyResponse = z.infer<
-  typeof GetDataByKeywordyResponseSchema
+export type GetVisualDataByKeywordyResponse = z.infer<
+  typeof GetVisualDataByKeywordyResponseSchema
 >;
-export type GetDataByCategoryResponse = z.infer<
-  typeof GetDataByCategoryResponseSchema
+export type GetVisualDataByCategoryResponse = z.infer<
+  typeof GetVisualDataByCategoryResponseSchema
 >;
-export type GetDetailtDataByCategoryResponse = z.infer<
-  typeof GetDetailtDataByCategoryResponseSchema
+export type GetDetailVisualDataByCategoryResponse = z.infer<
+  typeof GetDetailVisualDataByCategoryResponseSchema
 >;
-export type CreateDatasetRequest = z.infer<typeof CreateDatasetRequestSchema>;
+export type CreateVisualDatasetRequest = z.infer<
+  typeof CreateVisualDatasetRequestSchema
+>;
 export type CreateDatasetResponse = z.infer<typeof CreateDatasetResponseSchema>;
 
 export type DuplicateDatasetRequest = z.infer<
@@ -160,7 +170,9 @@ export type DuplicateDatasetResponse = z.infer<
   typeof DuplicateDatasetResponseSchema
 >;
 
-export type UpdateDatasetRequest = z.infer<typeof UpdateDatasetRequestSchema>;
+export type UpdateVisualDatasetRequest = z.infer<
+  typeof UpdateVisualDatasetRequestSchema
+>;
 export type UpdateDatasetResponse = z.infer<typeof UpdateDatasetResponseSchema>;
 
 export type DeleteDatasetRequest = z.infer<typeof DeleteDatasetRequestSchema>;

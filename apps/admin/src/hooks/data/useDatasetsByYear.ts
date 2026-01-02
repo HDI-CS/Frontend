@@ -1,37 +1,60 @@
 import { datasetQueryKeys } from '@/src/queries/dataQuery';
 import { UserType } from '@/src/schemas/auth';
 import {
-  GetDataByCategoryResponse,
-  GetDetailtDataByCategoryResponse,
-} from '@/src/schemas/data';
-import { getDatasetsByYear, getDetailDatasetsById } from '@/src/services/data';
-import { useQuery } from '@tanstack/react-query';
+  getIndustrialDatasetDetail,
+  getIndustrialDatasetsByYear,
+} from '@/src/services/data/industry';
+import {
+  getVisualDatasetDetail,
+  getVisualDatasetsByYear,
+} from '@/src/services/data/visual';
+import {
+  DatasetByIdResponse,
+  DatasetByYearResponse,
+} from '@/src/types/data/visual-data';
 
-interface UseDatasetsByYearParams {
-  type?: UserType;
-  year?: number;
-}
+import { useQuery } from '@tanstack/react-query';
 
 interface UserDataByDatasetIdParams {
   type?: UserType;
   datasetId: number;
 }
 
-export const useDatasetsByYear = ({ type, year }: UseDatasetsByYearParams) => {
-  return useQuery<GetDataByCategoryResponse>({
-    queryKey: datasetQueryKeys.listByYear(type, year),
-    queryFn: () => getDatasetsByYear({ type: type!, year: year! }), // enabled가 true일 때만 실행됨
-    enabled: !!type && !!year,
+// 년도별 조회
+
+export const useDatasetsByYear = ({
+  type,
+  yearId,
+}: {
+  type: UserType;
+  yearId: number;
+}) => {
+  return useQuery<DatasetByYearResponse>({
+    queryKey: datasetQueryKeys.listByYear(type, yearId),
+    queryFn: () => {
+      if (type === 'VISUAL') {
+        return getVisualDatasetsByYear(yearId);
+      }
+      return getIndustrialDatasetsByYear(yearId);
+    },
+    enabled: !!type && !!yearId,
   });
 };
 
+// 상세 조회
 export const useDataByDatasetId = ({
   type,
   datasetId,
 }: UserDataByDatasetIdParams) => {
-  return useQuery<GetDetailtDataByCategoryResponse>({
+  return useQuery<DatasetByIdResponse>({
     queryKey: datasetQueryKeys.detail(datasetId),
-    queryFn: () => getDetailDatasetsById({ type: type!, datasetId }),
+    queryFn: () => {
+      if (type === 'VISUAL') {
+        return getVisualDatasetDetail(datasetId!);
+      }
+      return getIndustrialDatasetDetail(datasetId!);
+    },
+
     enabled: !!type && !!datasetId,
   });
 };
