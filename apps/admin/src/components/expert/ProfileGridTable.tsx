@@ -2,6 +2,7 @@ import excelIcon from '@/public/data/Excel.svg';
 import { DUMMY_EXPERTS, ExpertProfile } from '@/src/constants/expert';
 import useGridManager from '@/src/hooks/useGridManager';
 
+import { useAuthStore } from '@/src/store/authStore';
 import clsx from 'clsx';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
@@ -10,7 +11,8 @@ import Th from '../data/table/Th';
 import BaseGridTable from '../evaluation/BaseGridTable';
 
 const ProfileGridTable = () => {
-  const { activeRowId } = useGridManager();
+  const { type } = useAuthStore();
+  const { activeRowId } = useGridManager(type!);
 
   const [profileData, setProfileData] = useState<ExpertProfile[]>();
 

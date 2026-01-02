@@ -4,10 +4,12 @@ import { useRouter } from 'next/navigation';
 import { LoginRequest, LoginResponse } from '@/src/schemas/auth';
 import { getAdminMe, login } from '@/src/services/auth';
 import { deleteCookie } from '@/src/utils/cookies';
+import { useAuthStore } from '../store/authStore';
 
 export const useLogin = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { setType } = useAuthStore();
 
   return useMutation<LoginResponse, Error, LoginRequest>({
     mutationFn: login,
@@ -39,6 +41,9 @@ export const useLogin = () => {
             staleTime: 0,
           });
         }
+
+        // 타입 전역 사용을 위한 설정
+        setType(data.result.userType);
         console.log('🔄 서버 세션 동기화 완료');
       } catch (error) {
         console.error('⚠️ 로그인 후 사용자 정보 재검증 실패:', error);
@@ -46,7 +51,7 @@ export const useLogin = () => {
       }
 
       // 성공 후 index 리다이렉트
-      router.push('/index');
+      router.push(`/${data.result.userType.toLowerCase()}`);
     },
     onError: (error) => {
       console.error('로그인 실패:', error);

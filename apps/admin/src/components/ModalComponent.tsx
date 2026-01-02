@@ -69,7 +69,7 @@ const ModalComponent = ({
         {/* MODAL */}
 
         <div
-          className={`w-full ${maxWidth} flex max-h-[800px] min-w-[700px] flex-col gap-5 overflow-hidden rounded-lg bg-white p-8 text-[#2D2E2E]`}
+          className={`w-full ${maxWidth} flex h-[800px] min-w-[700px] flex-col gap-5 overflow-hidden rounded-lg bg-white p-8 text-[#2D2E2E]`}
         >
           {/* Header */}
           <div className="border-b-1 flex items-start justify-between border-[#E9E9E7] py-3">

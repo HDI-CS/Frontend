@@ -2,7 +2,12 @@ import { z } from 'zod';
 
 // 사용자 역할 스키마
 export const UserRoleSchema = z.enum(['USER', 'ADMIN']);
-export const UserTypeSchema = z.enum(['PRODUCT', 'BRAND']);
+export const UserTypeSchema = z.enum([
+  'PRODUCT',
+  'BRAND',
+  'VISUAL',
+  'INDUSTRY',
+]);
 
 // 차수 정보 스키마
 export const EvaluationRoundSchema = z.object({
@@ -38,4 +43,11 @@ export const EvaluationYearsResponseSchema = z.object({
 
 // 타입 추출
 export type EvaluationRound = z.infer<typeof EvaluationRoundSchema>;
+export type RoundsSchema = z.infer<typeof RoundsSchema>;
+
 export type EvaluationYear = z.infer<typeof EvaluationYearSchema>;
+export type EvaluationYears = z.infer<typeof YearsSchema>;
+
+export type EvaluationYearsResponse = z.infer<
+  typeof EvaluationYearsResponseSchema
+>;

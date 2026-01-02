@@ -1,22 +1,21 @@
 import { z } from 'zod';
 
-// 사용자 역할 스키마
+// 어드민 역할 스키마
 export const UserRoleSchema = z.enum(['USER', 'ADMIN']);
 export const UserTypeSchema = z.enum([
-  'PRODUCT',
-  'BRAND',
   'VISUAL',
   'INDUSTRY',
 ]);
 
-// 사용자 정보 스키마
+
+// 어드민 정보 스키마
 export const UserSchema = z.object({
   id: z.number(),
   email: z.email(),
   name: z.string(),
   role: UserRoleSchema,
   userType: UserTypeSchema,
-  surveyDone: z.boolean(),
+  surveyDone: z.boolean().nullable(),
 });
 
 // 로그인 요청 스키마

@@ -10,6 +10,7 @@ import {
   SURVEY_QUESTIONS,
 } from '@/src/constants/surveyQuestions';
 import useGridManager from '@/src/hooks/useGridManager';
+import { useAuthStore } from '@/src/store/authStore';
 import { truncateText } from '@/src/utils/truncateText';
 import clsx from 'clsx';
 import Image from 'next/image';
@@ -22,6 +23,7 @@ import ResultModal from './ResultMoal';
 import ShowQuestionModal from './ShowQuestionModal';
 
 const OneExpertGridTable = () => {
+  const { type } = useAuthStore();
   const {
     dataId,
     idMenu,
@@ -44,7 +46,7 @@ const OneExpertGridTable = () => {
     setShowQuestion,
 
     getFieldExpertMenuItems,
-  } = useGridManager();
+  } = useGridManager(type!);
 
   // 화살표 disabled 관리
   const responses = DUMMY_EXPERT_RESPONSES;

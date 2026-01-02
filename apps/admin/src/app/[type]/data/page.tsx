@@ -3,16 +3,21 @@ import AddBtn from '@/src/components/common/AddBtn';
 import AddEvaluation from '@/src/components/evaluation/AddEvaluation';
 import FolderList from '@/src/components/FolderList';
 import FolderModals from '@/src/components/FolderModals';
-import { ADMIN_SECTIONS } from '@/src/constants/adminSection';
 import {
   SUBJECT_QUESTION,
   SURVEY_QUESTIONS,
 } from '@/src/constants/surveyQuestions';
+import { mapEvaluationYearsToFolders } from '@/src/features/data/rowMeta';
+import { useEvaluationYears } from '@/src/hooks/evaluation/useEvaluationYears';
 import { useFolderManager } from '@/src/hooks/useFolderManager';
-import { useRouter } from 'next/navigation';
+import { EvaluationYearFolder } from '@/src/types/evaluation';
+import { usePathname, useRouter } from 'next/navigation';
 
 const IndexPage = () => {
   const router = useRouter();
+  const pathname = usePathname();
+
+  const type = pathname.startsWith('/industry') ? 'INDUSTRY' : 'VISUAL';
 
   const {
     pressedKey,
@@ -30,8 +35,27 @@ const IndexPage = () => {
     getFieldMenuItems,
   } = useFolderManager();
 
-  const section = ADMIN_SECTIONS['DATA'];
-  const items = section.years ?? [];
+  // 년도 조회 api
+
+  const { data } = useEvaluationYears(type);
+
+  // if (isLoading) {
+  //   return <div>로딩 중...</div>;
+  // }
+
+  const yearFolders = data?.result
+    ? mapEvaluationYearsToFolders(data.result, `/${type.toLowerCase()}/data`)
+    : [];
+
+  // const yearFolders = useMemo(() => {
+  //   console.log(data?.result,'dsads');
+  //   if (!data?.result) return [];
+  //   return mapEvaluationYearsToFolders(data.result, '/data');
+  // }, [data]);
+
+  {
+    /* data가 아직 없을 때 mapper가 먼저 실행되지 않게 하고, data가 들어오면 그때 자동으로 다시 계산되게*/
+  }
 
   return (
     <div className="font-pretendard text-blue text-blue pl-47 mt-14 grid min-h-screen pr-80">
@@ -42,8 +66,8 @@ const IndexPage = () => {
           <span className="ml-31 w-25">Created</span>
         </div>
         {/* Folder List */}
-        <FolderList
-          items={items}
+        <FolderList<EvaluationYearFolder>
+          items={yearFolders}
           isPhase={false}
           pressedKey={pressedKey}
           openMenuKey={openMenuKey}

@@ -21,5 +21,11 @@ export type RequestGetSurveyDto = {
   surveyQuestions: survey[];
 };
 
-// /api/v1/{type}/survey/{surveyId}
-// export type RequestEditSurveyDto = {};
+export interface EvaluationYearFolder {
+  key: string; // yearId
+  label: string; // 1차년도
+  route: string; // /[type]/data/1
+  createdAt: string;
+  lastModifiedAt: string;
+}
+

@@ -1,0 +1,16 @@
+import { UserType } from '@/src/schemas/auth';
+
+export const datasetQueryKeys = {
+  all: ['datasets'] as const,
+
+  lists: () => [...datasetQueryKeys.all, 'list'] as const,
+
+  listByYear: (type?: UserType, year?: number) =>
+    [...datasetQueryKeys.lists(), type, year] as const,
+
+  search: (type: UserType, keyword: string, category?: string) =>
+    [...datasetQueryKeys.lists(), 'search', type, keyword, category] as const,
+
+  detail: (datasetId: number) =>
+    [...datasetQueryKeys.all, 'detail', datasetId] as const,
+};

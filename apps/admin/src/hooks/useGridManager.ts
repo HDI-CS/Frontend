@@ -2,9 +2,12 @@ import { useState } from 'react';
 import { FieldActionMenuItem } from '../components/FieldActionMenu';
 import { IdMappingType } from '../constants/expert';
 import { ExpertResponse } from '../constants/surveyQuestions';
+import { UserType } from '../schemas/auth';
 import { VisualDataItem } from '../types/data/visual-data';
+import { useDeleteDataset } from './data/useDeleteDataset';
+import { useDuplicateDataset } from './data/useDuplicateDataset';
 
-export const useFolderManager = () => {
+export const useFolderManager = (type: UserType) => {
   // dataId. : 선택 ID
   const [dataId, setDataId] = useState<number | null>(null);
 
@@ -19,7 +22,7 @@ export const useFolderManager = () => {
   const [rowMenu, setRowMenu] = useState<{
     x: number;
     y: number;
-    row: VisualDataItem;
+    rowId: number;
   } | null>(null);
 
   const [rowExpertMenu, setRowExpertMenu] = useState<{
@@ -49,7 +52,7 @@ export const useFolderManager = () => {
     null
   );
 
-// 왜씀?
+  // 왜씀?
   const [selectedRowId, setSelectedRowId] = useState<number | null>(null);
 
   // Edit <Boolean>
@@ -58,21 +61,25 @@ export const useFolderManager = () => {
   // showQuestion : 설문 문항 보여주는 상태  <Boolean>
   const [showQuestion, setShowQuestion] = useState(false);
 
+  // useMutation
+  const { mutate: deleteDataset } = useDeleteDataset({ type });
+  const { mutate: duplicateDataset } = useDuplicateDataset({ type });
+
   // row별 동작 정의
-  const getFieldMenuItems = (row: VisualDataItem): FieldActionMenuItem[] => [
+  const getFieldMenuItems = (rowId: number): FieldActionMenuItem[] => [
     {
       key: 'edit',
       label: 'edit field',
       onClick: () => {
         setIsEdit(true);
-        setDataId(row.id); // code인지 id인지는 봐야됨
+        setDataId(rowId); // code인지 id인지는 봐야됨
       },
     },
     {
       key: 'duplicate',
       label: 'duplicate field',
       onClick: () => {
-        console.log('duplicate field', row);
+        duplicateDataset([rowId]);
       },
     },
     {
@@ -81,6 +88,7 @@ export const useFolderManager = () => {
       variant: 'danger',
       onClick: () => {
         // 서버에 먼저 요청 → 성공 시 데이터를 새롭게 받음
+        deleteDataset([rowId]);
       },
     },
   ];
@@ -95,7 +103,7 @@ export const useFolderManager = () => {
       onClick: () => {
         setIsEdit(true);
         setDataId(row.id); // code인지 id인지는 봐야됨
-        setSelectedRow(row);  // 하나의 평가자의 응답 데이터 저장
+        setSelectedRow(row); // 하나의 평가자의 응답 데이터 저장
       },
     },
     {

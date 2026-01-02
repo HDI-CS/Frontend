@@ -1,92 +1,88 @@
 'use client';
+import { DatasetType } from '@/src/types/common';
 import { usePathname, useRouter } from 'next/navigation';
 import MenuItem from './MenuItem';
 import SubMenuItem from './SubMenuItem';
 
+const YEARS = [1, 2] as const;
+type Year = (typeof YEARS)[number];
+
+const PHASES_BY_YEAR: Record<Year, number[]> = {
+  1: [1, 2],
+  2: [1],
+};
+
 // 재사용성 가능하게 수정
 const ROUTES = {
-  ROOT: '/index',
+  ROOT: (type: DatasetType) => `/${type}`,
 
   DATA: {
-    ROOT: '/index/data',
-    YEAR1: '/index/data/year1',
-    YEAR2: '/index/data/year2',
+    ROOT: (type: DatasetType) => `/${type}/data`,
+    YEAR: (type: DatasetType, year: number) => `/${type}/data/${year}`,
   },
 
   EVALUATION: {
-    ROOT: '/index/evaluation',
-    YEAR1: '/index/evaluation/year1',
-    YEAR1_PHASE1: '/index/evaluation/year1/phase1',
-    YEAR1_PHASE2: '/index/evaluation/year1/phase2',
-    YEAR2: '/index/evaluation/year2',
+    ROOT: (type: DatasetType) => `/${type}/evaluation`,
+    YEAR: (type: DatasetType, year: number) => `/${type}/evaluation/${year}`,
+    PHASE: (type: DatasetType, year: number, phase: number) =>
+      `/${type}/evaluation/${year}/phase${phase}`,
   },
 
   EXPERT: {
-    ROOT: '/index/expert',
-    PROFILE: '/index/expert/profile',
-    MAPPING: '/index/expert/id-mapping',
-    MAPPING_YEAR1: '/index/expert/id-mapping/year1',
-    MAPPING_YEAR2: '/index/expert/id-mapping/year2',
-    MAPPING_YEAR1_PHASE1: '/index/expert/id-mapping/year1/phase1',
+    ROOT: (type: DatasetType) => `/${type}/expert`,
+    PROFILE: (type: DatasetType) => `/${type}/expert/profile`,
+    MAPPING: (type: DatasetType) => `/${type}/expert/id-mapping`,
+    MAPPING_YEAR: (type: DatasetType, year: number) =>
+      `/${type}/expert/id-mapping/${year}`,
+    MAPPING_PHASE: (type: DatasetType, year: number, phase: number) =>
+      `/${type}/expert/id-mapping/${year}/phase${phase}`,
   },
 };
 
-// const ROUTES = {
-//   DATA: {
-//     YEAR: (yearId: number) => `/index/data/year/${yearId}`,
-//   },
-//   EVALUATION: {
-//     YEAR: (yearId: number) => `/index/evaluation/year/${yearId}`,
-//     ROUND: (yearId: number, roundId: number) =>
-//       `/index/evaluation/year/${yearId}/round/${roundId}`,
-//   },
-// };
-
 const ROUTE_GROUPS = {
-  ROOT: [
-    ROUTES.ROOT,
-    ROUTES.DATA.ROOT,
-    ROUTES.EVALUATION.ROOT,
-    ROUTES.EXPERT.ROOT,
+  ROOT: (type: DatasetType) => [
+    ROUTES.ROOT(type),
+    ROUTES.DATA.ROOT(type),
+    ROUTES.EVALUATION.ROOT(type),
+    ROUTES.EXPERT.ROOT(type),
   ],
 
-  DATA: Object.values(ROUTES.DATA),
+  DATA: (type: DatasetType) => YEARS.map((y) => ROUTES.DATA.YEAR(type, y)),
 
-  EVALUATION: Object.values(ROUTES.EVALUATION),
+  EVALUATION: (type: DatasetType) =>
+    YEARS.flatMap((y) => [
+      ROUTES.EVALUATION.YEAR(type, y),
+      ...PHASES_BY_YEAR[y].map((p) => ROUTES.EVALUATION.PHASE(type, y, p)),
+    ]),
 
-  EVALUATION_YEAR1: [
-    ROUTES.EVALUATION.YEAR1,
-    ROUTES.EVALUATION.YEAR1_PHASE1,
-    ROUTES.EVALUATION.YEAR1_PHASE2,
+  EXPERT: (type: DatasetType) => [
+    ROUTES.EXPERT.ROOT(type),
+    ROUTES.EXPERT.MAPPING(type),
   ],
-
-  EVALUATION_YEAR2: [ROUTES.EVALUATION.YEAR2],
-
-  EXPERT: Object.values(ROUTES.EXPERT),
 };
 
 const SidebarMenu = () => {
   const pathname = usePathname();
+  const type: DatasetType = pathname.startsWith('/industry')
+    ? 'industry'
+    : 'visual';
+
   const router = useRouter();
   // const { data: years, isLoading } = useEvaluationFolders();
 
-  const openRoot = ROUTE_GROUPS.ROOT.some((r) => pathname.startsWith(r));
-  const openData = ROUTE_GROUPS.DATA.some((r) => pathname.startsWith(r));
-  const openEvaluation = ROUTE_GROUPS.EVALUATION.some((r) =>
+  const openRoot = ROUTE_GROUPS.ROOT(type).some((r) => pathname.startsWith(r));
+  const openData = ROUTE_GROUPS.DATA(type).some((r) => pathname.startsWith(r));
+
+  const openEvaluation = ROUTE_GROUPS.EVALUATION(type).some((r) =>
     pathname.startsWith(r)
   );
 
-  const openYear1 = ROUTE_GROUPS.EVALUATION_YEAR1.some((r) =>
+  const openExpert = ROUTE_GROUPS.EXPERT(type).some((r) =>
     pathname.startsWith(r)
   );
 
-  const openYear2 = ROUTE_GROUPS.EVALUATION_YEAR2.some((r) =>
-    pathname.startsWith(r)
-  );
-
-  const openExpert = ROUTE_GROUPS.EXPERT.some((r) => pathname.startsWith(r));
-  const openMapping = pathname.startsWith(ROUTES.EXPERT.MAPPING);
-  const openMappingYear1 = pathname.startsWith(ROUTES.EXPERT.MAPPING_YEAR1);
+  const openMapping = pathname.startsWith(ROUTES.EXPERT.MAPPING(type));
+  // const openMappingYear1 = pathname.startsWith(ROUTES.EXPERT.MAPPING_YEAR1);
 
   return (
     <div className="flex flex-col">
@@ -94,25 +90,25 @@ const SidebarMenu = () => {
       <MenuItem
         label="시각디자인"
         open={openRoot}
-        active={pathname === ROUTES.ROOT}
-        onClick={() => router.push(ROUTES.ROOT)}
+        active={pathname === ROUTES.ROOT(type)}
+        onClick={() => router.push(ROUTES.ROOT(type))}
       >
         {/* 데이터 관리 */}
         <MenuItem
           label="데이터 관리"
           open={openData}
-          active={pathname === ROUTES.DATA.ROOT}
-          onClick={() => router.push(ROUTES.DATA.ROOT)}
+          active={pathname === ROUTES.DATA.ROOT(type)}
+          onClick={() => router.push(ROUTES.DATA.ROOT(type))}
         >
           <SubMenuItem
             label="1차년도"
-            active={pathname === ROUTES.DATA.YEAR1}
-            onClick={() => router.push(ROUTES.DATA.YEAR1)}
+            active={pathname === ROUTES.DATA.YEAR(type, 1)}
+            onClick={() => router.push(ROUTES.DATA.YEAR(type, 1))}
           />
           <SubMenuItem
             label="2차년도"
-            active={pathname === ROUTES.DATA.YEAR2}
-            onClick={() => router.push(ROUTES.DATA.YEAR2)}
+            active={pathname === ROUTES.DATA.YEAR(type, 2)}
+            onClick={() => router.push(ROUTES.DATA.YEAR(type, 2))}
           />
         </MenuItem>
 
@@ -120,72 +116,88 @@ const SidebarMenu = () => {
         <MenuItem
           label="평가 관리"
           open={openEvaluation}
-          active={pathname === ROUTES.EVALUATION.ROOT}
-          onClick={() => router.push(ROUTES.EVALUATION.ROOT)}
+          active={pathname === ROUTES.EVALUATION.ROOT(type)}
+          onClick={() => router.push(ROUTES.EVALUATION.ROOT(type))}
         >
-          <MenuItem
-            label="1차년도"
-            open={openYear1}
-            active={pathname === ROUTES.EVALUATION.YEAR1}
-            onClick={() => router.push(ROUTES.EVALUATION.YEAR1)}
-          >
-            <SubMenuItem
-              label="1차 평가"
-              active={pathname.startsWith(ROUTES.EVALUATION.YEAR1_PHASE1)}
-              onClick={() => router.push(ROUTES.EVALUATION.YEAR1_PHASE1)}
-            />
-            <SubMenuItem
-              label="2차 평가"
-              active={pathname.startsWith(ROUTES.EVALUATION.YEAR1_PHASE2)}
-              onClick={() => router.push(ROUTES.EVALUATION.YEAR1_PHASE2)}
-            />
-          </MenuItem>
-          <MenuItem
-            label="2차년도"
-            open={openYear2}
-            active={pathname === ROUTES.EVALUATION.YEAR2}
-            onClick={() => router.push(ROUTES.EVALUATION.YEAR2)}
-          />
+          {YEARS.map((year) => {
+            const openYear = pathname.startsWith(
+              ROUTES.EVALUATION.YEAR(type, year)
+            );
+
+            return (
+              <MenuItem
+                key={year}
+                label={`${year}차년도`}
+                open={openYear}
+                active={pathname === ROUTES.EVALUATION.YEAR(type, year)}
+                onClick={() => router.push(ROUTES.EVALUATION.YEAR(type, year))}
+              >
+                {PHASES_BY_YEAR[year].map((phase) => (
+                  <SubMenuItem
+                    key={phase}
+                    label={`${phase}차 평가`}
+                    active={
+                      pathname === ROUTES.EVALUATION.PHASE(type, year, phase)
+                    }
+                    onClick={() =>
+                      router.push(ROUTES.EVALUATION.PHASE(type, year, phase))
+                    }
+                  />
+                ))}
+              </MenuItem>
+            );
+          })}
         </MenuItem>
 
         {/* 전문가 관리  */}
         <MenuItem
           label="전문가 관리"
           open={openExpert}
-          active={pathname === ROUTES.EXPERT.ROOT}
-          onClick={() => router.push(ROUTES.EXPERT.ROOT)}
+          active={pathname === ROUTES.EXPERT.ROOT(type)}
+          onClick={() => router.push(ROUTES.EXPERT.ROOT(type))}
         >
           <SubMenuItem
             label="전문가 인적사항"
-            active={pathname === ROUTES.EXPERT.PROFILE}
-            onClick={() => router.push(ROUTES.EXPERT.PROFILE)}
+            active={pathname === ROUTES.EXPERT.PROFILE(type)}
+            onClick={() => router.push(ROUTES.EXPERT.PROFILE(type))}
           />
           {/* 평가 데이터 ID */}
           <MenuItem
             label="평가 데이터 ID"
             open={openMapping}
-            active={pathname === ROUTES.EXPERT.MAPPING}
-            onClick={() => router.push(ROUTES.EXPERT.MAPPING)}
+            active={pathname === ROUTES.EXPERT.MAPPING(type)}
+            onClick={() => router.push(ROUTES.EXPERT.MAPPING(type))}
           >
             {/* N차년도 */}
-
-            <MenuItem
-              label="1차년도"
-              open={openMappingYear1}
-              active={pathname === ROUTES.EXPERT.MAPPING_YEAR1}
-              onClick={() => router.push(ROUTES.EXPERT.MAPPING_YEAR1)}
-            >
-              <SubMenuItem
-                label="1차수"
-                active={pathname === ROUTES.EXPERT.MAPPING_YEAR1_PHASE1}
-                onClick={() => router.push(ROUTES.EXPERT.MAPPING_YEAR1_PHASE1)}
-              />{' '}
-            </MenuItem>
-            <MenuItem
-              label="2차년도"
-              active={pathname.startsWith(ROUTES.EXPERT.MAPPING_YEAR2)}
-              onClick={() => router.push(ROUTES.EXPERT.MAPPING_YEAR2)}
-            />
+            {YEARS.map((year) => (
+              <MenuItem
+                key={year}
+                label={`${year}차년도`}
+                open={pathname.startsWith(
+                  ROUTES.EXPERT.MAPPING_YEAR(type, year)
+                )}
+                active={pathname === ROUTES.EXPERT.MAPPING_YEAR(type, year)}
+                onClick={() =>
+                  router.push(ROUTES.EXPERT.MAPPING_YEAR(type, year))
+                }
+              >
+                {PHASES_BY_YEAR[year].map((phase) => (
+                  <SubMenuItem
+                    key={phase}
+                    label={`${phase}차수`}
+                    active={
+                      pathname ===
+                      ROUTES.EXPERT.MAPPING_PHASE(type, year, phase)
+                    }
+                    onClick={() =>
+                      router.push(
+                        ROUTES.EXPERT.MAPPING_PHASE(type, year, phase)
+                      )
+                    }
+                  />
+                ))}
+              </MenuItem>
+            ))}
           </MenuItem>
         </MenuItem>
       </MenuItem>

@@ -2,16 +2,20 @@
 import AddBtn from '@/src/components/common/AddBtn';
 import AddEvaluation from '@/src/components/evaluation/AddEvaluation';
 import FolderList from '@/src/components/FolderList';
-import { ADMIN_SECTIONS } from '@/src/constants/adminSection';
 import {
   SUBJECT_QUESTION,
   SURVEY_QUESTIONS,
 } from '@/src/constants/surveyQuestions';
+import { mapEvaluationYearsToFolders } from '@/src/features/data/rowMeta';
+import { useEvaluationYears } from '@/src/hooks/evaluation/useEvaluationYears';
 import { useFolderManager } from '@/src/hooks/useFolderManager';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 const IndexPage = () => {
   const router = useRouter();
+  const pathname = usePathname();
+
+  const type = pathname.startsWith('/industry') ? 'INDUSTRY' : 'VISUAL';
 
   const {
     pressedKey,
@@ -24,9 +28,13 @@ const IndexPage = () => {
     setEditSurvey,
     getFieldEvaluationMenuItems,
   } = useFolderManager();
-
-  const section = ADMIN_SECTIONS['EVALUATION'];
-  const items = section.years ?? [];
+  const { data } = useEvaluationYears(type);
+  const yearFolders = data?.result
+    ? mapEvaluationYearsToFolders(
+        data.result,
+        `/${type.toLowerCase()}/evaluation`
+      )
+    : [];
 
   return (
     <div className="font-pretendard text-blue text-blue pl-47 mt-14 grid min-h-screen pr-80">
@@ -38,7 +46,7 @@ const IndexPage = () => {
         </div>
         {/* Folder List */}
         <FolderList
-          items={items}
+          items={yearFolders}
           isPhase={false}
           pressedKey={pressedKey}
           openMenuKey={openMenuKey}

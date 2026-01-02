@@ -16,3 +16,4 @@ export type RequestEditDataDto = {
 };
 
 export type ResponseEditDataDto = BaseResponse;
+

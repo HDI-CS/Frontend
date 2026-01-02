@@ -11,8 +11,8 @@ import FieldActionMenu, { FieldActionMenuItem } from './FieldActionMenu';
 
 interface FolderProps {
   name: string;
-  modified: string;
-  created: string;
+  modified?: string;
+  created?: string;
   duration: string;
   isManage?: boolean;
   isPhase: boolean;
