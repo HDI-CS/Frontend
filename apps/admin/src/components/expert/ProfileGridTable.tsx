@@ -2,11 +2,16 @@ import excelIcon from '@/public/data/Excel.svg';
 import { ExpertProfile } from '@/src/constants/expert';
 import useGridManager from '@/src/hooks/useGridManager';
 
-import { useExpertProfile } from '@/src/hooks/expert/useExpertProfile';
+import {
+  useExpertProfile,
+  useExpertProfileByKeyword,
+} from '@/src/hooks/expert/useExpertProfile';
+import { ExpertMember } from '@/src/schemas/expert';
+import { useSearchStore } from '@/src/store/searchStore';
 import clsx from 'clsx';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import Td from '../data/table/Td';
 import Th from '../data/table/Th';
 import BaseGridTable from '../evaluation/BaseGridTable';
@@ -17,52 +22,64 @@ const ProfileGridTable = () => {
   const type = pathname.startsWith('/industry') ? 'INDUSTRY' : 'VISUAL';
   const { activeRowId } = useGridManager(type!);
 
-  const [profileData, setProfileData] = useState<ExpertProfile[]>();
-
   const { data } = useExpertProfile(type!);
-  /* 초기 데이터 세팅 */
-  useEffect(() => {
-    if (!data?.result) return;
+  const mapExpertToProfile = (expert: ExpertMember): ExpertProfile => ({
+    id: expert.memberId,
+    name: expert.name,
+    participation: expert.rounds.join(', '),
+    email: expert.email ?? '',
+    phone: expert.phoneNumber ?? '',
+    gender: expert.gender ?? '',
+    ageGroup: expert.age ?? '',
+    experience: expert.career ?? '',
+    background: expert.academic ?? '',
+    field: expert.expertise ?? '',
+    company: expert.company ?? '',
+  });
 
-    const mapped: ExpertProfile[] = data.result.map((expert) => ({
-      id: expert.memberId,
-      name: expert.name,
-      participation: expert.rounds.join(', '),
-      email: expert.email ?? '',
-      phone: expert.phoneNumber ?? '',
-      gender: expert.gender ?? '',
-      ageGroup: expert.age ?? '',
-      experience: expert.career ?? '',
-      background: expert.academic ?? '',
-      field: expert.expertise ?? '',
-      company: expert.company ?? '',
-    }));
+  // const handleAddRow = () => { TODOS: 서버 요청으로 수정
+  //   setProfileData((prev) => {
+  //     if (!prev) return [createEmptyRow()];
 
-    setProfileData(mapped);
-  }, [data]);
+  //     return [...prev, createEmptyRow()];
+  //   });
+  // };
 
-  const handleAddRow = () => {
-    setProfileData((prev) => {
-      if (!prev) return [createEmptyRow()];
+  const keyword = useSearchStore((s) => s.keyword);
+  const { data: searchData } = useExpertProfileByKeyword(type, keyword);
 
-      return [...prev, createEmptyRow()];
-    });
-  };
+  {
+    /* 초기 데이터 세팅 */
+  } // 카테고리 단위 데이터는 “무조건 배열”로 고정
+
+  const localData = useMemo<ExpertProfile[]>(() => {
+    // 검색어 있을 때
+    if (keyword.length && searchData?.result) {
+      return searchData.result.map(mapExpertToProfile);
+    }
+    // 기본 데이터
+    if (data?.result) {
+      return data.result.map(mapExpertToProfile);
+    }
+
+    //  항상 배열 반환
+    return [];
+  }, [keyword, searchData, data]);
 
   // 새로운 행 추가 시 넣을 임시 데이터 값
-  const createEmptyRow = (): ExpertProfile => ({
-    id: Date.now(), // 임시 ID
-    name: '',
-    participation: '',
-    email: '',
-    phone: '',
-    gender: '',
-    ageGroup: '',
-    experience: '',
-    background: '',
-    field: '',
-    company: '',
-  });
+  // const createEmptyRow = (): ExpertProfile => ({
+  //   id: Date.now(), // 임시 ID
+  //   name: '',
+  //   participation: '',
+  //   email: '',
+  //   phone: '',
+  //   gender: '',
+  //   ageGroup: '',
+  //   experience: '',
+  //   background: '',
+  //   field: '',
+  //   company: '',
+  // });
 
   return (
     <div className=" ">
@@ -93,7 +110,7 @@ const ProfileGridTable = () => {
         </thead>
 
         <tbody>
-          {profileData?.map((row, index) => {
+          {localData?.map((row, index) => {
             // const qualitativeCount = getQualitativeCount(
             //   row.qualitativeEvaluation
             // );
@@ -146,7 +163,7 @@ const ProfileGridTable = () => {
           <tr>
             <Td className="h-21 flex w-[64px] items-center justify-center hover:bg-[#F4F7FF]">
               <button
-                onClick={handleAddRow}
+                // onClick={handleAddRow}
                 className="flex h-[28px] w-[28px] items-center justify-center rounded text-center text-3xl text-[#4676FB]"
                 aria-label="add row"
               >

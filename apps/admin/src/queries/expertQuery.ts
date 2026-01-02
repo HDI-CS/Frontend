@@ -9,8 +9,8 @@ export const expertQueryKeys = {
   listByYear: (type?: UserType, year?: number) =>
     [...expertQueryKeys.lists(), type, year] as const,
 
-  search: (type: UserType, keyword: string, category?: string) =>
-    [...expertQueryKeys.lists(), 'search', type, keyword, category] as const,
+  search: (type: UserType, keyword: string) =>
+    [...expertQueryKeys.lists(), 'search', type, keyword] as const,
 
   detail: (datasetId: number) =>
     [...expertQueryKeys.all, 'detail', datasetId] as const,
