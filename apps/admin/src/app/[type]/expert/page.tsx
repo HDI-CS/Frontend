@@ -1,10 +1,15 @@
 'use client';
 import FolderList from '@/src/components/FolderList';
 import { useFolderManager } from '@/src/hooks/useFolderManager';
-import { useRouter } from 'next/navigation';
+import { UserType } from '@/src/schemas/auth';
+import { usePathname, useRouter } from 'next/navigation';
 
 const ExpertPage = () => {
   const router = useRouter();
+  const pathname = usePathname();
+  const type: UserType = pathname.startsWith('/industry')
+    ? 'INDUSTRY'
+    : 'VISUAL';
 
   const {
     pressedKey,
@@ -20,14 +25,14 @@ const ExpertPage = () => {
     {
       key: 'PROFILE',
       label: '전문가 인적사항',
-      route: '/index/expert/profile',
+      route: `/${type.toLowerCase()}/expert/profile`,
       createdAt: '2021-11-03 22:00',
       lastModifiedAt: '2021-11-03 22:00',
     },
     {
       key: 'MAPPING',
       label: '평가 데이터 ID',
-      route: '/index/expert/id-mapping',
+      route: `/${type.toLowerCase()}/expert/id-mapping`,
       createdAt: '2021-11-03 22:00',
       lastModifiedAt: '2021-11-03 22:00',
     },

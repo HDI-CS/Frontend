@@ -1,25 +1,45 @@
 import excelIcon from '@/public/data/Excel.svg';
-import { DUMMY_EXPERTS, ExpertProfile } from '@/src/constants/expert';
+import { ExpertProfile } from '@/src/constants/expert';
 import useGridManager from '@/src/hooks/useGridManager';
 
-import { useAuthStore } from '@/src/store/authStore';
+import { useExpertProfile } from '@/src/hooks/expert/useExpertProfile';
 import clsx from 'clsx';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Td from '../data/table/Td';
 import Th from '../data/table/Th';
 import BaseGridTable from '../evaluation/BaseGridTable';
 
 const ProfileGridTable = () => {
-  const { type } = useAuthStore();
+  const pathname = usePathname();
+
+  const type = pathname.startsWith('/industry') ? 'INDUSTRY' : 'VISUAL';
   const { activeRowId } = useGridManager(type!);
 
   const [profileData, setProfileData] = useState<ExpertProfile[]>();
 
+  const { data } = useExpertProfile(type!);
   /* 초기 데이터 세팅 */
   useEffect(() => {
-    setProfileData(DUMMY_EXPERTS);
-  }, []);
+    if (!data?.result) return;
+
+    const mapped: ExpertProfile[] = data.result.map((expert) => ({
+      id: expert.memberId,
+      name: expert.name,
+      participation: expert.rounds.join(', '),
+      email: expert.email ?? '',
+      phone: expert.phoneNumber ?? '',
+      gender: expert.gender ?? '',
+      ageGroup: expert.age ?? '',
+      experience: expert.career ?? '',
+      background: expert.academic ?? '',
+      field: expert.expertise ?? '',
+      company: expert.company ?? '',
+    }));
+
+    setProfileData(mapped);
+  }, [data]);
 
   const handleAddRow = () => {
     setProfileData((prev) => {

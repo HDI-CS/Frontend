@@ -84,7 +84,7 @@ export const SurveyQuestionGroupSchema = z.object({
   questions: SurveyQuestionListSchema,
 });
 
-// 설문 질문 그룹 배열 
+// 설문 질문 그룹 배열
 export const SurveyQuestionGroupsSchema = z.array(SurveyQuestionGroupSchema);
 
 // 평가 년도 상세 result 요청 스키마
