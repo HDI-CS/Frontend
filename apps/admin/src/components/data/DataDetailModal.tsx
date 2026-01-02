@@ -214,7 +214,6 @@ const DataDetailModal = <TRow, TType extends UserType>({
           renderField(label, field as keyof UpdateForm)
         )}
 
-        {/*이미지 업로드는 api 연결 구현 시*/}
         {/* {renderField('로고 이미지', 'logoImage')} */}
         <LinedField label="로고 이미지" activeField={activeField} isImg={true}>
           {isEdit && (

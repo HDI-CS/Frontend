@@ -1,7 +1,7 @@
 import { UserType } from '@/src/schemas/auth';
 
 export const expertQueryKeys = {
-  all: ['datasets'] as const,
+  all: ['experts'] as const,
 
   lists: () => [...expertQueryKeys.all, 'list'] as const,
   listByType: (type?: UserType) => [...expertQueryKeys.lists(), type] as const,
@@ -12,6 +12,6 @@ export const expertQueryKeys = {
   search: (type: UserType, keyword: string) =>
     [...expertQueryKeys.lists(), 'search', type, keyword] as const,
 
-  detail: (datasetId: number) =>
-    [...expertQueryKeys.all, 'detail', datasetId] as const,
+  member: (type: UserType, memberId: number) =>
+    [...expertQueryKeys.lists(), 'member', memberId] as const,
 };

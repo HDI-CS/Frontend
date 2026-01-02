@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { FieldActionMenuItem } from '../components/FieldActionMenu';
-import { IdMappingType } from '../constants/expert';
+import { ExpertProfile, IdMappingType } from '../constants/expert';
 import { ExpertResponse } from '../constants/surveyQuestions';
 import { UserType } from '../schemas/auth';
 import { VisualDataItem } from '../types/data/visual-data';
@@ -10,6 +10,7 @@ import { useDuplicateDataset } from './data/useDuplicateDataset';
 export const useFolderManager = (type: UserType) => {
   // dataId. : 선택 ID
   const [dataId, setDataId] = useState<number | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<string | null>(null);
 
   // thead -> Id / tbody -> field 이벤트 완전히 분리
   // 헤더(ID 정렬용)
@@ -37,6 +38,9 @@ export const useFolderManager = (type: UserType) => {
     // questions: Question[]; // 설문 문항
   } | null>(null);
 
+  const [selectedExpertData, setSelectedExpertData] =
+    useState<ExpertProfile | null>();
+
   // const [questions, setQuestions] = useState<Question[]>();
 
   const [orderBy, setOrderBy] = useState<'first' | 'last'>('first');
@@ -57,6 +61,7 @@ export const useFolderManager = (type: UserType) => {
 
   // Edit <Boolean>
   const [isEdit, setIsEdit] = useState(false);
+  const [isAdd, setIsAdd] = useState(false);
 
   // showQuestion : 설문 문항 보여주는 상태  <Boolean>
   const [showQuestion, setShowQuestion] = useState(false);
@@ -132,12 +137,15 @@ export const useFolderManager = (type: UserType) => {
     rowQuestiontMenu,
     activeRowId,
     isEdit,
+    isAdd,
     orderBy,
     selectedRow,
     showQuestion,
     selectedExpertRow,
     selectedDataRow,
     selectedRowId,
+    selectedIndex,
+    selectedExpertData,
 
     // setters
     setDataId,
@@ -147,12 +155,15 @@ export const useFolderManager = (type: UserType) => {
     setRowQuestiontMenu,
     setActiveRowId,
     setIsEdit,
+    setIsAdd,
     setOrderBy,
     setSelectedRow,
     setShowQuestion,
     setSelectedExpertRow,
     setSelectedDataRow,
     setSelectedRowId,
+    setSelectedIndex,
+    setSelectedExpertData,
 
     // actions
     getFieldMenuItems,

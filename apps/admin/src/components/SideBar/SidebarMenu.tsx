@@ -224,11 +224,19 @@ const SidebarMenu = ({ type }: SidebarMenuProps) => {
                     label={`${round.roundId}`}
                     active={
                       pathname ===
-                      ROUTES.EXPERT.MAPPING_PHASE(lowerType, year.yearId, round.roundId)
+                      ROUTES.EXPERT.MAPPING_PHASE(
+                        lowerType,
+                        year.yearId,
+                        round.roundId
+                      )
                     }
                     onClick={() =>
                       router.push(
-                        ROUTES.EXPERT.MAPPING_PHASE(lowerType, year.yearId, round.roundId)
+                        ROUTES.EXPERT.MAPPING_PHASE(
+                          lowerType,
+                          year.yearId,
+                          round.roundId
+                        )
                       )
                     }
                   />
