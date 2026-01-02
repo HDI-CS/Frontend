@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+import { UserType } from '@/src/schemas/auth';
 import getHeaderOptions from '@/src/utils/getHeaderOptions';
 import clsx from 'clsx';
 import SideBar from '../SideBar/SideBar';
@@ -30,6 +31,10 @@ export default function LayoutWrapper({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const type: UserType = pathname.startsWith('/industry')
+    ? 'INDUSTRY'
+    : 'VISUAL';
+
   const headerOptions = getHeaderOptions(pathname);
 
   const [isNotFoundPage, setIsNotFoundPage] = useState(false);
@@ -73,7 +78,7 @@ export default function LayoutWrapper({
       )}
       {/* 사이드바 + 콘텐츠를 가로로 */}
       <div className="flex flex-1">
-        {!shouldHideHeader && <SideBar />}
+        {!shouldHideHeader && <SideBar type={type} />}
         <div className="min-w-0 flex-1">
           {/* SubHeader */}
           {!shouldHideHeader && showSubHeader && <SubHeader />}

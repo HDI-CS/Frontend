@@ -3,10 +3,6 @@ import AddBtn from '@/src/components/common/AddBtn';
 import AddEvaluation from '@/src/components/evaluation/AddEvaluation';
 import FolderList from '@/src/components/FolderList';
 import FolderModals from '@/src/components/FolderModals';
-import {
-  SUBJECT_QUESTION,
-  SURVEY_QUESTIONS,
-} from '@/src/constants/surveyQuestions';
 import { mapEvaluationYearsToFolders } from '@/src/features/data/rowMeta';
 import { useEvaluationYears } from '@/src/hooks/evaluation/useEvaluationYears';
 import { useFolderManager } from '@/src/hooks/useFolderManager';
@@ -96,10 +92,9 @@ const IndexPage = () => {
 
         {editSurvey && (
           <AddEvaluation
+            type={type}
             onClose={() => setEditSurvey(false)}
             isEdit={true}
-            qusetionsData={SURVEY_QUESTIONS}
-            subjectiveData={SUBJECT_QUESTION}
           />
         )}
       </div>

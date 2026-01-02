@@ -38,7 +38,6 @@ const IndexPage = () => {
   const rounds =
     data?.result.find((y) => y.yearId === Number(year))?.rounds ?? [];
 
-
   const roundsFolders = rounds
     ? mapEvaluationPhaseToFolders(
         year ?? '1',
@@ -76,7 +75,7 @@ const IndexPage = () => {
         <AddBtn isEvaluation={true} setAdd={setAdd} />
 
         {/* Modals */}
-        {add && <AddEvaluation onClose={() => setAdd(false)} />}
+        {add && <AddEvaluation type={type} onClose={() => setAdd(false)} />}
         {editName && (
           <ModalComponent
             title="폴더 이름"

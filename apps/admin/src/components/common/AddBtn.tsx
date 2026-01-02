@@ -3,10 +3,11 @@ import clsx from 'clsx';
 interface AddBtnProps {
   setAdd: React.Dispatch<React.SetStateAction<boolean>>;
   isEvaluation?: boolean;
+  onClick?: () => void;
   // isEvaluationYear?: boolean;
 }
 
-const AddBtn = ({ setAdd, isEvaluation = false }: AddBtnProps) => {
+const AddBtn = ({ setAdd, isEvaluation = false, onClick }: AddBtnProps) => {
   return (
     <div className="mt-7.5 flex w-full cursor-pointer items-center justify-center">
       <div
@@ -23,7 +24,11 @@ const AddBtn = ({ setAdd, isEvaluation = false }: AddBtnProps) => {
         >
           +
         </p>
-        {isEvaluation && <p className="text-regular16">평가 추가하기</p>}
+        {isEvaluation && (
+          <p className="text-regular16" onClick={onClick}>
+            평가 추가하기
+          </p>
+        )}
       </div>
     </div>
   );

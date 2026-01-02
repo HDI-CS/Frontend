@@ -10,6 +10,7 @@ export type GetFieldMenuItems = (item: {
 export const useFolderManager = () => {
   // 선택된 폴더
   const [pressedKey, setPressedKey] = useState<string | null>(null);
+  const [selectedName, setSelectedName] = useState<string | null>(null);
 
   // 열린 드롭다운 (단 하나)
   const [openMenuKey, setOpenMenuKey] = useState<string | null>(null);
@@ -121,6 +122,7 @@ export const useFolderManager = () => {
     editTarget,
     editFolderName,
     editSurvey,
+    selectedName,
 
     // setters
     setPressedKey,
@@ -130,6 +132,7 @@ export const useFolderManager = () => {
     setEditTarget,
     setEditFolderName,
     setEditSurvey,
+    setSelectedName,
 
     // actions
     getFieldMenuItems,

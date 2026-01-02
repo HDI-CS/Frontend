@@ -7,6 +7,7 @@ import optionWhite from '@/public/common/folder/optionWhite.svg';
 
 import clsx from 'clsx';
 import Image from 'next/image';
+import { formatDateTime } from '../utils/formatDateTime';
 import FieldActionMenu, { FieldActionMenuItem } from './FieldActionMenu';
 
 interface FolderProps {
@@ -91,24 +92,27 @@ const Folder = ({
             {name}
           </p>
         </div>
-
-        <p
-          className={clsx(
-            'flex items-center text-base transition-colors group-hover:text-white',
-            isMenuOpen ? 'text-[#ffffff]' : 'text-[#3A3A49]'
-          )}
-        >
-          {modified}
-        </p>
-        <span
-          className={clsx(
-            'flex items-center text-base transition-colors group-hover:text-white',
-            isMenuOpen ? 'text-[#ffffff]' : 'text-[#3A3A49]'
-          )}
-        >
-          {' '}
-          {created}
-        </span>
+        {modified && (
+          <>
+            <p
+              className={clsx(
+                'flex items-center text-base transition-colors group-hover:text-white',
+                isMenuOpen ? 'text-[#ffffff]' : 'text-[#3A3A49]'
+              )}
+            >
+              {formatDateTime(modified ?? '')}
+            </p>
+            <span
+              className={clsx(
+                'flex items-center text-base transition-colors group-hover:text-white',
+                isMenuOpen ? 'text-[#ffffff]' : 'text-[#3A3A49]'
+              )}
+            >
+              {' '}
+              {formatDateTime(created ?? '')}
+            </span>
+          </>
+        )}
         <div>
           {isPhase && (
             <span

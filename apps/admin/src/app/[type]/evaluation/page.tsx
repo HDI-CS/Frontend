@@ -2,30 +2,36 @@
 import AddBtn from '@/src/components/common/AddBtn';
 import AddEvaluation from '@/src/components/evaluation/AddEvaluation';
 import FolderList from '@/src/components/FolderList';
-import {
-  SUBJECT_QUESTION,
-  SURVEY_QUESTIONS,
-} from '@/src/constants/surveyQuestions';
 import { mapEvaluationYearsToFolders } from '@/src/features/data/rowMeta';
+import { useCreateEvaluationYear } from '@/src/hooks/evaluation/useCreateEvaluationYear';
 import { useEvaluationYears } from '@/src/hooks/evaluation/useEvaluationYears';
 import { useFolderManager } from '@/src/hooks/useFolderManager';
 import { usePathname, useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 const IndexPage = () => {
   const router = useRouter();
   const pathname = usePathname();
+  // 평가 추가하기 -> 바로 해당 Id의 설문 문항 생성
+  const [createdYearId, setCreatedYearId] = useState<number | null>(null);
 
   const type = pathname.startsWith('/industry') ? 'INDUSTRY' : 'VISUAL';
+  const { mutate } = useCreateEvaluationYear(type, (yearId) => {
+    setCreatedYearId(yearId);
+    setAdd(true);
+  });
 
   const {
     pressedKey,
     openMenuKey,
     add,
     editSurvey,
+    // selectedName, 평가 문항 수정시 사용할 폴더 네임
     setPressedKey,
     setOpenMenuKey,
     setAdd,
     setEditSurvey,
+    // setSelectedName,
     getFieldEvaluationMenuItems,
   } = useFolderManager();
   const { data } = useEvaluationYears(type);
@@ -61,17 +67,26 @@ const IndexPage = () => {
           getFieldMenuItems={getFieldEvaluationMenuItems}
         />
         {/* ADD BTN */}
-        <AddBtn isEvaluation={true} setAdd={setAdd} />
+        <AddBtn isEvaluation={true} setAdd={setAdd} onClick={() => mutate()} />
 
         {/* Modals */}
-        {add && <AddEvaluation onClose={() => setAdd(false)} />}
-
-        {editSurvey && (
+        {add && createdYearId && (
           <AddEvaluation
+            type={type}
+            yearId={createdYearId!}
+            onClose={() => {
+              setAdd(false);
+              setCreatedYearId(null);
+            }}
+          />
+        )}
+
+        {editSurvey && createdYearId && (
+          <AddEvaluation
+            type={type}
+            yearId={createdYearId!} // 클릭한 년도 아이디로 변경
             onClose={() => setEditSurvey(false)}
             isEdit={true}
-            qusetionsData={SURVEY_QUESTIONS}
-            subjectiveData={SUBJECT_QUESTION}
           />
         )}
       </div>

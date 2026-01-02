@@ -14,12 +14,9 @@ const IndexPage = () => {
 
   const [pressedKey, setPressedKey] = useState<string | null>(null);
 
-  // 전체 평가 조회 api
-  // const { data, isLoading, isError } = useEvaluationFolders('visual');
-
   const sections = Object.values(ADMIN_SECTIONS).map((section) => ({
     ...section,
-    route: `/${type.toLowerCase()}${section.route}`, //  여기
+    route: `/${type.toLowerCase()}${section.route}`,
   }));
 
   return (
@@ -27,7 +24,6 @@ const IndexPage = () => {
       <div className="flex flex-col gap-5">
         <div className="text-primary-blue flex">
           <p className="ml-21 w-25">Folder</p>
-
         </div>
         {sections.map((section) => (
           <Folder

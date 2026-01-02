@@ -4,16 +4,14 @@ import AddEvaluation from '@/src/components/evaluation/AddEvaluation';
 import FolderList from '@/src/components/FolderList';
 import FolderModals from '@/src/components/FolderModals';
 import { MAPPING_PHASE_FOLDER } from '@/src/constants/expert';
-import {
-  SUBJECT_QUESTION,
-  SURVEY_QUESTIONS,
-} from '@/src/constants/surveyQuestions';
 import { useFolderManager } from '@/src/hooks/useFolderManager';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 const IndexPage = () => {
   const router = useRouter();
+  const pathname = usePathname();
 
+  const type = pathname.startsWith('/industry') ? 'INDUSTRY' : 'VISUAL';
   const {
     pressedKey,
     openMenuKey,
@@ -72,10 +70,9 @@ const IndexPage = () => {
 
         {editSurvey && (
           <AddEvaluation
+            type={type}
             onClose={() => setEditSurvey(false)}
             isEdit={true}
-            qusetionsData={SURVEY_QUESTIONS}
-            subjectiveData={SUBJECT_QUESTION}
           />
         )}
       </div>

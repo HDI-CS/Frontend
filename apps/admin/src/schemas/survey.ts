@@ -41,6 +41,77 @@ export const EvaluationYearsResponseSchema = z.object({
   result: YearsSchema,
 });
 
+// 년도 평가 생성 응답 스키마
+export const yearIdShcema = z.object({
+  yearId: z.number(),
+});
+
+export const CreateEvaluationYearResponseSchema = z.object({
+  code: z.number(),
+  message: z.string(),
+  result: yearIdShcema,
+});
+
+// 설문 문항 타입
+export const SurveyQuestionTypeSchema = z.enum(['NUMBER', 'TEXT', 'SAMPLE']);
+
+export type SurveyQuestionType = z.infer<typeof SurveyQuestionTypeSchema>;
+
+// 개별 질문 스키마
+export const SurveyQuestionSchema = z.object({
+  id: z.number(),
+  surveyNumber: z.number(),
+  surveyCode: z.string(),
+  surveyContent: z.string(),
+});
+
+export const SurveyQuestionByTypeSchema = z.object({
+  type: SurveyQuestionTypeSchema,
+  surveyNumber: z.number(),
+  surveyCode: z.string(),
+  surveyContent: z.string(),
+});
+
+// 질문 배열 스키마
+export const SurveyQuestionListSchema = z.array(SurveyQuestionSchema);
+export const SurveyQuestionByTypeListSchema = z.array(
+  SurveyQuestionByTypeSchema
+);
+
+// 타입별 질문 묶음  (NUMBER / TEXT / SAMPLE)
+export const SurveyQuestionGroupSchema = z.object({
+  type: SurveyQuestionTypeSchema,
+  questions: SurveyQuestionListSchema,
+});
+
+// 설문 질문 그룹 배열 
+export const SurveyQuestionGroupsSchema = z.array(SurveyQuestionGroupSchema);
+
+// 평가 년도 상세 result 요청 스키마
+export const EvaluationSurveyResultSchema = z.object({
+  // folderName: z.string(),
+  questions: SurveyQuestionByTypeListSchema,
+});
+
+export const EvaluationSurveySchema = z.object({
+  folderName: z.string(),
+  surveyQuestions: SurveyQuestionGroupsSchema,
+});
+
+// 년도 평가 설문 문항 조회 응답 스키마
+export const EvaluationSurveyResponseSchema = z.object({
+  code: z.string(), // "1000"
+  message: z.string(),
+  result: EvaluationSurveySchema,
+});
+
+// 년도 평가 설문 문항 생성 응답 스키마
+export const CreateEvaluationQuestionResponseSchema = z.object({
+  code: z.string(),
+  message: z.string(),
+  result: null,
+});
+
 // 타입 추출
 export type EvaluationRound = z.infer<typeof EvaluationRoundSchema>;
 export type RoundsSchema = z.infer<typeof RoundsSchema>;
@@ -50,4 +121,25 @@ export type EvaluationYears = z.infer<typeof YearsSchema>;
 
 export type EvaluationYearsResponse = z.infer<
   typeof EvaluationYearsResponseSchema
+>;
+
+export type SurveyQuestionByType = z.infer<typeof SurveyQuestionByTypeSchema>;
+export type SurveyQuestionByTypeList = z.infer<
+  typeof SurveyQuestionByTypeListSchema
+>;
+
+export type SurveyQuestion = z.infer<typeof SurveyQuestionSchema>;
+export type SurveyQuestionList = z.infer<typeof SurveyQuestionListSchema>;
+
+export type SurveyQuestionGroups = z.infer<typeof SurveyQuestionGroupsSchema>;
+export type EvaluationSurveyResult = z.infer<
+  typeof EvaluationSurveyResultSchema
+>;
+export type SurveyQuestionGroup = z.infer<typeof SurveyQuestionGroupSchema>;
+export type EvaluationSurveyResponse = z.infer<
+  typeof EvaluationSurveyResponseSchema
+>;
+
+export type CreateEvaluationQuestionResponse = z.infer<
+  typeof CreateEvaluationQuestionResponseSchema
 >;
