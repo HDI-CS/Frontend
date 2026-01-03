@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { FieldActionMenuItem } from '../components/FieldActionMenu';
-import { ExpertProfile, IdMappingType } from '../constants/expert';
+import { ExpertProfile } from '../constants/expert';
 import { ExpertResponse } from '../constants/surveyQuestions';
 import { UserType } from '../schemas/auth';
+import { dataIdsSet } from '../schemas/expert';
 import { VisualDataItem } from '../types/data/visual-data';
 import { useDeleteDataset } from './data/useDeleteDataset';
 import { useDuplicateDataset } from './data/useDuplicateDataset';
@@ -50,8 +51,9 @@ export const useFolderManager = (type: UserType) => {
 
   // modal용 state
   const [selectedRow, setSelectedRow] = useState<ExpertResponse | null>(null);
-  const [selectedExpertRow, setSelectedExpertRow] =
-    useState<IdMappingType | null>(null);
+  const [selectedExpertRow, setSelectedExpertRow] = useState<dataIdsSet | null>(
+    null
+  );
   const [selectedDataRow, setSelectedDataRow] = useState<VisualDataItem | null>(
     null
   );

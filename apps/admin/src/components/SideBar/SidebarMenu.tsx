@@ -38,7 +38,7 @@ const ROUTES = {
     MAPPING_YEAR: (type: DatasetType, year: number) =>
       `/${type}/expert/id-mapping/${year}`,
     MAPPING_PHASE: (type: DatasetType, year: number, phase: number) =>
-      `/${type}/expert/id-mapping/${year}/phase${phase}`,
+      `/${type}/expert/id-mapping/${year}/${phase}`,
   },
 };
 
@@ -53,7 +53,7 @@ const SidebarMenu = ({ type }: SidebarMenuProps) => {
       yearName: year.folderName,
       rounds: year.rounds.map((round) => ({
         roundId: round.roundId,
-        roundName: round.folderName,
+        roundName: round.folderName ?? '',
       })),
     })) ?? [];
 
@@ -221,7 +221,7 @@ const SidebarMenu = ({ type }: SidebarMenuProps) => {
                 {year.rounds.map((round) => (
                   <SubMenuItem
                     key={round.roundId}
-                    label={`${round.roundId}`}
+                    label={`${round.roundName}`}
                     active={
                       pathname ===
                       ROUTES.EXPERT.MAPPING_PHASE(

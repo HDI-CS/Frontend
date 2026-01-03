@@ -19,12 +19,10 @@ export type ExpertlFieldMeta =
   | EditableFieldMeta<UpdateExpertMember>
   | ReadonlyFieldMeta;
 
-  export type CreateFieldMeta = {
+export type CreateFieldMeta = {
   label: string;
   field: keyof CreateExpertMember;
 };
-
-
 
 export const EXPERT_EDIT_FIELDS: readonly ExpertlFieldMeta[] = [
   // 수정 가능 (UpdateExpertMember 기준)
@@ -45,17 +43,17 @@ export const EXPERT_EDIT_FIELDS: readonly ExpertlFieldMeta[] = [
 
 // 신규 등록용 필드
 export const EXPERT_CREATE_FIELDS: readonly CreateFieldMeta[] = [
-  { label: '평가자명', field: 'name',  },
-  { label: '전문가 이메일', field: 'email', },
-  { label: '비밀번호', field: 'password', },
+  { label: '평가자명', field: 'name' },
+  { label: '전문가 이메일', field: 'email' },
+  { label: '비밀번호', field: 'password' },
 
-  { label: '연락처', field: 'phoneNumber', },
-  { label: '성별', field: 'gender', },
-  { label: '나이', field: 'age', },
-  { label: '경력', field: 'career',  },
-  { label: '학계/실무계', field: 'academic',  },
-  { label: '전문 분야', field: 'expertise',  },
-  { label: '회사', field: 'company',  },
+  { label: '연락처', field: 'phoneNumber' },
+  { label: '성별', field: 'gender' },
+  { label: '나이', field: 'age' },
+  { label: '경력', field: 'career' },
+  { label: '학계/실무계', field: 'academic' },
+  { label: '전문 분야', field: 'expertise' },
+  { label: '회사', field: 'company' },
 ];
 // input 창에 값 꺼내기 위한 함수
 export const getReadonlyValue = (

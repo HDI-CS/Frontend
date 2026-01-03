@@ -1,5 +1,5 @@
-import { apiClient } from '../lib/axios';
-import { UserType } from '../schemas/auth';
+import { apiClient } from '../../lib/axios';
+import { UserType } from '../../schemas/auth';
 import {
   CreateExpertMember,
   CreateExpertMemberResponseShcema,
@@ -8,8 +8,8 @@ import {
   UpdateExpertMember,
   UpdateExpertMemberResponseShcema,
   UpdateExpertMemberSchema,
-} from '../schemas/expert';
-import { safeZodParse } from '../utils/zod';
+} from '../../schemas/expert';
+import { safeZodParse } from '../../utils/zod';
 
 // 전문가 전체 리스트 조회
 export const getExpertProfile = async (type: UserType) => {
@@ -56,7 +56,6 @@ export const createExpertProfile = async (
   return CreateExpertMemberResponseShcema.parse(response.data);
 };
 
-
 export const downloadExpertProfile = async (
   type: UserType,
   body: CreateExpertMember
@@ -71,18 +70,9 @@ export const downloadExpertProfile = async (
   return CreateExpertMemberResponseShcema.parse(response.data);
 };
 
-
-
 // 엑셀 다운로드
-export const downloadExpertExcel = async ({
-  type,
-}: {
-  type: UserType;
-}) => {
-  return apiClient.get(
-    `/api/v1/admin/${type.toLowerCase()}/members/export`,
-    {
-      responseType: 'blob', // 이건 JSON이 아니라 binary라서 파싱 대상 아님
-    }
-  );
+export const downloadExpertExcel = async ({ type }: { type: UserType }) => {
+  return apiClient.get(`/api/v1/admin/${type}/members/export`, {
+    responseType: 'blob', // 이건 JSON이 아니라 binary라서 파싱 대상 아님
+  });
 };

@@ -20,8 +20,9 @@ import {
   ExpertMember,
   UpdateExpertMember,
 } from '@/src/schemas/expert';
-import { downloadExpertExcel } from '@/src/services/expert';
+import { downloadExpertExcel } from '@/src/services/expert/profile';
 import { useSearchStore } from '@/src/store/searchStore';
+import { truncateText } from '@/src/utils/truncateText';
 import clsx from 'clsx';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -264,7 +265,7 @@ const ProfileGridTable = () => {
 
       {/* 전문가 인적사항 테이블 */}
       <BaseGridTable>
-        <thead className="text-neutral-gray bg-white">
+        <thead className="text-neutral-gray sticky top-0 z-10 bg-white">
           <tr className="hover:bg-system-blueBg cursor-pointer">
             <Th className="text-regular16 w-[51px] text-start">번호</Th>
             <Th className="text-regular16 w-[153px] text-start">평가자명</Th>
@@ -305,36 +306,36 @@ const ProfileGridTable = () => {
                 <Td className="text-regular16 text-neutral-regularBlack px-4 py-1 text-center">
                   {index + 1}
                 </Td>
-
+                {/* 이메일 -> 21자 제한 , 나머지 -> 11자 제한 */}
                 <Td className="text-regular16 text-neutral-regularBlack px-4 py-1">
-                  {row.name}
+                  {truncateText(row.name, 11)}
                 </Td>
                 <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
-                  {row.participation}
+                  {truncateText(row.participation, 11)}
                 </Td>
                 <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
-                  {row.email}
+                  {truncateText(row.email, 21)}
                 </Td>
                 <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
-                  {row.phone}
+                  {truncateText(row.phone, 11)}
                 </Td>
                 <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
-                  {row.gender}
+                  {truncateText(row.gender, 11)}
                 </Td>
                 <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
                   {row.ageGroup}
                 </Td>
                 <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
-                  {row.experience}
+                  {truncateText(row.experience, 11)}
                 </Td>
                 <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
-                  {row.background}
+                  {truncateText(row.background, 11)}
                 </Td>
                 <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
-                  {row.field}
+                  {truncateText(row.field, 11)}
                 </Td>
                 <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
-                  {row.company}
+                  {truncateText(row.company, 11)}
                 </Td>
               </tr>
             );

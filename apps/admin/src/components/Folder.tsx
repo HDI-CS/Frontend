@@ -7,14 +7,17 @@ import optionWhite from '@/public/common/folder/optionWhite.svg';
 
 import clsx from 'clsx';
 import Image from 'next/image';
-import { formatDateTime } from '../utils/formatDateTime';
+import { formatDate, formatDateTime } from '../utils/formatDateTime';
 import FieldActionMenu, { FieldActionMenuItem } from './FieldActionMenu';
 
 interface FolderProps {
   name: string;
   modified?: string;
   created?: string;
-  duration: string;
+
+  startDate?: string;
+  endDate?: string;
+
   isManage?: boolean;
   isPhase: boolean;
   isActive?: boolean;
@@ -31,7 +34,8 @@ const Folder = ({
   name,
   modified,
   created,
-  duration,
+  startDate,
+  endDate,
   isManage = false,
   isPhase,
   isActive,
@@ -92,19 +96,22 @@ const Folder = ({
             {name}
           </p>
         </div>
+
         {modified && (
           <>
+            {/* 수정 날짜 */}
             <p
               className={clsx(
-                'flex items-center text-base transition-colors group-hover:text-white',
+                'flex items-center whitespace-nowrap text-base transition-colors group-hover:text-white',
                 isMenuOpen ? 'text-[#ffffff]' : 'text-[#3A3A49]'
               )}
             >
               {formatDateTime(modified ?? '')}
             </p>
+            {/* 생성 날짜 */}
             <span
               className={clsx(
-                'flex items-center text-base transition-colors group-hover:text-white',
+                'flex items-center whitespace-nowrap text-base transition-colors group-hover:text-white',
                 isMenuOpen ? 'text-[#ffffff]' : 'text-[#3A3A49]'
               )}
             >
@@ -113,17 +120,23 @@ const Folder = ({
             </span>
           </>
         )}
+
+        {/* Phase 기간 컬럼 */}
         <div>
           {isPhase && (
             <span
               className={clsx(
-                'flex items-center text-base transition-colors group-hover:text-white',
+                'w-46 flex items-center gap-2 whitespace-nowrap text-base transition-colors group-hover:text-white',
                 isMenuOpen ? 'text-[#ffffff]' : 'text-[#3A3A49]'
               )}
             >
-              {duration}
+              <div>{formatDate(startDate ?? '')}</div>
+              {'-'}
+              <div>{formatDate(endDate ?? '')}</div>
             </span>
           )}
+          {/* Phase 아닐 경우 (정렬 유지용 더미) */}
+          {!isPhase && <div className="w-46 h-1"></div>}
         </div>
         {}
       </div>

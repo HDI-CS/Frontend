@@ -131,6 +131,19 @@ export const DeleteDatasetResponseSchema = z.object({
   result: z.null(),
 });
 
+export const DatasetCandidateSchema = z.object({
+  id: z.number(),
+  code: z.string(),
+});
+export const DatasetCandidateArraySchema = z.array(DatasetCandidateSchema);
+
+// 전문가에게 매칭할 데이터셋 후보 조회 응답 스키마
+
+export const GetDatasetCandidatesResponseSchema = z.object({
+  code: z.string(),
+  message: z.string(),
+  result: DatasetCandidateArraySchema,
+});
 // export const DownloadExcelResponseSchema = z.object({
 //   code: z.number(),
 //   message: z.string(),
@@ -177,3 +190,5 @@ export type UpdateDatasetResponse = z.infer<typeof UpdateDatasetResponseSchema>;
 
 export type DeleteDatasetRequest = z.infer<typeof DeleteDatasetRequestSchema>;
 export type DeleteDatasetResponse = z.infer<typeof DeleteDatasetResponseSchema>;
+export type DatasetCandidateArray = z.infer<typeof DatasetCandidateArraySchema>;
+export type GetDatasetCandidatesResponse = z.infer<typeof GetDatasetCandidatesResponseSchema>;

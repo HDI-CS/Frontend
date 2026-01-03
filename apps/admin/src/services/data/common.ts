@@ -5,6 +5,8 @@ import {
   DeleteDatasetResponseSchema,
   DuplicateDatasetRequestSchema,
   DuplicateDatasetResponseSchema,
+  GetDatasetCandidatesResponse,
+  GetDatasetCandidatesResponseSchema,
   YearListResponseSchema,
 } from '@/src/schemas/visual-data';
 import { CreateDatasetParams } from '@/src/types/data/visual-data';
@@ -126,4 +128,12 @@ export const createDataset = async (params: CreateDatasetParams) => {
     default:
       throw new Error(`Unsupported dataset type: ${type}`);
   }
+};
+
+// 전문가 매칭할 데이터셋 후보 조회
+export const getCandidate = async (type: UserType, yearId: number) => {
+  const response = await apiClient.get(
+    `/api/v1/admin/${type.toLowerCase()}/data/years/${yearId}/datasets/id`
+  );
+  return response.data;
 };

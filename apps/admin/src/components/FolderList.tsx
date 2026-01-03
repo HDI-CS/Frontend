@@ -55,7 +55,7 @@ const FolderList = <T extends BaseFolderItem>({
       | EvaluationYearFolder
       | BaseFolderItem
   ): item is AdminEvaluationPhase | IdMappingFolder => {
-    return 'duration' in item;
+    return 'startDate' in item && 'endDate' in item;
   };
 
   return (
@@ -66,7 +66,8 @@ const FolderList = <T extends BaseFolderItem>({
           name={item.label}
           modified={item.lastModifiedAt}
           created={item.createdAt}
-          duration={isPhaseItem(item) ? item.duration : ''}
+          startDate={isPhaseItem(item) ? item.startDate : ''}
+          endDate={isPhaseItem(item) ? item.endDate : ''}
           isActive={pressedKey === item.key}
           isManage={isManage}
           isPhase={isPhase}

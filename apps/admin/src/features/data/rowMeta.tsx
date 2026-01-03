@@ -339,6 +339,7 @@ export const mapEvaluationPhaseToFolders = (
     route: `${baseRoute}/${year}/${round.roundId}`,
     createdAt: round.createdAt,
     lastModifiedAt: round.updatedAt,
-    duration: '',
+    startDate: round.startDate,
+    endDate: round.endDate,
   }));
 };

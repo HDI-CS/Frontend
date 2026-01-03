@@ -29,38 +29,9 @@ export type IdMappingFolder = {
   route: string;
   createdAt: string;
   lastModifiedAt: string;
-  duration: string; // 서버에서 데이터 주는 방식에 따라 시작-끝 기간 나눌수도
+  startDate: string;
+  endDate: string;
 };
-
-export const ID_MAPPING_FOLDERS: IdMappingFolder[] = [
-  {
-    key: 'year1',
-    label: '1차년도',
-    route: '/index/expert/id-mapping/year1',
-    createdAt: '2024-01-10 10:00',
-    lastModifiedAt: '2024-06-01 10:00',
-    duration: '2024.01 - 2024.12',
-  },
-  {
-    key: 'year2',
-    label: '2차년도',
-    route: '/index/expert/id-mapping/year2',
-    createdAt: '2025-01-05 10:00',
-    lastModifiedAt: '2025-06-15 10:00',
-    duration: '2025.01 - 2025.12',
-  },
-];
-
-export const MAPPING_PHASE_FOLDER: IdMappingFolder[] = [
-  {
-    key: 'phase1',
-    label: '1차수',
-    route: '/index/expert/id-mapping/year1/phase1',
-    createdAt: '2024-01-10 10:00',
-    lastModifiedAt: '2024-06-01 10:00',
-    duration: '2024.01 - 2024.12',
-  },
-];
 
 ///////////////////////////
 // ID 매칭 1차수 더미 데이터

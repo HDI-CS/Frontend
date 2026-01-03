@@ -1,17 +1,16 @@
 import { expertQueryKeys } from '@/src/queries/expertQuery';
 import { UserType } from '@/src/schemas/auth';
-import { CreateExpertMember } from '@/src/schemas/expert';
-import { createExpertProfile } from '@/src/services/expert/profile';
+import { searchExpertCandidate } from '@/src/services/expert/mapping';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-export const useCreateExpert = (type: UserType) => {
+export const useSearchCandidate = (type: UserType, search: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (body: CreateExpertMember) => createExpertProfile(type, body),
+    mutationFn: () => searchExpertCandidate(type, search),
     onSuccess: async () => {
       queryClient.invalidateQueries({
-        queryKey: expertQueryKeys.listByType(type!),
+        queryKey: expertQueryKeys.searchProfile(type, search),
       });
     },
     onError: (error) => {
