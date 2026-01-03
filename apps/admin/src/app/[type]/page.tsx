@@ -31,7 +31,6 @@ const IndexPage = () => {
             name={section.label}
             // modified={section.lastModifiedAt}
             // created={section.createdAt}
-            duration=""
             isPhase={false}
             isActive={pressedKey === section.key}
             onClick={() => {

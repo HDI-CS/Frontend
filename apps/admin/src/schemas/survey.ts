@@ -9,10 +9,16 @@ export const UserTypeSchema = z.enum([
   'INDUSTRY',
 ]);
 
+/**
+ * null | undefined → '' 로 정규화
+ * UI에서 항상 string으로 쓰기 위한 공통 스키마
+ */
+export const NullableString = z.preprocess((v) => v ?? '', z.string());
+
 // 차수 정보 스키마
 export const EvaluationRoundSchema = z.object({
   roundId: z.number(),
-  folderName: z.string(),
+  folderName: NullableString,
   updatedAt: z.string(),
   createdAt: z.string(),
   startDate: z.string(),
@@ -25,7 +31,7 @@ export const RoundsSchema = z.array(EvaluationRoundSchema);
 // 년도 정보 스키마
 export const EvaluationYearSchema = z.object({
   yearId: z.number(),
-  folderName: z.string(),
+  folderName: NullableString,
   updatedAt: z.string(),
   createdAt: z.string(),
   rounds: RoundsSchema,
@@ -36,7 +42,7 @@ export const YearsSchema = z.array(EvaluationYearSchema);
 
 // 전체 평가 조회 응답 스키마
 export const EvaluationYearsResponseSchema = z.object({
-  code: z.number(),
+  code: z.coerce.number(),
   message: z.string(),
   result: YearsSchema,
 });
@@ -84,7 +90,7 @@ export const SurveyQuestionGroupSchema = z.object({
   questions: SurveyQuestionListSchema,
 });
 
-// 설문 질문 그룹 배열 
+// 설문 질문 그룹 배열
 export const SurveyQuestionGroupsSchema = z.array(SurveyQuestionGroupSchema);
 
 // 평가 년도 상세 result 요청 스키마

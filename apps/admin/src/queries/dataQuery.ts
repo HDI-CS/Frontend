@@ -11,6 +11,9 @@ export const datasetQueryKeys = {
   search: (type: UserType, keyword: string, category?: string) =>
     [...datasetQueryKeys.lists(), 'search', type, keyword, category] as const,
 
+  candidates: (type: UserType, yearId: number) =>
+    [...datasetQueryKeys.all, 'candidates', type, yearId] as const,
+
   detail: (datasetId: number) =>
     [...datasetQueryKeys.all, 'detail', datasetId] as const,
 };

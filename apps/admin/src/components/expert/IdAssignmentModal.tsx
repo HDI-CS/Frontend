@@ -1,12 +1,18 @@
-import { IdMappingType } from '@/src/constants/expert';
+import { useCreateExpertAssignment } from '@/src/hooks/expert/useCreateExpertAssignment';
+import { useUpdatMapping } from '@/src/hooks/expert/useUpdateExpert';
+import { UserType } from '@/src/schemas/auth';
+import { dataIdsSet } from '@/src/schemas/expert';
 import clsx from 'clsx';
 import { useState } from 'react';
 import ModalComponent from '../ModalComponent';
 import DesignAiEvaluationTaskIds from './DesignAiEvaluationTaskIds';
 
 interface IdAssignmentModalProps {
+  type: UserType;
+  round: number;
+  isTemp: boolean;
   index: number;
-  expert: IdMappingType;
+  expert: dataIdsSet;
   currentIndex: number;
   totalLength: number;
   lastIndex: number | null;
@@ -15,6 +21,11 @@ interface IdAssignmentModalProps {
   onPrev: () => void;
   onNext: () => void;
 }
+
+export type DataId = {
+  datasetId: number;
+  dataCode: string;
+};
 
 const LinedField = ({
   value,
@@ -27,9 +38,9 @@ const LinedField = ({
   value: string;
   label: string;
   isNumber: boolean;
-  expert?: IdMappingType;
-  assignedIds?: string[];
-  setAssignedIds?: React.Dispatch<React.SetStateAction<string[]>>;
+  expert?: dataIdsSet;
+  assignedIds?: DataId[];
+  setAssignedIds?: React.Dispatch<React.SetStateAction<DataId[]>>;
 }) => {
   return (
     <div className="flex items-center gap-2.5">
@@ -71,6 +82,9 @@ const LinedField = ({
 
 const IdAssignmentModal = ({
   onClose,
+  type,
+  round,
+  isTemp,
   expert,
   index,
   currentIndex,
@@ -78,17 +92,44 @@ const IdAssignmentModal = ({
   onPrev,
   onNext,
 }: IdAssignmentModalProps) => {
-  const [assignedIds, setAssignedIds] = useState<string[]>([]);
+  const [assignedIds, setAssignedIds] = useState<DataId[]>([]);
   const isFirst = currentIndex <= 0;
   const isLast = currentIndex >= totalLength - 1;
+  const { mutate: mapping } = useUpdatMapping(type, round, index);
+  const { mutate: register } = useCreateExpertAssignment({
+    type,
+    assessmentRoundId: round,
+  });
+
+  const handleSubmit = () => {
+    const idArray = assignedIds.map((i) => i.datasetId);
+    // 등록일 경우
+    if (isTemp) {
+      const registerData = {
+        memberId: index,
+        datasetsIds: idArray,
+      };
+      register(registerData);
+    }
+    // 수정일 경우 
+    if (!isTemp) {
+      mapping({
+        ids: idArray,
+      });
+    }
+    onClose();
+  };
 
   return (
     <>
       <ModalComponent
         title={String(index)}
         subtitle="평가 ID 배정"
-        onClose={onClose}
-        onSubmit={onClose}
+        onClose={() => {
+          onClose();
+          setAssignedIds([]);
+        }}
+        onSubmit={handleSubmit}
         button="저장"
         allow={true}
         isPrevDisabled={isFirst}
@@ -97,11 +138,7 @@ const IdAssignmentModal = ({
         onNext={onNext}
       >
         <div className="flex flex-col gap-5">
-          <LinedField
-            value={expert.expertName}
-            label="평가자명"
-            isNumber={false}
-          />
+          <LinedField value={expert.name} label="평가자명" isNumber={false} />
           <LinedField
             value=""
             label="디자인 AI 해석 및 평가 리스트 수행 번호"
