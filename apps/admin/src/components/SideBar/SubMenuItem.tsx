@@ -13,7 +13,7 @@ const SubMenuItem = ({
     <div
       onClick={onClick}
       className={clsx(
-        'text-regular16 cursor-pointer px-3 py-2.5 text-sm',
+        'text-regular16 h-9 cursor-pointer px-3 py-2.5 text-sm',
         active
           ? 'bg-[#4676FB] text-white'
           : 'text-neutral-regularBlack hover:bg-[#F4F7FF]'

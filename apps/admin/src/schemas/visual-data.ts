@@ -4,8 +4,10 @@ export type VisualCategory = 'COSMETIC' | 'FB';
 
 // 연도 스키마
 export const YearSchema = z.object({
-  id: z.number(),
-  year: z.number(),
+  yearId: z.number(),
+  folderName: z.string().nullable,
+  updatedAt: z.string(),
+  createdAt: z.string(),
 });
 export const YearsSchema = z.array(YearSchema);
 
@@ -191,4 +193,6 @@ export type UpdateDatasetResponse = z.infer<typeof UpdateDatasetResponseSchema>;
 export type DeleteDatasetRequest = z.infer<typeof DeleteDatasetRequestSchema>;
 export type DeleteDatasetResponse = z.infer<typeof DeleteDatasetResponseSchema>;
 export type DatasetCandidateArray = z.infer<typeof DatasetCandidateArraySchema>;
-export type GetDatasetCandidatesResponse = z.infer<typeof GetDatasetCandidatesResponseSchema>;
+export type GetDatasetCandidatesResponse = z.infer<
+  typeof GetDatasetCandidatesResponseSchema
+>;

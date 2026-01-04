@@ -4,14 +4,22 @@ interface AddBtnProps {
   setAdd: React.Dispatch<React.SetStateAction<boolean>>;
   isEvaluation?: boolean;
   onClick?: () => void;
+
   // isEvaluationYear?: boolean;
 }
 
 const AddBtn = ({ setAdd, isEvaluation = false, onClick }: AddBtnProps) => {
+  const handleClick = () => {
+    if (onClick) {
+      onClick(); // round일 때: mutate 실행
+    } else {
+      setAdd(true); //  그 외: 모달 오픈
+    }
+  };
   return (
     <div className="mt-7.5 flex w-full cursor-pointer items-center justify-center">
       <div
-        onClick={() => setAdd(true)}
+        onClick={handleClick}
         className={
           'border-1 h-fulll shadow-card bg-neutral-white flex items-center gap-2 border-[#E9EFF4] p-6 text-center text-3xl font-light text-[#4676FB] hover:bg-[#4676FB] hover:text-[#ffffff]'
         }

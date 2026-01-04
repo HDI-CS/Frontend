@@ -1,36 +1,27 @@
-import allCheck from '@/public/evaluation/allCheckBox.svg';
-import check from '@/public/evaluation/checkbox.svg';
-import nocheck from '@/public/evaluation/nocheckBox.svg';
-import icon from '@/public/evaluation/sizeImg.svg';
-import {
-  ANSWER_TEXT,
-  AnswerValue,
-  DUMMY_EXPERT_RESPONSES,
-  SUBJECT_QUESTION,
-  SURVEY_QUESTIONS,
-} from '@/src/constants/surveyQuestions';
 import useGridManager from '@/src/hooks/useGridManager';
-import { useAuthStore } from '@/src/store/authStore';
+import { MemberSurveyResult } from '@/src/schemas/evaluation';
 import { truncateText } from '@/src/utils/truncateText';
 import clsx from 'clsx';
-import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import IdSortMenu from '../data/table/IdSortMenu';
 import Td from '../data/table/Td';
 import Th from '../data/table/Th';
-import FieldActionMenu from '../FieldActionMenu';
 import BaseGridTable from './BaseGridTable';
 import ResultModal from './ResultMoal';
 import ShowQuestionModal from './ShowQuestionModal';
 
-const OneExpertGridTable = () => {
-  const { type } = useAuthStore();
+interface OneExpertGridTableProps {
+  expertData: MemberSurveyResult;
+}
+
+const OneExpertGridTable = ({ expertData }: OneExpertGridTableProps) => {
+  const pathname = usePathname();
+  const type = pathname.startsWith('/industry') ? 'INDUSTRY' : 'VISUAL';
   const {
     dataId,
     idMenu,
-    rowExpertMenu,
     rowQuestiontMenu,
     activeRowId,
-    isEdit,
     orderBy,
     selectedRow,
     showQuestion,
@@ -44,16 +35,16 @@ const OneExpertGridTable = () => {
     setOrderBy,
     setSelectedRow,
     setShowQuestion,
-
-    getFieldExpertMenuItems,
   } = useGridManager(type!);
 
   // 화살표 disabled 관리
-  const responses = DUMMY_EXPERT_RESPONSES;
-  const lastIndex = DUMMY_EXPERT_RESPONSES.length - 1;
+  const responses = expertData.surveyDatas;
+  const lastIndex = expertData.surveyDatas.length - 1;
 
   // 현재 index 계산
-  const currentIndex = responses.findIndex((r) => r.id === selectedRow?.id);
+  const currentIndex = responses.findIndex(
+    (r) => r.dataId === selectedRow?.dataId
+  );
 
   // 이전
   const handlePrev = () => {
@@ -62,8 +53,8 @@ const OneExpertGridTable = () => {
     if (!prevRow) return;
 
     setSelectedRow(prevRow);
-    setActiveRowId(prevRow.id);
-    setDataId(prevRow.id);
+    setActiveRowId(prevRow.dataId);
+    setDataId(prevRow.dataId);
   };
 
   // 다음
@@ -73,9 +64,30 @@ const OneExpertGridTable = () => {
     if (!nextRow) return;
 
     setSelectedRow(nextRow);
-    setActiveRowId(nextRow.id);
-    setDataId(nextRow.id);
+    setActiveRowId(nextRow.dataId);
+    setDataId(nextRow.dataId);
   };
+
+  /* ---------- coloumnCount ---------- */
+
+  const MIN_COL_COUNT = 8;
+
+  const questionData = responses[0]?.surveys ?? [];
+  const columnCount = Math.max(MIN_COL_COUNT, questionData.length);
+
+  /* ---------- coloumn Array for thead ---------- */
+  const headerColumns = Array.from({ length: columnCount }).map((_, index) => {
+    return questionData[index] ?? null;
+  });
+
+  /* ---------- 설문 문항 원문 모달로 넘길 데이터 ---------- */
+
+  // 1. NUMBER 질문들
+  const numberQuestions = questionData.filter((q) => q.surveyType === 'NUMBER');
+
+  // 2. TEXT 질문 (정성평가, 1개)
+  const subjectQuestion =
+    questionData.find((q) => q.surveyType === 'TEXT') ?? null;
 
   return (
     <div>
@@ -98,24 +110,7 @@ const OneExpertGridTable = () => {
             }}
             className="hover:bg-system-blueBg cursor-pointer"
           >
-            <Th className="text-regular16 group w-[40px] cursor-pointer text-start">
-              <Image
-                src={allCheck}
-                alt="AllCheck"
-                className="block scale-105 group-hover:hidden"
-              />
-              {/* hover 이미지 */}
-              <Image
-                src={check}
-                alt="check-hover"
-                width={20}
-                className="hidden scale-105 group-hover:block"
-              />
-            </Th>
-            <Th className="text-regular16 w-[40px] text-start">
-              <Image src={icon} alt="icon" />
-            </Th>
-            <Th className="text-regular16 w-[63px] text-start">번호</Th>
+            <Th className="text-regular16 w-[63px] text-center">번호</Th>
             <Th className="text-regular16 w-[108px] text-start">평가자명</Th>
             <Th
               onContextMenu={(e) => {
@@ -131,29 +126,54 @@ const OneExpertGridTable = () => {
             </Th>
 
             {/*  평가 헤더  생성 */}
-            {SURVEY_QUESTIONS.map((question, index) => (
-              <Th key={index} className="text-regular16 w-[148px] text-start">
-                {index + 1}. {truncateText(question.text, 6)}
-              </Th>
-            ))}
+            {/* 질문은 다 동일할 것으로 가정하여 0번의 질문만 */}
+            {/* Q :: SAMPLE TYPE의 질문은 어떻게 처리할지 */}
+
+            {headerColumns.map((question, index) =>
+              question ? (
+                question.surveyType === 'TEXT' ? (
+                  <Th
+                    key={`text-${index}`}
+                    className="text-regular16 w-[148px] text-start"
+                  >
+                    정성평가
+                  </Th>
+                ) : (
+                  <Th
+                    key={`q-${index}`}
+                    className="text-regular16 w-[148px] text-start"
+                  >
+                    {index + 1}. {truncateText(question.surveyContent, 6)}
+                  </Th>
+                )
+              ) : (
+                /* ---------- Dummy coloumn ---------- */
+                <Th
+                  key={`empty-${index}`}
+                  className="text-regular16 w-[148px] text-start"
+                >
+                  &nbsp;
+                </Th>
+              )
+            )}
           </tr>
         </thead>
 
         <tbody>
-          {DUMMY_EXPERT_RESPONSES.map((row, index) => {
+          {expertData.surveyDatas.map((row, index) => {
             // const qualitativeCount = getQualitativeCount(
             //   row.qualitativeEvaluation
             // );
 
             return (
               <tr
-                key={row.id}
-                onClick={() => setActiveRowId(row.id)}
+                key={row.dataId}
+                onClick={() => setActiveRowId(row.dataId)}
                 onDoubleClick={(e) => {
                   e.preventDefault();
                   setSelectedRow(row);
-                  setActiveRowId(row.id);
-                  setDataId(row.id);
+                  setActiveRowId(row.dataId);
+                  setDataId(row.dataId);
                 }}
                 onContextMenu={(e) => {
                   e.preventDefault();
@@ -162,54 +182,59 @@ const OneExpertGridTable = () => {
                     y: e.clientY,
                     row,
                   });
-                  setActiveRowId(row.id);
+                  setActiveRowId(row.dataId);
                 }}
                 className={clsx(
                   'h-25 text-neutral-regularBlack hover:bg-[#F4F7FF]',
-                  activeRowId === row.id ? 'bg-[#F4F7FF]' : 'bg-neutral-white'
+                  activeRowId === row.dataId
+                    ? 'bg-[#F4F7FF]'
+                    : 'bg-neutral-white'
                 )}
               >
                 {/* check Box */}
-                <Td className="text-regular16 h-25 group flex cursor-pointer justify-center py-1 text-center">
-                  {/* 기본 이미지 */}
-                  <Image
+                {/* <Td className="text-regular16 h-25 group flex cursor-pointer justify-center py-1 text-center"> */}
+                {/* 기본 이미지 */}
+                {/* <Image
                     src={nocheck}
                     alt="check"
                     width={10}
                     className="block group-hover:hidden"
-                  />
-                  {/* hover 이미지 */}
-                  <Image
+                  /> */}
+                {/* hover 이미지 */}
+                {/* <Image
                     src={check}
                     alt="check-hover"
                     width={20}
                     className="hidden scale-105 group-hover:block"
-                  />{' '}
-                </Td>
-                <Td className="text-regular16 py-1 text-center">
+                  />{' '} */}
+                {/* </Td> */}
+                {/* <Td className="text-regular16 py-1 text-center">
                   <Image src={icon} alt="icon" />
-                </Td>
+                </Td> */}
                 <Td className="text-regular16 text-neutral-regularBlack px-4 py-1 text-center">
                   {index + 1}
                 </Td>
 
                 <Td className="text-regular16 text-neutral-regularBlack px-4 py-1">
-                  {row.evaluatorName}
+                  {expertData.memberName}
                 </Td>
                 <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
-                  {row.surveyId}
+                  {row.dataCode}
                 </Td>
 
                 {/* 정성평가 데이터 */}
-                {row.quantitativeScores.map((score, index) => {
+                {Array.from({ length: columnCount }).map((_, colIndex) => {
+                  const survey = row.surveys[colIndex];
+
                   return (
-                    <Td key={index} className="w-[125px]">
-                      <div className="text-neutral-regularBlack text-regular16 bg-system-blueBg flex items-center justify-center rounded px-4 py-1">
-                        {truncateText(
-                          `${score}. ${ANSWER_TEXT[score as AnswerValue]}`,
-                          7
-                        )}
-                      </div>
+                    <Td key={colIndex} className="w-[125px]">
+                      {survey ? (
+                        <div className="text-neutral-regularBlack text-regular16 bg-system-blueBg flex h-7 items-center justify-center rounded px-4 py-1">
+                          {survey.answerContent ?? ''}
+                        </div>
+                      ) : (
+                        <></>
+                      )}
                     </Td>
                   );
                 })}
@@ -231,7 +256,7 @@ const OneExpertGridTable = () => {
       )}
 
       {/* 행 dropdown 오픈 */}
-      {rowExpertMenu && (
+      {/* {rowExpertMenu && (
         <FieldActionMenu
           x={rowExpertMenu.x}
           y={rowExpertMenu.y}
@@ -242,17 +267,17 @@ const OneExpertGridTable = () => {
           }}
           position="fixed"
         />
-      )}
+      )} */}
 
       {/* 설문결과 Modal 오픈 */}
       {dataId && (
         <ResultModal
           dataId={dataId}
           row={selectedRow}
+          expertName={expertData.memberName}
           currentIndex={currentIndex}
           totalLength={responses.length}
-          qusetionsData={SURVEY_QUESTIONS}
-          isEdit={isEdit}
+          qusetionsData={questionData}
           lastIndex={lastIndex}
           onClose={() => {
             setDataId(null);
@@ -266,8 +291,9 @@ const OneExpertGridTable = () => {
       {/* 설문문항 원문 Modal 오픈 */}
       {showQuestion && (
         <ShowQuestionModal
-          subjectData={SUBJECT_QUESTION}
-          qusetionsData={SURVEY_QUESTIONS}
+          type={type!}
+          subjectData={subjectQuestion!}
+          qusetionsData={numberQuestions}
           setShowQuestion={setShowQuestion}
         />
       )}
@@ -288,3 +314,13 @@ const OneExpertGridTable = () => {
   );
 };
 export default OneExpertGridTable;
+
+/////////
+// 기준 컬럼 개수 = Math.max(8, 실제 질문 개수)
+
+// 실제 질문 개수보다 부족하면
+
+// undefined용 더미 컬럼을 추가
+
+// thead, tbody에서 같은 컬럼 배열을 기준으로 렌더링
+////////

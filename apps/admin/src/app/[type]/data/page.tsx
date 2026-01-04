@@ -3,8 +3,11 @@ import AddBtn from '@/src/components/common/AddBtn';
 import AddEvaluation from '@/src/components/evaluation/AddEvaluation';
 import FolderList from '@/src/components/FolderList';
 import FolderModals from '@/src/components/FolderModals';
-import { mapEvaluationYearsToFolders } from '@/src/features/data/rowMeta';
+import { mapEvaluationYearsToFoldersForDataPage } from '@/src/features/data/rowMeta';
+import { useDataYears } from '@/src/hooks/data/useDataYears';
+import { useCreateEvaluationYear } from '@/src/hooks/evaluation/useCreateEvaluationYear';
 import { useEvaluationYears } from '@/src/hooks/evaluation/useEvaluationYears';
+import { useUpdateSurvey } from '@/src/hooks/evaluation/useUpdateSurvey';
 import { useFolderManager } from '@/src/hooks/useFolderManager';
 import { EvaluationYearFolder } from '@/src/types/evaluation';
 import { usePathname, useRouter } from 'next/navigation';
@@ -33,14 +36,38 @@ const IndexPage = () => {
 
   // 년도 조회 api
 
-  const { data } = useEvaluationYears(type);
+  // const { data } = useEvaluationYears(type);
+  const { data: yearData } = useDataYears(type);
 
-  // if (isLoading) {
-  //   return <div>로딩 중...</div>;
-  // }
+  // 년도 폴더 이름 수정
+  const { mutateAsync: createFolder } = useCreateEvaluationYear(type);
+  const { mutateAsync: updateFolderName } = useUpdateSurvey(type);
 
-  const yearFolders = data?.result
-    ? mapEvaluationYearsToFolders(data.result, `/${type.toLowerCase()}/data`)
+  const handleSubmit = async () => {
+    try {
+      // 1 폴더 생성
+      const createRes = await createFolder();
+      const newYearId = createRes.result.yearId;
+
+      // 2 생성 직후 → 바로 이름 수정
+      await updateFolderName({
+        yearId: newYearId,
+        folderName: editFolderName,
+      });
+
+      // 3 UI 정리
+      setAdd(false);
+      setEditFolderName('');
+    } catch (e) {
+      console.error('폴더 생성 실패', e);
+    }
+  };
+
+  const yearFolders = yearData?.result
+    ? mapEvaluationYearsToFoldersForDataPage(
+        yearData?.result,
+        `/${type.toLowerCase()}/data`
+      )
     : [];
 
   // const yearFolders = useMemo(() => {
@@ -88,6 +115,7 @@ const IndexPage = () => {
           setEditFolderName={setEditFolderName}
           onCloseAdd={() => setAdd(false)}
           onCloseEdit={() => setEditName(false)}
+          onSubmit={handleSubmit}
         />
 
         {editSurvey && (

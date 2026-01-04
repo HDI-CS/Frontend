@@ -7,6 +7,7 @@ import { UserType } from '@/src/schemas/auth';
 import { dataIdsSetArray, ExpertBasicArray } from '@/src/schemas/expert';
 import { useSearchStore } from '@/src/store/searchStore';
 import { dataIdsTempSet } from '@/src/types/expert';
+import { highlightText } from '@/src/utils/highlightText';
 import clsx from 'clsx';
 import { useEffect, useMemo, useState } from 'react';
 import Td from '../data/table/Td';
@@ -33,9 +34,20 @@ const IdMappingTable = ({ type, round }: IdMappingTableProps) => {
    * 검색어 (전역 store)
    */
   const keyword = useSearchStore((s) => s.keyword);
+  const { activeIndex, setResultFromData } = useSearchStore();
 
   /* 서버에서 전문가 + 할당된 데이터셋 목록 조회  */
   const { data } = useExpertAssignment(type, round, keyword);
+
+  useEffect(() => {
+    if (!keyword) {
+      setResultFromData(null);
+    } else {
+      setResultFromData(data?.result);
+    }
+  }, [keyword, data, setResultFromData]);
+  const activeRowIdFromSearch =
+    keyword && activeIndex > 0 ? data?.result[activeIndex - 1]?.memberId : null;
 
   /*  행 추가를 위한 상태 관리 : 전문가 검색을 통한 등록 이후에 서버에 저장, 등록하지 않으면 사라짐  */
   const [mappingData, setMappingData] = useState<dataIdsTempSet[]>();
@@ -81,7 +93,7 @@ const IdMappingTable = ({ type, round }: IdMappingTableProps) => {
    * 검색어 하이라이트 처리
    * - 이름 검색 시 일치하는 부분을 파란색으로 강조
    */
-  const highlightText = (text: string, keyword: string) => {
+  const highlightTextInMapping = (text: string, keyword: string) => {
     if (!keyword) return text;
 
     const parts = text.split(new RegExp(`(${keyword})`, 'gi'));
@@ -278,7 +290,7 @@ const IdMappingTable = ({ type, round }: IdMappingTableProps) => {
                                 setOpen(false);
                               }}
                             >
-                              {highlightText(expert.name, search)}
+                              {highlightTextInMapping(expert.name, search)}
                             </li>
                           ))}
                         </ul>
@@ -295,7 +307,9 @@ const IdMappingTable = ({ type, round }: IdMappingTableProps) => {
                         setSearch(row.name);
                       }}
                     >
-                      {row.name}
+                      {highlightText(row.name, keyword, {
+                        active: row.memberId === activeRowIdFromSearch,
+                      })}{' '}
                     </p>
                   )}
                 </Td>

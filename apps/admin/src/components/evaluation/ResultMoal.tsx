@@ -1,19 +1,15 @@
-import {
-  ANSWER_TEXT,
-  AnswerValue,
-  ExpertResponse,
-} from '@/src/constants/surveyQuestions';
+import { Survey, SurveyData } from '@/src/schemas/evaluation';
 import clsx from 'clsx';
 import ModalComponent from '../ModalComponent';
 
 interface AddEvaluationProps {
-  row: ExpertResponse | null;
+  row: SurveyData | null;
   dataId: number | null;
   currentIndex: number;
   totalLength: number;
-  isEdit?: boolean; // field 수정 가능한지 아닌지
+  expertName: string;
 
-  qusetionsData?: Question[];
+  qusetionsData?: Survey[];
   subjectiveData?: Question;
   lastIndex: number | null;
 
@@ -32,6 +28,7 @@ const ResultModal = ({
   dataId,
   currentIndex,
   totalLength,
+  expertName,
 
   qusetionsData,
   // subjectiveData,
@@ -53,6 +50,12 @@ const ResultModal = ({
   // 화살표 관리
   const isFirst = currentIndex <= 0;
   const isLast = currentIndex >= totalLength - 1;
+  const quantitativeQuestions =
+    qusetionsData?.filter((q) => q.surveyType !== 'TEXT') ?? [];
+
+  const subjectiveQuestion = qusetionsData?.find(
+    (q) => q.surveyType === 'TEXT'
+  );
 
   const LinedField = ({
     value,
@@ -105,41 +108,42 @@ const ResultModal = ({
           {row && (
             <>
               <LinedField
-                value={row.evaluatorName}
+                value={expertName}
                 label="평가자명"
                 isQustion={false}
               />
               <LinedField
-                value={String(row.surveyId)}
+                value={String(row.dataCode)} // 설문 데이터 코드
                 label="아이디"
                 isQustion={false}
               />
-              {qusetionsData?.map((question, index) => {
-                const score = row.quantitativeScores[index] as AnswerValue;
+              {quantitativeQuestions?.map((question, index) => {
+                // const score = row.quantitativeScores[index] a
 
                 return (
                   <LinedField
                     key={index}
-                    value={`${score}. ${ANSWER_TEXT[score]}`}
-                    label={question.text}
+                    value={question.answerContent ?? ''}
+                    label={question.surveyContent}
                     isQustion={true}
                   />
                 );
               })}
-
-              <div className="flex items-center gap-2.5">
-                <div
-                  className={clsx(
-                    'bg-system-lineGray w-1 self-stretch rounded'
-                  )}
-                ></div>
-                <span className="text-bold16 w-22 text-[#2D2E2E]">
-                  정성평가
-                </span>
-                <p className="border-1 w-134 border-system-lineGray min-h-11.5 flex-1 rounded-lg p-2.5 text-[#2D2E2E]">
-                  {row.qualitativeComment}
-                </p>
-              </div>
+              {subjectiveQuestion && (
+                <div className="flex items-center gap-2.5">
+                  <div
+                    className={clsx(
+                      'bg-system-lineGray w-1 self-stretch rounded'
+                    )}
+                  ></div>
+                  <span className="text-bold16 w-22 text-[#2D2E2E]">
+                    정성평가
+                  </span>
+                  <p className="border-1 w-134 border-system-lineGray min-h-11.5 flex-1 rounded-lg p-2.5 text-[#2D2E2E]">
+                    {subjectiveQuestion.answerContent}
+                  </p>
+                </div>
+              )}
             </>
           )}
         </div>

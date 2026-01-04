@@ -1,53 +1,99 @@
 import { datasetQueryKeys } from '@/src/queries/dataQuery';
-import { UpdateVisualDatasetRequest } from '@/src/schemas/visual-data';
-import { updateVisualDataset } from '@/src/services/data/visual';
+import { updateDataset } from '@/src/services/data/common';
+import { UpdateMutationInput } from '@/src/types/data/visual-data';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-
-interface UpdateDatasetVariables {
-  id: number;
-  requestData: UpdateVisualDatasetRequest;
-  logoFile?: File | null;
-}
 
 export const useUpdateDataset = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, requestData, logoFile }: UpdateDatasetVariables) =>
-      updateVisualDataset({
-        id,
+    // return useMutation({
+    //   mutationFn: (input: UpdateMutationInput) => {
 
-        requestData,
-        logoFile: logoFile ? logoFile : null,
-      }),
+    mutationFn: (input: UpdateMutationInput) => {
+      if (input.type === 'VISUAL') {
+        return updateDataset({
+          type: 'VISUAL',
+          id: input.id,
+          requestData: input.requestData,
+          logoFile: input.logoFile ? input.logoFile : null,
+        });
+      }
+
+      return updateDataset({
+        type: 'INDUSTRY',
+        id: input.id,
+        requestData: input.requestData,
+        detailFile: input.logoFile ? input.logoFile : null,
+      });
+    },
+    // updateVisualDataset({
+    //   id,
+
+    //   requestData,
+    //   logoFile: logoFile ? logoFile : null,
+    // }),
 
     onSuccess: async (data, variables) => {
-      const { logoFile } = variables;
+      console.log('🔥 update success data', data);
+      console.log('🔥 update variables', variables);
+      const { type, logoFile, detailFile, frontFile, sideFile } = variables;
+      const uploadTasks: Promise<Response>[] = [];
+      /** VISUAL */
+      if (type === 'VISUAL') {
+        const uploadUrl = data.result?.uploadUrl;
 
-      // 새 이미지 없는 경우 → 종료
-      if (!logoFile || !data.result.uploadUrl) {
-        queryClient.invalidateQueries({
-          queryKey: datasetQueryKeys.lists(),
-        });
-        return;
+        if (logoFile && uploadUrl) {
+          uploadTasks.push(
+            fetch(uploadUrl, {
+              method: 'PUT',
+              body: logoFile,
+            })
+          );
+        }
+      }
+
+      /** INDUSTRY */
+      if (type === 'INDUSTRY') {
+        const { detailUploadUrl, frontUploadUrl, sideUploadUrl } =
+          data.result ?? {};
+
+        if (detailFile && detailUploadUrl) {
+          uploadTasks.push(
+            fetch(detailUploadUrl, { method: 'PUT', body: detailFile })
+          );
+        }
+
+        if (frontFile && frontUploadUrl) {
+          uploadTasks.push(
+            fetch(frontUploadUrl, { method: 'PUT', body: frontFile })
+          );
+        }
+
+        if (sideFile && sideUploadUrl) {
+          uploadTasks.push(
+            fetch(sideUploadUrl, { method: 'PUT', body: sideFile })
+          );
+        }
       }
 
       try {
-        const uploadRes = await fetch(data.result.uploadUrl, {
-          method: 'PUT',
-          body: logoFile,
-        });
+        if (uploadTasks.length > 0) {
+          const results = await Promise.all(uploadTasks);
 
-        if (!uploadRes.ok) {
-          throw new Error(`S3 upload failed: ${uploadRes.status}`);
+          results.forEach((res) => {
+            if (!res.ok) {
+              throw new Error(`S3 upload failed: ${res.status}`);
+            }
+          });
         }
-
+      } catch (e) {
+        console.error('S3 upload failed after update', e);
+      } finally {
         queryClient.invalidateQueries({
           queryKey: datasetQueryKeys.lists(),
         });
-      } catch (e) {
-        console.error('S3 upload failed after update', e);
       }
     },
 

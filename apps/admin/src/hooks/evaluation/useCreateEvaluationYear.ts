@@ -1,7 +1,11 @@
 import { evaluationQueryKeys } from '@/src/queries/evaluationQuery';
 import { UserType } from '@/src/schemas/auth';
-import { createEvaluation } from '@/src/services/evaluation';
+import {
+  createEvaluation,
+  createRoundEvaluation,
+} from '@/src/services/evaluation';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+// 년도 평가 생성
 
 export const useCreateEvaluationYear = (
   type: UserType,
@@ -18,6 +22,21 @@ export const useCreateEvaluationYear = (
       });
 
       onSuccess?.(yearId);
+    },
+  });
+};
+
+// 차수 평가 생성
+
+export const useCreateEvaluationRound = (type: UserType, yearId: number) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => createRoundEvaluation(type, yearId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: evaluationQueryKeys.lists(type!),
+      });
     },
   });
 };

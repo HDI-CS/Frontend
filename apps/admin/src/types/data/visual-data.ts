@@ -151,6 +151,27 @@ export type CreateMutationInput =
       requestData: CreateIndustrialDatasetRequest;
     };
 
+export type UpdateMutationInput =
+  | {
+      type: 'VISUAL';
+      id: number;
+      requestData: UpdateVisualDatasetRequest;
+      logoFile?: File | null;
+      detailFile?: File | null;
+      frontFile?: File | null;
+      sideFile?: File | null;
+    }
+  | {
+      type: 'INDUSTRY';
+      id: number;
+      requestData: UpdateIndustrialDatasetRequest;
+      logoFile?: File | null;
+
+      detailFile?: File | null;
+      frontFile?: File | null;
+      sideFile?: File | null;
+    };
+
 // UI 공통 타입으로 평탄화해서 분기 제거
 export type DatasetItems = DatasetUIItem[];
 export type DatasetByCategory = Record<string, DatasetItems>;
@@ -211,7 +232,7 @@ export type ColumnDef<T> = {
   header: React.ReactNode;
   thClassName?: string;
   className?: string;
-  cell: (row: T) => React.ReactNode;
+  cell: (row: T, isActiveRow: boolean) => React.ReactNode;
 
   /*  헤더 우클릭 핸들러 */
   onHeaderContextMenu?: (e: React.MouseEvent) => void;

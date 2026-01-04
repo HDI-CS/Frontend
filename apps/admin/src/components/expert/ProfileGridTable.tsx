@@ -22,6 +22,7 @@ import {
 } from '@/src/schemas/expert';
 import { downloadExpertExcel } from '@/src/services/expert/profile';
 import { useSearchStore } from '@/src/store/searchStore';
+import { highlightText } from '@/src/utils/highlightText';
 import { truncateText } from '@/src/utils/truncateText';
 import clsx from 'clsx';
 import Image from 'next/image';
@@ -69,16 +70,22 @@ const ProfileGridTable = () => {
     company: expert.company ?? '',
   });
 
-  // const handleAddRow = () => { TODOS: 서버 요청으로 수정
-  //   setProfileData((prev) => {
-  //     if (!prev) return [createEmptyRow()];
-
-  //     return [...prev, createEmptyRow()];
-  //   });
-  // };
-
   const keyword = useSearchStore((s) => s.keyword);
+  const { activeIndex, setResultFromData } = useSearchStore();
+
   const { data: searchData } = useExpertProfileByKeyword(type, keyword);
+  useEffect(() => {
+    if (!keyword) {
+      setResultFromData(null);
+    } else {
+      setResultFromData(searchData?.result);
+    }
+  }, [keyword, searchData, setResultFromData]);
+
+  const activeRowIdFromSearch =
+    keyword && activeIndex > 0
+      ? searchData?.result[activeIndex - 1]?.memberId
+      : null;
 
   {
     /* 초기 데이터 세팅 */
@@ -308,34 +315,54 @@ const ProfileGridTable = () => {
                 </Td>
                 {/* 이메일 -> 21자 제한 , 나머지 -> 11자 제한 */}
                 <Td className="text-regular16 text-neutral-regularBlack px-4 py-1">
-                  {truncateText(row.name, 11)}
+                  {highlightText(truncateText(row.name, 11), keyword, {
+                    active: row.id === activeRowIdFromSearch,
+                  })}{' '}
                 </Td>
                 <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
-                  {truncateText(row.participation, 11)}
+                  {highlightText(truncateText(row.participation, 11), keyword, {
+                    active: row.id === activeRowIdFromSearch,
+                  })}
                 </Td>
                 <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
-                  {truncateText(row.email, 21)}
+                  {highlightText(truncateText(row.email, 21), keyword, {
+                    active: row.id === activeRowIdFromSearch,
+                  })}
                 </Td>
                 <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
-                  {truncateText(row.phone, 11)}
+                  {highlightText(truncateText(row.phone, 11), keyword, {
+                    active: row.id === activeRowIdFromSearch,
+                  })}
                 </Td>
                 <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
-                  {truncateText(row.gender, 11)}
+                  {highlightText(truncateText(row.gender, 11), keyword, {
+                    active: row.id === activeRowIdFromSearch,
+                  })}
                 </Td>
                 <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
-                  {row.ageGroup}
+                  {highlightText(truncateText(row.ageGroup, 11), keyword, {
+                    active: row.id === activeRowIdFromSearch,
+                  })}
                 </Td>
                 <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
-                  {truncateText(row.experience, 11)}
+                  {highlightText(truncateText(row.experience, 11), keyword, {
+                    active: row.id === activeRowIdFromSearch,
+                  })}
                 </Td>
                 <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
-                  {truncateText(row.background, 11)}
+                  {highlightText(truncateText(row.background, 11), keyword, {
+                    active: row.id === activeRowIdFromSearch,
+                  })}
                 </Td>
                 <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
-                  {truncateText(row.field, 11)}
+                  {highlightText(truncateText(row.field, 11), keyword, {
+                    active: row.id === activeRowIdFromSearch,
+                  })}
                 </Td>
                 <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
-                  {truncateText(row.company, 11)}
+                  {highlightText(truncateText(row.company, 11), keyword, {
+                    active: row.id === activeRowIdFromSearch,
+                  })}
                 </Td>
               </tr>
             );

@@ -1,4 +1,5 @@
 export function formatDateTime(value: string) {
+  if (!value) return;
   const d = new Date(value);
 
   const yyyy = d.getFullYear();
@@ -11,6 +12,7 @@ export function formatDateTime(value: string) {
 }
 
 export function formatDate(value: string) {
+  if (!value) return;
   const d = new Date(value);
 
   const yyyy = d.getFullYear();

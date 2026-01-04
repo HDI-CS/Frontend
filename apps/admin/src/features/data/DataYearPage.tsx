@@ -36,16 +36,25 @@ const DataPage = ({ type, yearId = 1, categories = [] }: DataPageProps) => {
   const [activeCategory, setActiveCategory] = useState('');
 
   useEffect(() => {
-    if (categories.length > 0) {
-      setActiveCategory(categories[0]?.categoryName ?? '');
-    }
+    if (categories.length === 0) return;
+
+    setActiveCategory((prev) => {
+      // 이미 선택된 카테고리가 있으면 유지
+      if (prev && categories.some((c) => c.categoryName === prev)) {
+        return prev;
+      }
+
+      // 처음이거나 기존 카테고리가 사라졌을 때만 fallback
+      return categories[0]?.categoryName ?? ''
+    });
   }, [categories]);
 
   // Grid에서 “추가” 버튼 누르면 실제로 데이터 추가되게 (데모)
   // 검색어 관리
   // const { activeIndex, setResultCount } = useSearchStore();
 
-  const keyword = useSearchStore((s) => s.keyword);
+  const { keyword, setResultFromData, clear } = useSearchStore();
+
   const { data } = useSearchDatasets({
     type: type ?? 'VISUAL',
     keyword,
@@ -154,6 +163,15 @@ const DataPage = ({ type, yearId = 1, categories = [] }: DataPageProps) => {
           : mapIndustryToUIItem(item as IndustrialDataItem, idx)
       );
     }, [localData, activeCategory, sort, type]);
+
+    useEffect(() => {
+      // 검색어가 있을 때만 검색 결과 카운트 반영
+      if (keyword.length > 0) {
+        setResultFromData(displayRows);
+      } else {
+        clear(); // 검색어 없으면 초기화 (선택)
+      }
+    }, [keyword, displayRows, setResultFromData, clear]);
 
     // 화살표 disabled 관리
     const lastIndex = displayRows.length - 1;
