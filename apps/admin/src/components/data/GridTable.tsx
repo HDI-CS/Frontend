@@ -1,5 +1,6 @@
 import useGridManager from '@/src/hooks/useGridManager';
 import { UserType } from '@/src/schemas/auth';
+import { useSearchStore } from '@/src/store/searchStore';
 import { ColumnDef, VisualRow, WithIndex } from '@/src/types/data/visual-data';
 import clsx from 'clsx';
 import FieldActionMenu from '../FieldActionMenu';
@@ -43,6 +44,8 @@ const GridTable = <T extends { id: number }>({
     setRowMenu,
     getFieldMenuItems,
   } = useGridManager(type!);
+
+  const activeIndex = useSearchStore((s) => s.activeIndex);
 
   const currentIndex =
     dataId == null ? -1 : rows.findIndex((r) => r.id === dataId);
@@ -99,36 +102,42 @@ const GridTable = <T extends { id: number }>({
 
             {/* 바디 */}
             <tbody>
-              {rows.map((row) => (
-                <tr
-                  key={row.id}
-                  className={clsx(
-                    'group h-[66px] cursor-pointer text-sm',
-                    activeRowId === row.id
-                      ? 'bg-[#F4F7FF]'
-                      : 'hover:bg-[#F4F7FF]'
-                  )}
-                  onContextMenu={(e) => {
-                    e.preventDefault();
-                    setRowMenu({
-                      x: e.clientX,
-                      y: e.clientY,
-                      rowId: row.id,
-                    });
-                    setActiveRowId(row.id);
-                  }}
-                  onDoubleClick={() => {
-                    setIsEdit(false); //  읽기 모드
-                    setDataId(row.id);
-                  }}
-                >
-                  {columns.map((col) => (
-                    <Td key={col.key} className={col.className}>
-                      {col.cell(row)}
-                    </Td>
-                  ))}
-                </tr>
-              ))}
+              {rows.map((row, idx) => {
+                const isActiveRow = idx + 1 === activeIndex;
+
+                return (
+                  <tr
+                    key={row.id}
+                    className={clsx(
+                      'group h-[66px] cursor-pointer text-sm',
+                      activeRowId === row.id
+                        ? 'bg-[#F4F7FF]'
+                        : 'hover:bg-[#F4F7FF]'
+                    )}
+                    onContextMenu={(e) => {
+                      e.preventDefault();
+                      setRowMenu({
+                        x: e.clientX,
+                        y: e.clientY,
+                        rowId: row.id,
+                      });
+                      setActiveRowId(row.id);
+                    }}
+                    onDoubleClick={() => {
+                      setIsEdit(false); //  읽기 모드
+                      setDataId(row.id);
+                    }}
+                  >
+                    {columns.map((col) => {
+                      return (
+                        <Td key={col.key} className={col.className}>
+                          {col.cell(row, isActiveRow)}
+                        </Td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
 
               {/* 하단 + 추가 행 (스샷 느낌) */}
               <tr>

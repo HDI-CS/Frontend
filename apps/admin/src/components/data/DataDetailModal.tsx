@@ -70,6 +70,10 @@ export const EMPTY_INDUSTRY_DATASET: UpdateIndustrialDatasetRequest = {
   originalSideImagePath: null,
 };
 
+/* =======================
+   Component
+======================= */
+
 const DataDetailModal = <TRow, TType extends UserType>({
   type,
   row,
@@ -94,14 +98,41 @@ const DataDetailModal = <TRow, TType extends UserType>({
     };
   }, []);
 
-  // 데이터 상세 조회 훅
+  /* ---------- data ---------- */
   const { data, isError } = useDataByDatasetId({
     type,
     datasetId: Number(dataId),
   });
 
-  const [logoFile, setLogoFile] = useState<File | null>();
+  /* ---------- file states ---------- */
 
+  // VISUAL
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+
+  // INDUSTRY
+  const [detailFile, setDetailFile] = useState<File | null>(null);
+  const [frontFile, setFrontFile] = useState<File | null>(null);
+  const [sideFile, setSideFile] = useState<File | null>(null);
+
+  const INDUSTRY_IMAGE_FIELDS = [
+    {
+      label: '상세 이미지',
+      field: 'originalDetailImagePath',
+      setter: setDetailFile,
+    },
+    {
+      label: '정면 이미지',
+      field: 'originalFrontImagePath',
+      setter: setFrontFile,
+    },
+    {
+      label: '측면 이미지',
+      field: 'originalSideImagePath',
+      setter: setSideFile,
+    },
+  ] as const;
+
+  /* ---------- mutation ---------- */
   // 데이터 수정을 위한 훅
   const { mutate: updateDataset } = useUpdateDataset();
 
@@ -109,6 +140,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fields = type === 'VISUAL' ? VISUAL_FIELDS : INDUSTRY_FIELDS;
 
+  /* ---------- image src ---------- */
   const imageSrc = useMemo(() => {
     if (previewUrl) return previewUrl;
 
@@ -176,20 +208,46 @@ const DataDetailModal = <TRow, TType extends UserType>({
       requestData[key] = value;
     });
 
-    // 수정 api
-    updateDataset(
-      {
-        id: dataId,
-        requestData,
-        logoFile: logoFile,
-      },
-      {
-        onSuccess: () => {
-          onClose();
+    if (type === 'VISUAL') {
+      // 수정 api
+      updateDataset(
+        {
+          type: type,
+          id: dataId,
+          requestData,
+          logoFile: logoFile,
         },
-      }
-    );
+        {
+          onSuccess: () => {
+            onClose();
+          },
+        }
+      );
+    }
+
+    if (type === 'INDUSTRY') {
+      // 수정 api
+      updateDataset(
+        {
+          type,
+          id: dataId,
+          requestData,
+          detailFile,
+          frontFile,
+          sideFile,
+        },
+        {
+          onSuccess: () => {
+            onClose();
+          },
+        }
+      );
+    }
   };
+
+  /* =======================
+     Render
+  ======================= */
 
   return (
     <ModalComponent
@@ -214,51 +272,108 @@ const DataDetailModal = <TRow, TType extends UserType>({
           renderField(label, field as keyof UpdateForm)
         )}
 
-        {/* {renderField('로고 이미지', 'logoImage')} */}
-        <LinedField label="로고 이미지" activeField={activeField} isImg={true}>
-          {isEdit && (
-            <input
-              id="logo-upload"
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => {
-                const file = e.target.files?.[0] ?? null;
-                if (!file) return;
-
-                setLogoFile(file);
-                setPreviewUrl(URL.createObjectURL(file));
-                setValue('originalLogoImage', file?.name, {
-                  shouldDirty: true,
-                });
-              }}
-            />
-          )}
-          <label
-            htmlFor={isEdit ? 'logo-upload' : undefined}
-            className={clsx('flex justify-center', isEdit && 'cursor-pointer')}
+        {/* ---------- VISUAL image ---------- */}
+        {type === 'VISUAL' && (
+          <LinedField
+            label="로고 이미지"
+            activeField={activeField}
+            isImg={true}
           >
-            <div className="flex flex-col justify-center gap-10">
-              <Image
-                src={imageSrc}
-                alt="logo"
-                width={160}
-                height={160}
-                className={isEdit ? 'border transition hover:opacity-80' : ''}
+            {isEdit && type === 'VISUAL' && (
+              <input
+                id="logo-upload"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0] ?? null;
+                  if (!file) return;
+
+                  setLogoFile(file);
+                  setPreviewUrl(URL.createObjectURL(file));
+
+                  setValue('originalLogoImage', file.name, {
+                    shouldDirty: true,
+                  });
+                }}
               />
-            </div>
-          </label>
-          <div
-            className="cursor-pointer"
-            onClick={() => {
-              setLogoFile(null);
-              console.log(logoFile);
-            }}
-          >
-            {'이미지 삭제'}
-          </div>
-        </LinedField>
+            )}
 
+            <label
+              htmlFor={isEdit ? 'logo-upload' : undefined}
+              className={clsx(
+                'flex justify-center',
+                isEdit && 'cursor-pointer'
+              )}
+            >
+              <div className="flex flex-col justify-center gap-10">
+                <Image
+                  src={imageSrc}
+                  alt="logo"
+                  width={160}
+                  height={160}
+                  className={
+                    isEdit
+                      ? 'border-1 border-system-lineGray rounded transition hover:opacity-80'
+                      : ''
+                  }
+                />
+              </div>
+            </label>
+
+            {isEdit && (
+              <div
+                className="cursor-pointer"
+                onClick={() => {
+                  setLogoFile(null);
+                  console.log(logoFile);
+                }}
+              >
+                {'이미지 삭제'}
+              </div>
+            )}
+          </LinedField>
+        )}
+
+        {/* ---------- INDUSTRY images (3 li, no nesting) ---------- */}
+        {type === 'INDUSTRY' &&
+          INDUSTRY_IMAGE_FIELDS.map(({ label, field, setter }) => (
+            <LinedField
+              key={field}
+              label={label}
+              activeField={activeField}
+              isImg
+            >
+              {isEdit && (
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  id={field}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    setter(file);
+                    setValue(field, file.name, {
+                      shouldDirty: true,
+                    });
+                  }}
+                />
+              )}
+
+              <label htmlFor={isEdit ? field : undefined}>
+                <Image
+                  src={imageSrc}
+                  alt={label}
+                  width={160}
+                  height={160}
+                  className="rounded border"
+                />
+              </label>
+            </LinedField>
+          ))}
+
+        {/* ---------- save ---------- */}
         {isEdit && (
           <div className="flex w-full justify-center">
             <button

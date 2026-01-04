@@ -5,21 +5,30 @@ import {
   DeleteDatasetResponseSchema,
   DuplicateDatasetRequestSchema,
   DuplicateDatasetResponseSchema,
-  GetDatasetCandidatesResponse,
-  GetDatasetCandidatesResponseSchema,
-  YearListResponseSchema,
 } from '@/src/schemas/visual-data';
-import { CreateDatasetParams } from '@/src/types/data/visual-data';
+import {
+  CreateDatasetParams,
+  UpdateMutationInput,
+} from '@/src/types/data/visual-data';
 import { safeZodParse } from '@/src/utils/zod';
-import { createIndustrialDataset, searchIndustrialDataset } from './industry';
-import { createVisualDataset, searchVisualDataset } from './visual';
+import {
+  createIndustrialDataset,
+  searchIndustrialDataset,
+  updateIndustrialDataset,
+} from './industry';
+import {
+  createVisualDataset,
+  searchVisualDataset,
+  updateVisualDataset,
+} from './visual';
 
-// 연도 목록
+// 연도 목록 조회
+// 데이터셋 폴더 업데이트 날짜를 위해 필요
 export const getYearList = async (type: UserType) => {
   const res = await apiClient.get(
     `/api/v1/admin/${type.toLowerCase()}/data/years`
   );
-  return YearListResponseSchema.parse(res.data);
+  return res.data;
 };
 
 // 데이터셋 복제
@@ -123,6 +132,30 @@ export const createDataset = async (params: CreateDatasetParams) => {
       return createIndustrialDataset({
         yearId,
         requestData: params.requestData,
+      });
+
+    default:
+      throw new Error(`Unsupported dataset type: ${type}`);
+  }
+};
+
+export const updateDataset = async (params: UpdateMutationInput) => {
+  const { type, id, logoFile, detailFile, frontFile, sideFile } = params;
+  switch (type) {
+    case 'VISUAL':
+      return updateVisualDataset({
+        id,
+        requestData: params.requestData,
+        logoFile,
+      });
+
+    case 'INDUSTRY':
+      return updateIndustrialDataset({
+        id,
+        requestData: params.requestData,
+        detailFile,
+        frontFile,
+        sideFile,
       });
 
     default:

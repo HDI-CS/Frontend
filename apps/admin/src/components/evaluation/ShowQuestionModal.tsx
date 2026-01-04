@@ -1,16 +1,20 @@
+import { useUpdateOirignalSurvey } from '@/src/hooks/evaluation/useUpdateSurvey';
+import { UserType } from '@/src/schemas/auth';
+import { Survey } from '@/src/schemas/evaluation';
 import clsx from 'clsx';
 import { useParams } from 'next/navigation';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import ModalComponent from '../ModalComponent';
-import { Question } from './ResultMoal';
 
 interface ShowQuestionModalProps {
-  subjectData: Question;
-  qusetionsData: Question[];
+  type: UserType;
+  subjectData: Survey;
+  qusetionsData: Survey[];
   setShowQuestion: Dispatch<SetStateAction<boolean>>;
 }
 
 const ShowQuestionModal = ({
+  type,
   subjectData,
   qusetionsData,
   setShowQuestion,
@@ -21,21 +25,70 @@ const ShowQuestionModal = ({
   // activeId : 포커스된 질문
   const [activeId, setActiveId] = useState<string | null>(null);
 
-  // questions : 객관식/문항 리스트
-  const [questionValue, setQuestionValue] = useState<Question[]>(qusetionsData);
+  /* ---------------- 원본 데이터 (비교용) ---------------- */
+  const originalQuestions = useMemo(() => qusetionsData, [qusetionsData]);
+  const originalSubject = useMemo(() => subjectData, [subjectData]);
 
-  // subjective : 정성평가 입력값
-  const [subjectiveValue, setSubjectiveValue] = useState(
-    subjectData?.text ? subjectData.text : ''
-  );
+  /* ---------------- 수정용 상태 ---------------- */
+  const [questions, setQuestions] = useState<Survey[]>(qusetionsData);
+  const [subject, setSubject] = useState<Survey>(subjectData);
 
-  const isSubjectEditing = activeId === 'subject';
-
-  const updateQuestion = (id: string, text: string) => {
-    setQuestionValue((prev) =>
-      prev.map((q) => (q.id === id ? { ...q, text } : q))
+  /* ---------------- 질문 수정 ---------------- */
+  const updateQuestion = (surveyId: number, value: string) => {
+    setQuestions((prev) =>
+      prev.map((q) =>
+        q.surveyId === surveyId ? { ...q, surveyContent: value } : q
+      )
     );
   };
+
+  /* ---------------- 변경된 것만 추출 ---------------- */
+  const changedPayload = useMemo(() => {
+    const changedQuestions = questions.filter((q) => {
+      const origin = originalQuestions.find((o) => o.surveyId === q.surveyId);
+      return origin?.surveyContent !== q.surveyContent;
+    });
+
+    const subjectChanged =
+      subject.surveyContent !== originalSubject.surveyContent;
+
+    return [
+      ...changedQuestions.map((q) => ({
+        surveyId: q.surveyId,
+        surveyContent: q.surveyContent,
+      })),
+      ...(subjectChanged
+        ? [
+            {
+              surveyId: subject.surveyId,
+              surveyContent: subject.surveyContent,
+            },
+          ]
+        : []),
+    ];
+  }, [questions, subject, originalQuestions, originalSubject]);
+
+  /* ---------------- 저장 ---------------- */
+  const handleSave = () => {
+    if (changedPayload.length === 0) {
+      setShowQuestion(false);
+      return;
+    }
+
+    updateSurvey(changedPayload, {
+      onSuccess: () => {
+        setShowQuestion(false);
+      },
+      onError: (e) => {
+        console.error('설문 문항 수정 실패', e);
+      },
+    });
+  };
+
+  /* ---------------- 수정 훅 ---------------- */
+
+  const { mutate: updateSurvey } = useUpdateOirignalSurvey(type);
+  const isSubjectEditing = activeId === 'subject';
 
   const LinedField = ({
     value,
@@ -113,28 +166,24 @@ const ShowQuestionModal = ({
       title={`${phaseNumber}차평가`}
       subtitle="설문 문항"
       onClose={() => setShowQuestion(false)}
-      onSubmit={() => setShowQuestion(false)}
+      onSubmit={handleSave}
       button={activeId ? '저장' : undefined}
     >
       <div className="mt-0.5 flex flex-col gap-5 pr-0.5">
-        {questionValue?.map((question, index) => {
-          const currentQuestion = questionValue.find(
-            (q) => q.id === question.id
-          );
-
+        {questions?.map((question, index) => {
           return (
             <LinedField
-              key={question.id}
+              key={question.surveyId}
               label={String(index + 1)} // 수정 필요
-              value={currentQuestion ? currentQuestion?.text : question.text}
+              value={question.surveyContent}
               isQustion={true}
-              active={activeId === question.id}
-              isEditing={activeId === question.id}
+              active={activeId === String(question.surveyId)}
+              isEditing={activeId === String(question.surveyId)}
               onDoubleClick={() => {
-                setActiveId(question.id);
+                setActiveId(String(question.surveyId));
               }}
-              onFocus={() => setActiveId(question.id)}
-              onChange={(v) => updateQuestion(question.id, v)}
+              onFocus={() => setActiveId(String(question.surveyId))}
+              onChange={(v) => updateQuestion(question.surveyId, v)}
             />
           );
         })}
@@ -150,9 +199,14 @@ const ShowQuestionModal = ({
           {isSubjectEditing ? (
             <div>
               <input
-                value={subjectiveValue}
+                value={subject.surveyContent}
                 onFocus={() => setActiveId('subject')}
-                onChange={(e) => setSubjectiveValue(e.target.value)}
+                onChange={(e) =>
+                  setSubject((prev) => ({
+                    ...prev,
+                    surveyContent: e.target.value,
+                  }))
+                }
                 placeholder="평가 질문을 적어주세요"
                 className="min-w-135 flex-1 rounded-lg border border-gray-200 px-4 py-2"
               />
@@ -162,7 +216,7 @@ const ShowQuestionModal = ({
               onDoubleClick={() => setActiveId('subject')}
               className="border-1 min-w-135 border-system-lineGray min-h-11.5 flex-1 rounded-lg p-2.5 text-[#2D2E2E]"
             >
-              {subjectData.text}
+              {subjectData.surveyContent}
             </p>
           )}
         </div>

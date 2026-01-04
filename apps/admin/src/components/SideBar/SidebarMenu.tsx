@@ -1,6 +1,7 @@
 'use client';
 import { useEvaluationFolders } from '@/src/hooks/useEvaluationFolders';
 import { UserType } from '@/src/schemas/auth';
+import { EvaluationYear } from '@/src/schemas/survey';
 import { DatasetType } from '@/src/types/common';
 import { usePathname, useRouter } from 'next/navigation';
 import MenuItem from './MenuItem';
@@ -8,6 +9,17 @@ import SubMenuItem from './SubMenuItem';
 
 interface SidebarMenuProps {
   type: UserType;
+}
+
+export interface EvaluationRoundFolder {
+  roundId: number;
+  roundName: string;
+}
+
+export interface EvaluationYearFolder {
+  yearId: number;
+  yearName: string;
+  rounds: EvaluationRoundFolder[];
 }
 
 export function toDatasetTypeLower(type: string): 'visual' | 'industry' {
@@ -28,7 +40,9 @@ const ROUTES = {
     ROOT: (type: DatasetType) => `/${type}/evaluation`,
     YEAR: (type: DatasetType, year: number) => `/${type}/evaluation/${year}`,
     PHASE: (type: DatasetType, year: number, phase: number) =>
-      `/${type}/evaluation/${year}/phase${phase}`,
+      `/${type}/evaluation/${year}/${phase}`,
+    MEMBER: (type: DatasetType, year: number, phase: number, member: number) =>
+      `/${type}/evaluation/${year}/${phase}/${member}`,
   },
 
   EXPERT: {
@@ -44,11 +58,15 @@ const ROUTES = {
 
 const SidebarMenu = ({ type }: SidebarMenuProps) => {
   const pathname = usePathname();
+  const typeLable = {
+    VISUAL: '시각디자인',
+    INDUSTRY: '산업디자인',
+  };
   const lowerType = toDatasetTypeLower(type);
 
   const { data } = useEvaluationFolders(type);
-  const yearFolders =
-    data?.result.map((year) => ({
+  const yearFolders: EvaluationYearFolder[] =
+    data?.result.map((year: EvaluationYear) => ({
       yearId: year.yearId,
       yearName: year.folderName,
       rounds: year.rounds.map((round) => ({
@@ -90,9 +108,7 @@ const SidebarMenu = ({ type }: SidebarMenuProps) => {
     pathname.startsWith(r)
   );
 
-  const openEvaluation = yearFolders.some((year) =>
-    pathname.startsWith(ROUTES.EVALUATION.YEAR(lowerType, year.yearId))
-  );
+  const openEvaluation = pathname.startsWith(ROUTES.EVALUATION.ROOT(lowerType));
 
   const openExpert = ROUTE_GROUPS.EXPERT(lowerType).some((r) =>
     pathname.startsWith(r)
@@ -105,7 +121,7 @@ const SidebarMenu = ({ type }: SidebarMenuProps) => {
     <div className="flex flex-col">
       {/* 시각디자인 */}
       <MenuItem
-        label="시각디자인"
+        label={typeLable[type]}
         open={openRoot}
         active={pathname === ROUTES.ROOT(lowerType)}
         onClick={() => router.push(ROUTES.ROOT(lowerType))}
@@ -117,16 +133,16 @@ const SidebarMenu = ({ type }: SidebarMenuProps) => {
           active={pathname === ROUTES.DATA.ROOT(lowerType)}
           onClick={() => router.push(ROUTES.DATA.ROOT(lowerType))}
         >
-          <SubMenuItem
-            label="1차년도"
-            active={pathname === ROUTES.DATA.YEAR(lowerType, 1)}
-            onClick={() => router.push(ROUTES.DATA.YEAR(lowerType, 1))}
-          />
-          <SubMenuItem
-            label="2차년도"
-            active={pathname === ROUTES.DATA.YEAR(lowerType, 2)}
-            onClick={() => router.push(ROUTES.DATA.YEAR(lowerType, 2))}
-          />
+          {yearFolders.map((year) => (
+            <SubMenuItem
+              key={year.yearId}
+              label={year.yearName}
+              active={pathname === ROUTES.DATA.YEAR(lowerType, year.yearId)}
+              onClick={() =>
+                router.push(ROUTES.DATA.YEAR(lowerType, year.yearId))
+              }
+            />
+          ))}
         </MenuItem>
 
         {/* 평가 관리  */}
@@ -136,41 +152,43 @@ const SidebarMenu = ({ type }: SidebarMenuProps) => {
           active={pathname === ROUTES.EVALUATION.ROOT(lowerType)}
           onClick={() => router.push(ROUTES.EVALUATION.ROOT(lowerType))}
         >
-          {yearFolders.map((year) => {
+          {yearFolders.map((year: EvaluationYearFolder) => {
             const openYear = pathname.startsWith(
-              ROUTES.EVALUATION.YEAR(lowerType, year.yearId)
+              ROUTES.EVALUATION.YEAR(lowerType, year.yearId ?? 0)
             );
 
             return (
               <MenuItem
                 key={year.yearId}
-                label={`${year.yearName}`}
+                label={`${year.yearName ?? ''}`}
                 open={openYear}
                 active={
-                  pathname === ROUTES.EVALUATION.YEAR(lowerType, year.yearId)
+                  pathname ===
+                  ROUTES.EVALUATION.YEAR(lowerType, year.yearId ?? 0)
                 }
                 onClick={() =>
-                  router.push(ROUTES.EVALUATION.YEAR(lowerType, year.yearId))
+                  router.push(
+                    ROUTES.EVALUATION.YEAR(lowerType, year.yearId ?? 0)
+                  )
                 }
               >
-                {year.rounds.map((round) => (
+                {year.rounds.map((round: EvaluationRoundFolder) => (
                   <SubMenuItem
                     key={round.roundId}
                     label={`${round.roundName}`}
-                    active={
-                      pathname ===
+                    active={pathname.startsWith(
                       ROUTES.EVALUATION.PHASE(
                         lowerType,
                         year.yearId,
-                        round.roundId
+                        round.roundId ?? 0
                       )
-                    }
+                    )}
                     onClick={() =>
                       router.push(
                         ROUTES.EVALUATION.PHASE(
                           lowerType,
                           year.yearId,
-                          round.roundId
+                          round.roundId ?? 0
                         )
                       )
                     }
@@ -201,41 +219,41 @@ const SidebarMenu = ({ type }: SidebarMenuProps) => {
             onClick={() => router.push(ROUTES.EXPERT.MAPPING(lowerType))}
           >
             {/* N차년도 */}
-            {yearFolders.map((year) => (
+            {yearFolders.map((year: EvaluationYearFolder) => (
               <MenuItem
                 key={year.yearId}
-                label={`${year.yearName}`}
+                label={`${year.yearName ?? ''}`}
                 open={pathname.startsWith(
-                  ROUTES.EXPERT.MAPPING_YEAR(lowerType, year.yearId)
+                  ROUTES.EXPERT.MAPPING_YEAR(lowerType, year.yearId ?? 0)
                 )}
                 active={
                   pathname ===
-                  ROUTES.EXPERT.MAPPING_YEAR(lowerType, year.yearId)
+                  ROUTES.EXPERT.MAPPING_YEAR(lowerType, year.yearId ?? 0)
                 }
                 onClick={() =>
                   router.push(
-                    ROUTES.EXPERT.MAPPING_YEAR(lowerType, year.yearId)
+                    ROUTES.EXPERT.MAPPING_YEAR(lowerType, year.yearId ?? 0)
                   )
                 }
               >
                 {year.rounds.map((round) => (
                   <SubMenuItem
                     key={round.roundId}
-                    label={`${round.roundName}`}
+                    label={`${round.roundName ?? ''}`}
                     active={
                       pathname ===
                       ROUTES.EXPERT.MAPPING_PHASE(
                         lowerType,
-                        year.yearId,
-                        round.roundId
+                        year.yearId ?? 0,
+                        round.roundId ?? 0
                       )
                     }
                     onClick={() =>
                       router.push(
                         ROUTES.EXPERT.MAPPING_PHASE(
                           lowerType,
-                          year.yearId,
-                          round.roundId
+                          year.yearId ?? 0,
+                          round.roundId ?? 0
                         )
                       )
                     }

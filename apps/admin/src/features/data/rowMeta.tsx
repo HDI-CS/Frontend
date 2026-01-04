@@ -1,7 +1,8 @@
 import empty from '@/public/data/EmptyIMg.svg';
 import { UserType } from '@/src/schemas/auth';
 import { EvaluationYears, RoundsSchema } from '@/src/schemas/survey';
-import { UpdateVisualDatasetRequest } from '@/src/schemas/visual-data';
+import { UpdateVisualDatasetRequest, Years } from '@/src/schemas/visual-data';
+import { useSearchStore } from '@/src/store/searchStore';
 import {
   GetDetailResponseByType,
   IndustrialRow,
@@ -9,8 +10,10 @@ import {
   WithIndex,
 } from '@/src/types/data/visual-data';
 import { EvaluationYearFolder } from '@/src/types/evaluation';
+import { highlightText } from '@/src/utils/highlightText';
 import Image from 'next/image';
 import { MetaByType } from './uiDef';
+const getKeyword = () => useSearchStore.getState().keyword;
 
 const toHttpUrl = (url?: string) => {
   if (!url) return '';
@@ -37,42 +40,62 @@ export const rowMeta: MetaByType = {
         header: 'ID',
         thClassName: 'w-[90px]',
         className: 'w-[90px] px-3',
-        cell: (row: VisualRow) => row.code,
+
+        cell: (row, isActiveRow) =>
+          highlightText(row.code ?? '', getKeyword(), {
+            active: isActiveRow,
+          }),
       },
       {
         key: 'name',
         header: '브랜드명',
         thClassName: 'w-[140px]',
         className: 'w-[140px] px-3',
-        cell: (row: VisualRow) => row.name,
+
+        cell: (row, isActiveRow) =>
+          highlightText(row.name ?? '', getKeyword(), {
+            active: isActiveRow,
+          }),
       },
       {
         key: 'sectorCategory',
         header: '부문·카테고리',
         thClassName: 'w-[140px]',
         className: 'w-[140px]',
-        cell: (row: VisualRow) => row.sectorCategory,
+        cell: (row, isActiveRow) =>
+          highlightText(row.sectorCategory ?? '', getKeyword(), {
+            active: isActiveRow,
+          }),
       },
       {
         key: 'mainProductCategory',
         header: '대표 제품 카테고리',
         thClassName: 'min-w-[260px]',
         className: 'min-w-[260px]',
-        cell: (row: VisualRow) => row.mainProductCategory,
+        cell: (row, isActiveRow) =>
+          highlightText(row.mainProductCategory ?? '', getKeyword(), {
+            active: isActiveRow,
+          }),
       },
       {
         key: 'mainProduct',
         header: '대표 제품',
         thClassName: 'min-w-[240px]',
         className: 'min-w-[240px]',
-        cell: (row: VisualRow) => row.mainProduct,
+        cell: (row, isActiveRow) =>
+          highlightText(row.mainProduct ?? '', getKeyword(), {
+            active: isActiveRow,
+          }),
       },
       {
         key: 'target',
         header: '타겟(성별/연령)',
         thClassName: 'w-[160px]',
         className: 'w-[160px]',
-        cell: (row: VisualRow) => row.target,
+        cell: (row, isActiveRow) =>
+          highlightText(row.target ?? '', getKeyword(), {
+            active: isActiveRow,
+          }),
       },
       {
         key: 'referenceUrl',
@@ -223,6 +246,21 @@ export const rowMeta: MetaByType = {
           );
         },
       },
+      {
+        key: 'logoImage',
+        header: <span className="block text-center">로고이미지</span>,
+        thClassName: 'w-[120px]',
+        className: 'w-[120px] text-center',
+        cell: (row: IndustrialRow) => (
+          <Image
+            src={row.detailImagePath ? row.detailImagePath : empty}
+            alt={`${row.modelName} logo`}
+            className="mx-auto h-[44px] w-[44px] rounded object-cover"
+            width={44}
+            height={44}
+          />
+        ),
+      },
     ],
 
     galleryFields: [
@@ -296,6 +334,17 @@ export const updateRequestMapper = {
 
 // 이미지 타입별 분리
 
+export function normalizeImageUrl(url?: string | null): string | null {
+  if (!url) return null;
+
+  // 끝이 /null 이거나 null 문자열 포함 -> 이미지 없음으로 처리
+  if (url.endsWith('/null') || url.includes('/null')) {
+    return null;
+  }
+
+  return url;
+}
+
 export function getImageSrcByType(
   type: UserType,
   detail?: GetDetailResponseByType[keyof GetDetailResponseByType]
@@ -303,12 +352,18 @@ export function getImageSrcByType(
   if (!detail) return null;
 
   if (type === 'VISUAL') {
-    return (detail as GetDetailResponseByType['VISUAL']).logoImage;
+    return normalizeImageUrl(
+      (detail as GetDetailResponseByType['VISUAL']).logoImage
+    );
   }
 
   return (
-    (detail as GetDetailResponseByType['INDUSTRY']).detailImagePath ??
-    (detail as GetDetailResponseByType['INDUSTRY']).frontImagePath ??
+    normalizeImageUrl(
+      (detail as GetDetailResponseByType['INDUSTRY']).detailImagePath
+    ) ??
+    normalizeImageUrl(
+      (detail as GetDetailResponseByType['INDUSTRY']).frontImagePath
+    ) ??
     null
   );
 }
@@ -319,11 +374,11 @@ export const mapEvaluationYearsToFolders = (
   baseRoute: string // '/data'
 ): EvaluationYearFolder[] => {
   return years.map((year) => ({
-    key: `YEAR_${year.yearId}`,
+    key: `${year.yearId}`,
     label: year.folderName,
     route: `${baseRoute}/${year.yearId}`,
-    createdAt: year.createdAt,
-    lastModifiedAt: year.updatedAt,
+    createdAt: year.createdAt ?? '',
+    lastModifiedAt: year.updatedAt ?? '',
     duration: '',
   }));
 };
@@ -334,12 +389,25 @@ export const mapEvaluationPhaseToFolders = (
   baseRoute: string // '/data'
 ): EvaluationYearFolder[] => {
   return rounds.map((round) => ({
-    key: `YEAR_${round.roundId}`,
+    key: `${round.roundId}`,
     label: round.folderName,
     route: `${baseRoute}/${year}/${round.roundId}`,
-    createdAt: round.createdAt,
-    lastModifiedAt: round.updatedAt,
-    startDate: round.startDate,
-    endDate: round.endDate,
+    createdAt: round.createdAt ?? '',
+    lastModifiedAt: round.updatedAt ?? '',
+    startDate: round.startDate ?? '',
+    endDate: round.endDate ?? '',
+  }));
+};
+
+export const mapEvaluationYearsToFoldersForDataPage = (
+  years: Years,
+  baseRoute: string // '/data'
+): EvaluationYearFolder[] => {
+  return years.map((year) => ({
+    key: `${year.yearId}`,
+    label: `${year.folderName}`,
+    route: `${baseRoute}/${year.yearId}`,
+    createdAt: year.createdAt ?? '',
+    lastModifiedAt: year.updatedAt ?? '',
   }));
 };

@@ -7,6 +7,7 @@ interface FolderModalsProps {
   setEditFolderName: (name: string) => void;
   onCloseAdd: () => void;
   onCloseEdit: () => void;
+  onSubmit: () => void;
 }
 
 const FolderModals = ({
@@ -16,17 +17,23 @@ const FolderModals = ({
   setEditFolderName,
   onCloseAdd,
   onCloseEdit,
+  onSubmit,
 }: FolderModalsProps) => {
   return (
     <>
       {add && (
         <ModalComponent
+          editBasicInfo={true}
           title="폴더 이름"
           button="생성"
           onClose={onCloseAdd}
-          onSubmit={onCloseAdd}
+          onSubmit={onSubmit}
         >
-          <input className="border-1 w-full rounded border-[#E9E9E7] p-3 text-[#3A3A49]" />
+          <input
+            value={editFolderName ?? ''}
+            onChange={(e) => setEditFolderName(e.target.value)}
+            className="border-1 w-full rounded border-[#E9E9E7] p-3 text-[#3A3A49]"
+          />
         </ModalComponent>
       )}
 
@@ -34,11 +41,12 @@ const FolderModals = ({
         <ModalComponent
           title="폴더 이름"
           button="저장"
+          editBasicInfo={true}
           onClose={onCloseEdit}
-          onSubmit={onCloseEdit}
+          onSubmit={onSubmit}
         >
           <input
-            value={editFolderName}
+            value={editFolderName ?? ''}
             onChange={(e) => setEditFolderName(e.target.value)}
             className="border-1 w-full rounded border-[#E9E9E7] p-3 text-lg text-[#3A3A49]"
           />

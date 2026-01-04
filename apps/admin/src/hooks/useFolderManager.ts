@@ -11,6 +11,8 @@ export const useFolderManager = () => {
   // 선택된 폴더
   const [pressedKey, setPressedKey] = useState<string | null>(null);
   const [selectedName, setSelectedName] = useState<string | null>(null);
+  const [createdYearId, setCreatedYearId] = useState<number | null>(null);
+  const [createdRoundId, setCreatedRoundId] = useState<number | null>(null);
 
   // 열린 드롭다운 (단 하나)
   const [openMenuKey, setOpenMenuKey] = useState<string | null>(null);
@@ -42,14 +44,10 @@ export const useFolderManager = () => {
       onClick: () => {
         setEditTarget({ key: item.key, name: item.label });
         setEditName(true);
+        setCreatedYearId(Number(item.key));
+
         setOpenMenuKey(null);
       },
-    },
-    {
-      key: 'delete',
-      label: 'delete file',
-      variant: 'danger',
-      onClick: () => {},
     },
   ];
 
@@ -61,6 +59,7 @@ export const useFolderManager = () => {
       onClick: () => {
         setEditTarget({ key: item.key, name: item.label });
         setEditName(true);
+        setCreatedYearId(Number(item.key));
         setOpenMenuKey(null);
       },
     },
@@ -70,15 +69,9 @@ export const useFolderManager = () => {
       onClick: () => {
         setEditTarget({ key: item.key, name: item.label }); // API 구현 후 수정 필요
         setEditSurvey(true);
+        setCreatedYearId(Number(item.key));
+
         setOpenMenuKey(null);
-      },
-    },
-    {
-      key: 'delete',
-      label: 'delete file',
-      variant: 'danger',
-      onClick: () => {
-        // delete api
       },
     },
   ];
@@ -91,6 +84,8 @@ export const useFolderManager = () => {
       onClick: () => {
         setEditTarget({ key: item.key, name: item.label });
         setEditName(true);
+        setCreatedRoundId(Number(item.key));
+
         setOpenMenuKey(null);
       },
     },
@@ -101,14 +96,7 @@ export const useFolderManager = () => {
         setEditTarget({ key: item.key, name: item.label }); // API 구현 후 수정 필요
         setEditSurvey(true);
         setOpenMenuKey(null);
-      },
-    },
-    {
-      key: 'delete',
-      label: 'delete file',
-      variant: 'danger',
-      onClick: () => {
-        // delete api
+        setCreatedRoundId(Number(item.key));
       },
     },
   ];
@@ -123,6 +111,8 @@ export const useFolderManager = () => {
     editFolderName,
     editSurvey,
     selectedName,
+    createdYearId,
+    createdRoundId,
 
     // setters
     setPressedKey,
@@ -133,6 +123,8 @@ export const useFolderManager = () => {
     setEditFolderName,
     setEditSurvey,
     setSelectedName,
+    setCreatedYearId,
+    setCreatedRoundId,
 
     // actions
     getFieldMenuItems,

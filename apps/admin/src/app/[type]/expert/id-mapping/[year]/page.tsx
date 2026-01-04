@@ -4,7 +4,9 @@ import AddEvaluation from '@/src/components/evaluation/AddEvaluation';
 import FolderList from '@/src/components/FolderList';
 import FolderModals from '@/src/components/FolderModals';
 import { mapEvaluationPhaseToFolders } from '@/src/features/data/rowMeta';
+import { useCreateEvaluationRound } from '@/src/hooks/evaluation/useCreateEvaluationYear';
 import { useEvaluationYears } from '@/src/hooks/evaluation/useEvaluationYears';
+import { useUpdatePhaseSurvey } from '@/src/hooks/evaluation/useUpdateSurvey';
 import { useFolderManager } from '@/src/hooks/useFolderManager';
 import { usePathname, useRouter } from 'next/navigation';
 
@@ -33,6 +35,7 @@ const IndexPage = () => {
 
   // const items = MAPPING_PHASE_FOLDER ?? [];
   const { data } = useEvaluationYears(type);
+
   const rounds =
     data?.result.find((y) => y.yearId === Number(year))?.rounds ?? [];
 
@@ -44,8 +47,37 @@ const IndexPage = () => {
       )
     : [];
 
+  // 차수 폴더 생성
+  const { mutateAsync: createRoundEvaluation } = useCreateEvaluationRound(
+    type,
+    Number(year)
+  );
+
+  //차수  폴더 이름 수정
+  const { mutateAsync: updateName } = useUpdatePhaseSurvey(type);
+
+  const handleSubmit = async () => {
+    try {
+      // 1 폴더 생성
+      const createRes = await createRoundEvaluation();
+      const newRoundId = createRes.result.roundId;
+
+      // 2 생성 직후 → 바로 이름 수정
+      await updateName({
+        assessmentRoundId: newRoundId,
+        folderName: editFolderName,
+      });
+
+      // 3 UI 정리
+      setAdd(false);
+      setEditFolderName('');
+    } catch (e) {
+      console.error('폴더 생성 실패', e);
+    }
+  };
+
   return (
-    <div className="font-pretendard text-blue text-blue pl-40 mt-14 grid min-h-screen pr-60">
+    <div className="font-pretendard text-blue text-blue mt-14 grid min-h-screen pl-40 pr-60">
       <div className="flex flex-col gap-5">
         <div className="flex text-[#4676FB]">
           <p className="ml-21 w-25">Folder</p>
@@ -80,6 +112,7 @@ const IndexPage = () => {
           setEditFolderName={setEditFolderName}
           onCloseAdd={() => setAdd(false)}
           onCloseEdit={() => setEditName(false)}
+          onSubmit={handleSubmit}
         />
 
         {editSurvey && (

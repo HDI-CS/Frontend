@@ -12,7 +12,7 @@ function getHeaderOptions(pathname: string): HeaderOptions {
   // /data/year1, /data/year2 ...
   if (
     /^\/[^/]+\/data\/[^/]+$/.test(pathname) ||
-    /^\/[^/]+\/evaluation\/[^/]+\/[^/]+(\/[^/]+)?$/.test(pathname) ||
+    /^\/[^/]+\/evaluation\/[^/]+\/[^/]+$/.test(pathname) ||
     /^\/[^/]+\/expert\/profile/.test(pathname) ||
     /^\/[^/]+\/expert\/[^/]+\/[^/]+\/[^/]+(\/[^/]+)?$/.test(pathname)
   ) {

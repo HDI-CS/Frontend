@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { FieldActionMenuItem } from '../components/FieldActionMenu';
 import { ExpertProfile } from '../constants/expert';
-import { ExpertResponse } from '../constants/surveyQuestions';
 import { UserType } from '../schemas/auth';
+import { SurveyData } from '../schemas/evaluation';
 import { dataIdsSet } from '../schemas/expert';
 import { VisualDataItem } from '../types/data/visual-data';
 import { useDeleteDataset } from './data/useDeleteDataset';
@@ -30,7 +30,7 @@ export const useFolderManager = (type: UserType) => {
   const [rowExpertMenu, setRowExpertMenu] = useState<{
     x: number;
     y: number;
-    row: ExpertResponse; // 하나의 평가자의 응답 데이터
+    row: SurveyData; // 하나의 평가자의 응답 데이터
   } | null>(null);
 
   const [rowQuestiontMenu, setRowQuestiontMenu] = useState<{
@@ -49,8 +49,8 @@ export const useFolderManager = (type: UserType) => {
   // UI : 클릭된 row 하이라이트
   const [activeRowId, setActiveRowId] = useState<number | null>(null);
 
-  // modal용 state
-  const [selectedRow, setSelectedRow] = useState<ExpertResponse | null>(null);
+  // modal용 state  하나의 응답 데이터
+  const [selectedRow, setSelectedRow] = useState<SurveyData | null>(null);
   const [selectedExpertRow, setSelectedExpertRow] = useState<dataIdsSet | null>(
     null
   );
@@ -101,15 +101,13 @@ export const useFolderManager = (type: UserType) => {
   ];
 
   // row별 동작 정의
-  const getFieldExpertMenuItems = (
-    row: ExpertResponse
-  ): FieldActionMenuItem[] => [
+  const getFieldExpertMenuItems = (row: SurveyData): FieldActionMenuItem[] => [
     {
       key: 'edit',
       label: 'edit field',
       onClick: () => {
         setIsEdit(true);
-        setDataId(row.id); // code인지 id인지는 봐야됨
+        setDataId(row.dataId); // code인지 id인지는 봐야됨
         setSelectedRow(row); // 하나의 평가자의 응답 데이터 저장
       },
     },
@@ -120,14 +118,14 @@ export const useFolderManager = (type: UserType) => {
         console.log('duplicate field', row);
       },
     },
-    {
-      key: 'delete',
-      label: 'delete field',
-      variant: 'danger',
-      onClick: () => {
-        // 서버에 먼저 요청 → 성공 시 데이터를 새롭게 받음
-      },
-    },
+    // {
+    //   key: 'delete',
+    //   label: 'delete field',
+    //   variant: 'danger',
+    //   onClick: () => {
+    //     // 서버에 먼저 요청 → 성공 시 데이터를 새롭게 받음
+    //   },
+    // },
   ];
 
   return {

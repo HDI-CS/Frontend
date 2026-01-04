@@ -2,8 +2,8 @@ import { useCreateQuestion } from '@/src/hooks/evaluation/useCreateQuestion';
 import { useEvaluationQuestion } from '@/src/hooks/evaluation/useEvaluationQuestion';
 import { UserType } from '@/src/schemas/auth';
 import {
-  SurveyQuestionByType,
-  SurveyQuestionByTypeList,
+  SurveyQuestionByTypeWithSampleText,
+  SurveyQuestionByTypeWithSampleTextArray,
 } from '@/src/schemas/survey';
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
@@ -33,16 +33,21 @@ const AddEvaluation = ({
   // qusetionsData,
   subjectiveData,
 }: AddEvaluationProps) => {
+  // 수정일 시에만 기존 데이터 가져옴
+  // 수정이지만 동일 아이디로 새롭게 등록
+  const [folderName, setFolderName] = useState('');
+
   // questions : 객관식/문항 리스트
   const [questions, setQuestions] = useState<Question[]>([]);
 
   // activeId : 포커스된 질문
   const [activeId, setActiveId] = useState<string | null>(null);
-  console.log(yearId);
   // subjective : 정성평가 입력값
   const [subjective, setSubjective] = useState(
     subjectiveData?.text ? subjectiveData.text : ''
   );
+  // sampleText : 샘플 텍스트
+  const [sampleText, setSampleText] = useState<string>('');
 
   const { data } = useEvaluationQuestion(type, yearId!);
   useEffect(() => {
@@ -73,6 +78,18 @@ const AddEvaluation = ({
     } else {
       setSubjective('');
     }
+
+    /** 3. 샘플(SAMPLE) */
+    const originalSampleText = groups.find((g) => g.type === 'SAMPLE');
+
+    if (originalSampleText?.questions[0]) {
+      setSampleText(originalSampleText.questions[0].surveyContent);
+    } else {
+      setSampleText('');
+    }
+
+    // 폴더 이름 기존 유지
+    setFolderName(data.result.folderName ?? '');
   }, [data]);
 
   const addQuestion = () => {
@@ -97,8 +114,8 @@ const AddEvaluation = ({
     // folderName: string;
     questions: { text: string }[];
     subjective: string;
-  }): SurveyQuestionByTypeList => {
-    const result: SurveyQuestionByType[] = [];
+  }): SurveyQuestionByTypeWithSampleTextArray => {
+    const result: SurveyQuestionByTypeWithSampleText[] = [];
 
     // 1.  객관식 (NUMBER)
     questions.forEach((q, index) => {
@@ -109,6 +126,7 @@ const AddEvaluation = ({
         surveyNumber: index + 1,
         surveyCode: 'PR_FRM_QT',
         surveyContent: q.text,
+        sampleText: null,
       });
     });
 
@@ -119,16 +137,19 @@ const AddEvaluation = ({
         surveyNumber: 1,
         surveyCode: 'PR_FRM_QT',
         surveyContent: subjective,
+        sampleText: sampleText,
       });
     }
 
     // 3.  샘플 (SAMPLE) — 필요 시
-    // result.push({
-    //   type: 'SAMPLE',
-    //   surveyNumber: 1,
-    //   surveyCode: 'PR_FRM_QT',
-    //   surveyContent: '샘플 텍스트',
-    // });
+    // if (sampleText.trim()) {
+    //   result.push({
+    //     type: 'SAMPLE',
+    //     surveyNumber: 1,
+    //     surveyCode: 'PR_FRM_QT',
+    //     surveyContent: sampleText,
+    //   });
+    // }
 
     return result;
     // folderName,
@@ -138,17 +159,20 @@ const AddEvaluation = ({
 
   const handleSubmit = () => {
     const body = buildEvaluationRequestBody({
-      // folderName: '1차년도',
       questions,
       subjective,
     });
 
-    createQuestion(body);
+    createQuestion(body, {
+      onSuccess: () => {
+        onClose();
+      },
+    });
   };
 
   return (
     <ModalComponent
-      title="Folder Name"
+      title={folderName ?? ''}
       subtitle="평가문항"
       button={isEdit ? '저장' : '평가 생성'}
       onClose={onClose}
@@ -158,7 +182,7 @@ const AddEvaluation = ({
         <div className="mb-0 flex h-full w-full text-[#2D2E2E]">
           <div className="flex gap-2.5">
             <div className="bg-neutral-gray30 h-full w-1 rounded"></div>
-            <p className="text-bold16 py-1">평가 문항 등록</p>
+            <p className="text-bold16 py-1">평가 문항 수정</p>
           </div>
         </div>
 
@@ -206,9 +230,9 @@ const AddEvaluation = ({
               className="flex-1 rounded-lg border border-gray-200 px-4 py-2"
             />
             <input
-              value={subjective}
+              value={sampleText}
               onFocus={() => setActiveId('subject')}
-              onChange={(e) => setSubjective(e.target.value)}
+              onChange={(e) => setSampleText(e.target.value)}
               placeholder="샘플 텍스트를 적어주세요"
               className="flex-1 rounded-lg border border-gray-200 px-4 py-2"
             />

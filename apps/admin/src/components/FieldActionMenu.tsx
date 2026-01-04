@@ -72,7 +72,7 @@ const FieldActionMenu = ({
           }}
           className={clsx(
             'mx-4 flex w-[calc(100%-32px)] py-2 text-left text-sm text-[#3A3A49] hover:opacity-45',
-            item.variant === 'danger' && 'text-[#DA1E28]',
+            item.variant === 'danger' && 'text-system-red',
             i === items.length - 1 && 'border-t border-[#E4E2E4]'
           )}
         >

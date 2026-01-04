@@ -39,12 +39,12 @@ const CategoryTab = ({ categories, activeKey, onChange }: CategoryTabProps) => {
           </button>
         );
       })}
-      <button
+      {/* <button
         onClick={() => setOpen(true)}
         className="flex h-[36px] items-center rounded-t-[4px] border border-b-0 border-[#E5E5E5] bg-[#F6F7F8] px-4 hover:bg-gray-200"
       >
         <Image src={plusIcon} alt="plus" width={14} height={14} />
-      </button>
+      </button> */}
       {open && (
         <ModalComponent
           button="저장"

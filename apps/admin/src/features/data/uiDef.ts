@@ -1,17 +1,9 @@
 import {
+  ColumnDef,
   IndustrialRow,
   VisualRow,
   WithIndex,
 } from '@/src/types/data/visual-data';
-
-export type ColumnDef<T> = {
-  key: string;
-  header: React.ReactNode;
-  className?: string;
-  thClassName?: string;
-  // 각 셀 렌더러
-  cell: (row: T) => React.ReactNode;
-};
 
 export type DetailFieldDef<T> = {
   label: string;

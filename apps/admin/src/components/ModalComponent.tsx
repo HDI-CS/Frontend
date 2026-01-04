@@ -12,6 +12,7 @@ interface BaseModalProps {
   maxWidth?: string;
   subtitle?: string;
   button?: string;
+  editBasicInfo?: boolean; // 높이 조절용
   allow?: boolean;
 
   onPrev?: () => void;
@@ -30,6 +31,7 @@ const ModalComponent = ({
   maxWidth = 'max-w-[720px]',
   subtitle,
   button,
+  editBasicInfo = false,
   allow = false,
   isPrevDisabled,
   isNextDisabled,
@@ -69,7 +71,10 @@ const ModalComponent = ({
         {/* MODAL */}
 
         <div
-          className={`w-full ${maxWidth} flex h-[800px] min-w-[700px] flex-col gap-5 overflow-hidden rounded-lg bg-white p-8 text-[#2D2E2E]`}
+          className={clsx(
+            `w-full ${maxWidth} flex min-w-[700px] flex-col gap-5 overflow-hidden rounded-lg bg-white p-8 text-[#2D2E2E]`,
+            editBasicInfo ? ' ' : 'h-[800px]'
+          )}
         >
           {/* Header */}
           <div className="border-b-1 flex items-start justify-between border-[#E9E9E7] py-3">

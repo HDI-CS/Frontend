@@ -5,7 +5,9 @@ import EditDuration from '@/src/components/evaluation/EditDuration';
 import FolderList from '@/src/components/FolderList';
 import ModalComponent from '@/src/components/ModalComponent';
 import { mapEvaluationPhaseToFolders } from '@/src/features/data/rowMeta';
+import { useCreateEvaluationRound } from '@/src/hooks/evaluation/useCreateEvaluationYear';
 import { useEvaluationYears } from '@/src/hooks/evaluation/useEvaluationYears';
+import { useUpdatePhaseSurvey } from '@/src/hooks/evaluation/useUpdateSurvey';
 import { useFolderManager } from '@/src/hooks/useFolderManager';
 import { usePathname, useRouter } from 'next/navigation';
 
@@ -24,6 +26,7 @@ const IndexPage = () => {
     editName,
     editSurvey,
     editFolderName,
+    createdRoundId,
 
     setPressedKey,
     setOpenMenuKey,
@@ -31,6 +34,7 @@ const IndexPage = () => {
     setEditName,
     setEditSurvey,
     setEditFolderName,
+    setCreatedRoundId,
     getFieldEvaluationRangeMenuItems,
   } = useFolderManager();
 
@@ -45,6 +49,34 @@ const IndexPage = () => {
         `/${type.toLowerCase()}/evaluation`
       )
     : [];
+  // 차수 폴더 생성
+  const { mutate: createRoundEvaluation } = useCreateEvaluationRound(
+    type,
+    Number(year)
+  );
+  const handleAddRoundEvaluation = () => {
+    createRoundEvaluation();
+  };
+
+  //차수  폴더 이름 수정
+  const { mutate: updateName } = useUpdatePhaseSurvey(type);
+
+  const handleEditName = () => {
+    const body = {
+      folderName: editFolderName,
+      assessmentRoundId: createdRoundId ?? 0,
+    };
+    updateName(body, {
+      onSuccess: () => {
+        setEditName(false);
+        setEditFolderName('');
+        setCreatedRoundId(null);
+      },
+    });
+  };
+
+  // 차수 폴더 기간 수정을 위한 변수
+  const currentRound = rounds.find((round) => round.roundId === createdRoundId);
 
   return (
     <div className="font-pretendard text-blue text-blue pl-47 pr-50 mt-14 grid min-h-screen">
@@ -72,7 +104,11 @@ const IndexPage = () => {
           getFieldMenuItems={getFieldEvaluationRangeMenuItems}
         />
         {/* ADD BTN */}
-        <AddBtn isEvaluation={true} setAdd={setAdd} />
+        <AddBtn
+          isEvaluation={true}
+          setAdd={setAdd}
+          onClick={handleAddRoundEvaluation}
+        />
 
         {/* Modals */}
         {add && <AddEvaluation type={type} onClose={() => setAdd(false)} />}
@@ -80,19 +116,24 @@ const IndexPage = () => {
           <ModalComponent
             title="폴더 이름"
             button="저장"
+            editBasicInfo={true}
             onClose={() => setEditName(false)}
-            onSubmit={() => setEditName(false)}
+            onSubmit={handleEditName}
           >
             <input
               value={editFolderName}
               onChange={(e) => setEditFolderName(e.target.value)}
-              className="border-1 w-full rounded border-[#E9E9E7] p-3 text-lg text-[#3A3A49]"
+              className="border-1 focus:outline-primary-blue w-full rounded border-[#E9E9E7] p-3 text-lg text-[#3A3A49]"
             />
           </ModalComponent>
         )}
         {editSurvey && (
           <EditDuration
             name={editFolderName}
+            type={type}
+            createdRoundId={createdRoundId!}
+            startDate={currentRound?.startDate ?? ''}
+            endDate={currentRound?.endDate ?? ''}
             onClose={() => setEditSurvey(false)}
           />
         )}
