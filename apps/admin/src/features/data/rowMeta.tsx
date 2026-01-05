@@ -347,7 +347,11 @@ export function normalizeImageUrl(url?: string | null): string | null {
 
 export function getImageSrcByType(
   type: UserType,
-  detail?: GetDetailResponseByType[keyof GetDetailResponseByType]
+  detail?: GetDetailResponseByType[keyof GetDetailResponseByType],
+  field?:
+    | 'originalDetailImagePath'
+    | 'originalFrontImagePath'
+    | 'originalSideImagePath'
 ): string | null {
   if (!detail) return null;
 
@@ -356,16 +360,18 @@ export function getImageSrcByType(
       (detail as GetDetailResponseByType['VISUAL']).logoImage
     );
   }
+  const industry = detail as GetDetailResponseByType['INDUSTRY'];
 
-  return (
-    normalizeImageUrl(
-      (detail as GetDetailResponseByType['INDUSTRY']).detailImagePath
-    ) ??
-    normalizeImageUrl(
-      (detail as GetDetailResponseByType['INDUSTRY']).frontImagePath
-    ) ??
-    null
-  );
+  switch (field) {
+    case 'originalDetailImagePath':
+      return normalizeImageUrl(industry.detailImagePath);
+    case 'originalFrontImagePath':
+      return normalizeImageUrl(industry.frontImagePath);
+    case 'originalSideImagePath':
+      return normalizeImageUrl(industry.sideImagePath);
+    default:
+      return null;
+  }
 }
 
 // 폴더 프롭으로 넘기기 위한 가공 함수

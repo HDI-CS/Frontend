@@ -9,8 +9,11 @@ import SortModal from '@/src/components/data/SortModal';
 import ViewToggle from '@/src/components/data/ViewToggle';
 import { useCreateDataset } from '@/src/hooks/data/useCreateVisualDataset';
 import { useSearchDatasets } from '@/src/hooks/data/useSearchDatasets';
-import { IndustrialDataItem } from '@/src/schemas/industry-data';
-import { VisualDataItem } from '@/src/schemas/visual-data';
+import {
+  IndustrialDataItem,
+  IndustryCategory,
+} from '@/src/schemas/industry-data';
+import { VisualCategory, VisualDataItem } from '@/src/schemas/visual-data';
 import { downloadExcel } from '@/src/services/data/common';
 import { useSearchStore } from '@/src/store/searchStore';
 import {
@@ -29,25 +32,49 @@ import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 import { rowMeta } from './rowMeta';
 
-const DataPage = ({ type, yearId = 1, categories = [] }: DataPageProps) => {
+export type CategoryByType = {
+  VISUAL: VisualCategory;
+  INDUSTRY: IndustryCategory;
+};
+
+type ItemByType = {
+  VISUAL: VisualDataItem;
+  INDUSTRY: IndustrialDataItem;
+};
+
+const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
+  type,
+  yearId = 1,
+  categories = [],
+}: DataPageProps & { type: T }) => {
+  const categorieItem = useMemo<CategoryByType[T][]>(() => {
+    if (type === 'VISUAL') {
+      return ['COSMETIC', 'FB'] as CategoryByType[T][];
+    }
+
+    return [
+      'VACUUM_CLEANER',
+      'AIR_PURIFIER',
+      'HAIR_DRYER',
+    ] as CategoryByType[T][];
+  }, [type]);
+
   const [activeTab, setActiveTab] = useState<'grid' | 'gallery'>('grid');
   const [sortBtn, setSortBtn] = useState(false);
   const [sort, setSort] = useState<'first' | 'last'>('first');
-  const [activeCategory, setActiveCategory] = useState('');
+  const [activeCategory, setActiveCategory] = useState<
+    CategoryByType[T] | null
+  >(null);
 
   useEffect(() => {
-    if (categories.length === 0) return;
-
     setActiveCategory((prev) => {
-      // 이미 선택된 카테고리가 있으면 유지
       if (prev && categories.some((c) => c.categoryName === prev)) {
         return prev;
       }
 
-      // 처음이거나 기존 카테고리가 사라졌을 때만 fallback
-      return categories[0]?.categoryName ?? ''
+      return categorieItem[0] as CategoryByType[T] | null;
     });
-  }, [categories]);
+  }, [categorieItem, categories]);
 
   // Grid에서 “추가” 버튼 누르면 실제로 데이터 추가되게 (데모)
   // 검색어 관리
@@ -56,9 +83,9 @@ const DataPage = ({ type, yearId = 1, categories = [] }: DataPageProps) => {
   const { keyword, setResultFromData, clear } = useSearchStore();
 
   const { data } = useSearchDatasets({
-    type: type ?? 'VISUAL',
+    type,
     keyword,
-    category: activeCategory,
+    category: activeCategory ?? undefined,
   });
 
   {
@@ -71,6 +98,8 @@ const DataPage = ({ type, yearId = 1, categories = [] }: DataPageProps) => {
     for (const c of categories) {
       init[c.categoryName] = c.data ?? [];
     }
+
+    if (!activeCategory) return init;
 
     if (keyword.length && data?.result) {
       const normalizedSearchData: DatasetItems = Array.isArray(data.result)
@@ -86,17 +115,15 @@ const DataPage = ({ type, yearId = 1, categories = [] }: DataPageProps) => {
   }, [keyword, activeCategory, categories, data]);
 
   {
-    // tabItems: CategoryTab 컴포넌트에 넘겨주기 위한 가공 데이터
-    const tabItems = categories.map((c) => ({
-      key: c.categoryName,
-      label: c.categoryName,
-    }));
-
     const { mutate: createDataset } = useCreateDataset();
 
     // 생성
     const handleAddRow = () => {
+      if (!activeCategory) return;
+
       if (type === 'VISUAL') {
+        const visualCategory = activeCategory as VisualCategory;
+
         createDataset({
           type: 'VISUAL',
           yearId,
@@ -110,13 +137,15 @@ const DataPage = ({ type, yearId = 1, categories = [] }: DataPageProps) => {
             target: '',
             referenceUrl: '',
             originalLogoImage: null,
-            visualDataCategory: activeCategory,
+            visualDataCategory: visualCategory,
           },
         });
         return;
       }
 
       if (type === 'INDUSTRY') {
+        const industryDataCategory = activeCategory as IndustryCategory;
+
         createDataset({
           type: 'INDUSTRY',
           yearId,
@@ -138,6 +167,7 @@ const DataPage = ({ type, yearId = 1, categories = [] }: DataPageProps) => {
             originalDetailImagePath: null,
             originalFrontImagePath: null,
             originalSideImagePath: null,
+            industryDataCategory: industryDataCategory,
           },
         });
         return;
@@ -146,6 +176,8 @@ const DataPage = ({ type, yearId = 1, categories = [] }: DataPageProps) => {
 
     // 테이블 정리 함수
     const displayRows = useMemo(() => {
+      if (!activeCategory) return [];
+
       const activeData = localData[activeCategory] ?? [];
 
       const sorted = [...activeData].sort((a, b) => {
@@ -159,8 +191,8 @@ const DataPage = ({ type, yearId = 1, categories = [] }: DataPageProps) => {
 
       return sorted.map((item, idx) =>
         type === 'VISUAL'
-          ? mapVisualToUIItem(item as VisualDataItem, idx)
-          : mapIndustryToUIItem(item as IndustrialDataItem, idx)
+          ? mapVisualToUIItem(item as ItemByType['VISUAL'], idx)
+          : mapIndustryToUIItem(item as ItemByType['INDUSTRY'], idx)
       );
     }, [localData, activeCategory, sort, type]);
 
@@ -211,8 +243,9 @@ const DataPage = ({ type, yearId = 1, categories = [] }: DataPageProps) => {
           {/* 상단 */}
           <div className="flex items-center justify-between border-b border-[#E5E5E5]">
             <CategoryTab
-              categories={tabItems}
-              activeKey={activeCategory}
+              type={type}
+              categories={categorieItem}
+              activeKey={activeCategory!}
               onChange={setActiveCategory}
               onAdd={() => console.log('카테고리 추가')}
             />
@@ -258,7 +291,7 @@ const DataPage = ({ type, yearId = 1, categories = [] }: DataPageProps) => {
                 orderBy={sort}
                 setOrderBy={setSort}
                 lastIndex={lastIndex}
-                activeCategory={activeCategory}
+                activeCategory={activeCategory!}
               />
             ) : (
               <GridTable<IndustrialRow>
@@ -269,7 +302,7 @@ const DataPage = ({ type, yearId = 1, categories = [] }: DataPageProps) => {
                 orderBy={sort}
                 setOrderBy={setSort}
                 lastIndex={lastIndex}
-                activeCategory={activeCategory}
+                activeCategory={activeCategory!}
               />
             )
           ) : (
@@ -283,7 +316,7 @@ const DataPage = ({ type, yearId = 1, categories = [] }: DataPageProps) => {
                   orderBy={sort}
                   setOrderBy={setSort}
                   lastIndex={lastIndex}
-                  activeCategory={activeCategory}
+                  activeCategory={activeCategory!}
                 />
               ) : (
                 <GalleryView<IndustrialRow>
@@ -294,7 +327,7 @@ const DataPage = ({ type, yearId = 1, categories = [] }: DataPageProps) => {
                   setOrderBy={setSort}
                   onAdd={handleAddRow}
                   lastIndex={lastIndex}
-                  activeCategory={activeCategory}
+                  activeCategory={activeCategory!}
                 />
               )}
             </div>

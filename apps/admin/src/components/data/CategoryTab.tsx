@@ -1,8 +1,8 @@
 'use client';
 import clsx from 'clsx';
 
-import plusIcon from '@/public/data/plusIcon.svg';
-import Image from 'next/image';
+import { CategoryByType } from '@/src/features/data/DataYearPage';
+import { UserType } from '@/src/schemas/auth';
 import { useState } from 'react';
 import ModalComponent from '../ModalComponent';
 
@@ -11,23 +11,29 @@ export interface CategoryTabItem {
   label: string;
 }
 
-interface CategoryTabProps {
-  categories: CategoryTabItem[];
+interface CategoryTabProps<T extends UserType> {
+  type: UserType;
+  categories: CategoryByType[T][];
   activeKey: string;
-  onChange: (key: string) => void;
+  onChange: (key: CategoryByType[T]) => void;
   onAdd?: () => void;
 }
 
-const CategoryTab = ({ categories, activeKey, onChange }: CategoryTabProps) => {
+const CategoryTab = <T extends UserType>({
+  activeKey,
+  categories,
+  onChange,
+}: CategoryTabProps<T>) => {
   const [open, setOpen] = useState(false);
+
   return (
     <div className="flex items-end gap-1">
       {categories.map((cat) => {
-        const isActive = activeKey === cat.key;
+        const isActive = activeKey === cat;
         return (
           <button
-            key={cat.key}
-            onClick={() => onChange(cat.key)}
+            key={cat}
+            onClick={() => onChange(cat)}
             className={clsx(
               'flex items-center gap-1 rounded-t-[4px] border border-b-0 border-[#E5E5E5] px-4 text-lg',
               isActive
@@ -35,7 +41,7 @@ const CategoryTab = ({ categories, activeKey, onChange }: CategoryTabProps) => {
                 : 'h-9 bg-[#F6F7F8] p-2 text-[#3A3A49] hover:bg-gray-200'
             )}
           >
-            {cat.label}
+            {cat}
           </button>
         );
       })}

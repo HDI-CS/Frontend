@@ -1,6 +1,12 @@
 import z from 'zod';
 
-export type IndustryCategory = 'VACUUM_CLEANER' | 'AIR_PURIFIER' | 'HAIR_DRYER';
+export const IndustryCategorySchema = z.enum([
+  'VACUUM_CLEANER',
+  'AIR_PURIFIER',
+  'HAIR_DRYER',
+]);
+
+export type IndustryCategory = z.infer<typeof IndustryCategorySchema>;
 
 // 산디 데이터 셋 기본 스키마
 export const IndustrialDataItemSchema = z.object({
@@ -76,6 +82,7 @@ export const CreateIndustrialDatasetRequestSchema = z.object({
   originalDetailImagePath: z.string().nullable(),
   originalFrontImagePath: z.string().nullable(),
   originalSideImagePath: z.string().nullable(),
+  industryDataCategory: IndustryCategorySchema,
 });
 
 // 시각 디자인 데이터셋 수정 요청 스키마
@@ -96,6 +103,7 @@ export const UpdateIndustrialDatasetRequestSchema = z
     originalDetailImagePath: z.string().nullable(), // 빈 값일 땐 널
     originalFrontImagePath: z.string().nullable(), // 빈 값일 땐 널
     originalSideImagePath: z.string().nullable(), // 빈 값일 땐 널 여러개 삭제되면 리스트로…!! (image=DETAIL & image=FRONT)
+    industryDataCategory: IndustryCategorySchema,
   })
   .partial();
 

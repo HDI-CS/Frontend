@@ -52,7 +52,7 @@ export const searchVisualDataset = async ({
   category,
 }: {
   keyword: string;
-  category: string;
+  category?: string;
 }) => {
   const response = await apiClient.get(
     `/api/v1/admin/visual/data/datasets/search`,

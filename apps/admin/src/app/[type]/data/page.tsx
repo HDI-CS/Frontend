@@ -6,7 +6,6 @@ import FolderModals from '@/src/components/FolderModals';
 import { mapEvaluationYearsToFoldersForDataPage } from '@/src/features/data/rowMeta';
 import { useDataYears } from '@/src/hooks/data/useDataYears';
 import { useCreateEvaluationYear } from '@/src/hooks/evaluation/useCreateEvaluationYear';
-import { useEvaluationYears } from '@/src/hooks/evaluation/useEvaluationYears';
 import { useUpdateSurvey } from '@/src/hooks/evaluation/useUpdateSurvey';
 import { useFolderManager } from '@/src/hooks/useFolderManager';
 import { EvaluationYearFolder } from '@/src/types/evaluation';

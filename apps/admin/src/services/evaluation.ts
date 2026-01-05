@@ -1,9 +1,6 @@
 import { apiClient } from '../lib/axios';
 import { UserType } from '../schemas/auth';
-import {
-  UpdateOriginalSurvey,
-  UpdateOriginalSurveySchema,
-} from '../schemas/evaluation';
+import { UpdateOriginalSurvey } from '../schemas/evaluation';
 import {
   CreateEvaluationYearResponseSchema,
   DurationRequest,
@@ -174,8 +171,9 @@ export const updateOriginalSurvey = async (
   type: UserType,
   body: UpdateOriginalSurvey
 ) => {
-  const res = await apiClient.put(`/api/v1/admin/${type}/survey/questions`,
+  const res = await apiClient.put(
+    `/api/v1/admin/${type}/survey/questions`,
     body
   );
-  return (res.data);
+  return res.data;
 };

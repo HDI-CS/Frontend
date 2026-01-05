@@ -40,7 +40,7 @@ interface DataDetailModalProps<TRow, TType extends UserType> {
   type: TType;
 }
 
-export const EMPTY_VISUAL_DATASET: UpdateVisualDatasetRequest = {
+const EMPTY_VISUAL_DATASET: UpdateVisualDatasetRequest = {
   code: '',
   name: '',
   sectorCategory: '',
@@ -49,10 +49,10 @@ export const EMPTY_VISUAL_DATASET: UpdateVisualDatasetRequest = {
   target: '',
   referenceUrl: '',
   originalLogoImage: null,
-  visualDataCategory: '',
+  visualDataCategory: 'COSMETIC',
 };
 
-export const EMPTY_INDUSTRY_DATASET: UpdateIndustrialDatasetRequest = {
+const EMPTY_INDUSTRY_DATASET: UpdateIndustrialDatasetRequest = {
   code: '',
   productName: '',
   companyName: '',
@@ -68,6 +68,7 @@ export const EMPTY_INDUSTRY_DATASET: UpdateIndustrialDatasetRequest = {
   originalDetailImagePath: null,
   originalFrontImagePath: null,
   originalSideImagePath: null,
+  industryDataCategory: 'AIR_PURIFIER',
 };
 
 /* =======================
@@ -114,30 +115,40 @@ const DataDetailModal = <TRow, TType extends UserType>({
   const [frontFile, setFrontFile] = useState<File | null>(null);
   const [sideFile, setSideFile] = useState<File | null>(null);
 
-  const INDUSTRY_IMAGE_FIELDS = [
-    {
-      label: '상세 이미지',
-      field: 'originalDetailImagePath',
-      setter: setDetailFile,
-    },
-    {
-      label: '정면 이미지',
-      field: 'originalFrontImagePath',
-      setter: setFrontFile,
-    },
-    {
-      label: '측면 이미지',
-      field: 'originalSideImagePath',
-      setter: setSideFile,
-    },
-  ] as const;
-
   /* ---------- mutation ---------- */
   // 데이터 수정을 위한 훅
   const { mutate: updateDataset } = useUpdateDataset();
 
   const [activeField, setActvieField] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [detailPreview, setDetailPreview] = useState<string | null>(null);
+  const [frontPreview, setFrontPreview] = useState<string | null>(null);
+  const [sidePreview, setSidePreview] = useState<string | null>(null);
+
+  const INDUSTRY_IMAGE_FIELDS = [
+    {
+      label: '상세 이미지',
+      field: 'originalDetailImagePath',
+      setter: setDetailFile,
+      preview: detailPreview,
+      setPreview: setDetailPreview,
+    },
+    {
+      label: '정면 이미지',
+      field: 'originalFrontImagePath',
+      setter: setFrontFile,
+      preview: frontPreview,
+      setPreview: setFrontPreview,
+    },
+    {
+      label: '측면 이미지',
+      field: 'originalSideImagePath',
+      setter: setSideFile,
+      preview: sidePreview,
+      setPreview: setSidePreview,
+    },
+  ] as const;
+
   const fields = type === 'VISUAL' ? VISUAL_FIELDS : INDUSTRY_FIELDS;
 
   /* ---------- image src ---------- */
@@ -337,41 +348,49 @@ const DataDetailModal = <TRow, TType extends UserType>({
 
         {/* ---------- INDUSTRY images (3 li, no nesting) ---------- */}
         {type === 'INDUSTRY' &&
-          INDUSTRY_IMAGE_FIELDS.map(({ label, field, setter }) => (
-            <LinedField
-              key={field}
-              label={label}
-              activeField={activeField}
-              isImg
-            >
-              {isEdit && (
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  id={field}
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (!file) return;
-                    setter(file);
-                    setValue(field, file.name, {
-                      shouldDirty: true,
-                    });
-                  }}
-                />
-              )}
+          INDUSTRY_IMAGE_FIELDS.map(
+            ({ label, field, setter, setPreview, preview }) => (
+              <LinedField
+                key={field}
+                label={label}
+                activeField={activeField}
+                isImg
+              >
+                {isEdit && (
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    id={field}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      setter(file);
+                      setPreview(URL.createObjectURL(file));
 
-              <label htmlFor={isEdit ? field : undefined}>
-                <Image
-                  src={imageSrc}
-                  alt={label}
-                  width={160}
-                  height={160}
-                  className="rounded border"
-                />
-              </label>
-            </LinedField>
-          ))}
+                      setValue(field, file.name, {
+                        shouldDirty: true,
+                      });
+                    }}
+                  />
+                )}
+
+                <label htmlFor={isEdit ? field : undefined}>
+                  <Image
+                    src={
+                      preview ??
+                      getImageSrcByType(type, data?.result, field) ??
+                      empty
+                    }
+                    alt={label}
+                    width={160}
+                    height={160}
+                    className="rounded border"
+                  />
+                </label>
+              </LinedField>
+            )
+          )}
 
         {/* ---------- save ---------- */}
         {isEdit && (

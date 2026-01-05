@@ -1,6 +1,5 @@
 'use client';
 import { useLogout } from '@/src/hooks/useLogout';
-import { useMe } from '@/src/hooks/useMe';
 import SearchInput from '../SearchInput';
 
 interface HeaderProps {
