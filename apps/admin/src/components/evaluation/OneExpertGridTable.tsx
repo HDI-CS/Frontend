@@ -25,6 +25,7 @@ const OneExpertGridTable = ({ expertData }: OneExpertGridTableProps) => {
     orderBy,
     selectedRow,
     showQuestion,
+    selectedIndex,
 
     setDataId,
     setIdMenu,
@@ -35,6 +36,7 @@ const OneExpertGridTable = ({ expertData }: OneExpertGridTableProps) => {
     setOrderBy,
     setSelectedRow,
     setShowQuestion,
+    setSelectedIndex,
   } = useGridManager(type!);
 
   // 화살표 disabled 관리
@@ -174,6 +176,7 @@ const OneExpertGridTable = ({ expertData }: OneExpertGridTableProps) => {
                   setSelectedRow(row);
                   setActiveRowId(row.dataId);
                   setDataId(row.dataId);
+                  setSelectedIndex(String(index + 1));
                 }}
                 onContextMenu={(e) => {
                   e.preventDefault();
@@ -272,7 +275,7 @@ const OneExpertGridTable = ({ expertData }: OneExpertGridTableProps) => {
       {/* 설문결과 Modal 오픈 */}
       {dataId && (
         <ResultModal
-          dataId={dataId}
+          selectedIndex={selectedIndex}
           row={selectedRow}
           expertName={expertData.memberName}
           currentIndex={currentIndex}

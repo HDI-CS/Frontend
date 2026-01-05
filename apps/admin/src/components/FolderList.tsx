@@ -63,7 +63,7 @@ const FolderList = <T extends BaseFolderItem>({
       {items.map((item) => (
         <Folder
           key={item.key}
-          name={item.label}
+          name={item.label ?? ''}
           modified={item.lastModifiedAt}
           created={item.createdAt}
           startDate={isPhaseItem(item) ? item.startDate : ''}

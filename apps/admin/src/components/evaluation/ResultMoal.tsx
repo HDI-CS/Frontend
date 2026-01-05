@@ -4,7 +4,7 @@ import ModalComponent from '../ModalComponent';
 
 interface AddEvaluationProps {
   row: SurveyData | null;
-  dataId: number | null;
+  selectedIndex: string | null;
   currentIndex: number;
   totalLength: number;
   expertName: string;
@@ -25,7 +25,7 @@ export type Question = {
 
 const ResultModal = ({
   row,
-  dataId,
+  selectedIndex,
   currentIndex,
   totalLength,
   expertName,
@@ -94,7 +94,7 @@ const ResultModal = ({
   return (
     <>
       <ModalComponent
-        title={String(dataId)}
+        title={selectedIndex ?? ''}
         subtitle="설문 결과"
         onClose={onClose}
         onSubmit={onClose}

@@ -46,7 +46,7 @@ export const createVisualDataset = async ({
   return CreateDatasetResponseSchema.parse(res.data);
 };
 
-// 검색 
+// 검색
 export const searchVisualDataset = async ({
   keyword,
   category,

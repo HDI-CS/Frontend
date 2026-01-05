@@ -24,12 +24,14 @@ const IndexPage = () => {
     editName,
     editSurvey,
     editFolderName,
+    createdYearId,
     setPressedKey,
     setOpenMenuKey,
     setAdd,
     setEditName,
     setEditSurvey,
     setEditFolderName,
+    setCreatedYearId,
     getFieldMenuItems,
   } = useFolderManager();
 
@@ -68,6 +70,23 @@ const IndexPage = () => {
         `/${type.toLowerCase()}/data`
       )
     : [];
+
+  // 년도 폴더 이름 수정
+  const { mutate: updateName } = useUpdateSurvey(type);
+
+  const hanleEditName = () => {
+    const body = {
+      folderName: editFolderName,
+      yearId: createdYearId ?? 0,
+    };
+    updateName(body, {
+      onSuccess: () => {
+        setEditName(false);
+        setEditFolderName('');
+        setCreatedYearId(null);
+      },
+    });
+  };
 
   // const yearFolders = useMemo(() => {
   //   console.log(data?.result,'dsads');
@@ -115,6 +134,7 @@ const IndexPage = () => {
           onCloseAdd={() => setAdd(false)}
           onCloseEdit={() => setEditName(false)}
           onSubmit={handleSubmit}
+          onEdit={hanleEditName}
         />
 
         {editSurvey && (
