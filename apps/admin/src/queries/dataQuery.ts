@@ -15,5 +15,5 @@ export const datasetQueryKeys = {
     [...datasetQueryKeys.all, 'candidates', type, yearId] as const,
 
   detail: (datasetId: number) =>
-    [...datasetQueryKeys.all, 'detail', datasetId] as const,
+    [...datasetQueryKeys.lists(), 'detail', datasetId] as const,
 };
