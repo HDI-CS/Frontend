@@ -17,9 +17,9 @@ const LinedField = ({
   return (
     <li
       className={clsx(
-        'border-l-3 mb-0 flex w-full items-center justify-between gap-4 space-y-1 pl-2',
+        'border-l-3 relative mb-0 flex w-full items-center justify-between gap-4 space-y-1 pl-2',
         activeField === label ? 'border-[#4676FB]' : 'border-[#E9E9E7]',
-        isImg ? 'flex items-end' : 'h-10'
+        isImg ? 'h-45 flex items-end' : 'h-10'
       )}
     >
       {isImg ? (

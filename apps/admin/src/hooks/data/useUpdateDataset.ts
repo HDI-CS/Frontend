@@ -25,7 +25,9 @@ export const useUpdateDataset = () => {
         type: 'INDUSTRY',
         id: input.id,
         requestData: input.requestData,
-        detailFile: input.logoFile ? input.logoFile : null,
+        detailFile: input.detailFile,
+        frontFile: input.frontFile,
+        sideFile: input.sideFile,
       });
     },
     // updateVisualDataset({
@@ -36,8 +38,6 @@ export const useUpdateDataset = () => {
     // }),
 
     onSuccess: async (data, variables) => {
-      console.log('🔥 update success data', data);
-      console.log('🔥 update variables', variables);
       const { type, logoFile, detailFile, frontFile, sideFile } = variables;
       const uploadTasks: Promise<Response>[] = [];
       /** VISUAL */

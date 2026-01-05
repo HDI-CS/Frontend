@@ -1,5 +1,6 @@
 'use client';
 import empty from '@/public/data/EmptyIMg.svg';
+import close from '@/public/data/close.svg';
 import {
   getImageSrcByType,
   INDUSTRY_FIELDS,
@@ -111,9 +112,13 @@ const DataDetailModal = <TRow, TType extends UserType>({
   const [logoFile, setLogoFile] = useState<File | null>(null);
 
   // INDUSTRY
-  const [detailFile, setDetailFile] = useState<File | null>(null);
-  const [frontFile, setFrontFile] = useState<File | null>(null);
-  const [sideFile, setSideFile] = useState<File | null>(null);
+  const [detailFile, setDetailFile] = useState<File | null | undefined>(
+    undefined
+  );
+  const [frontFile, setFrontFile] = useState<File | null | undefined>(
+    undefined
+  );
+  const [sideFile, setSideFile] = useState<File | null | undefined>(undefined);
 
   /* ---------- mutation ---------- */
   // 데이터 수정을 위한 훅
@@ -130,6 +135,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
       label: '상세 이미지',
       field: 'originalDetailImagePath',
       setter: setDetailFile,
+      file: detailFile,
       preview: detailPreview,
       setPreview: setDetailPreview,
     },
@@ -137,6 +143,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
       label: '정면 이미지',
       field: 'originalFrontImagePath',
       setter: setFrontFile,
+      file: frontFile,
       preview: frontPreview,
       setPreview: setFrontPreview,
     },
@@ -144,6 +151,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
       label: '측면 이미지',
       field: 'originalSideImagePath',
       setter: setSideFile,
+      file: sideFile,
       preview: sidePreview,
       setPreview: setSidePreview,
     },
@@ -243,9 +251,9 @@ const DataDetailModal = <TRow, TType extends UserType>({
           type,
           id: dataId,
           requestData,
-          detailFile,
-          frontFile,
-          sideFile,
+          detailFile: detailFile === undefined ? undefined : detailFile,
+          frontFile: frontFile === undefined ? undefined : frontFile,
+          sideFile: sideFile === undefined ? undefined : sideFile,
         },
         {
           onSuccess: () => {
@@ -333,15 +341,15 @@ const DataDetailModal = <TRow, TType extends UserType>({
             </label>
 
             {isEdit && (
-              <div
-                className="cursor-pointer"
-                onClick={() => {
+              <Image
+                onClick={(e) => {
+                  e.stopPropagation();
                   setLogoFile(null);
-                  console.log(logoFile);
                 }}
-              >
-                {'이미지 삭제'}
-              </div>
+                src={close}
+                alt="close"
+                className="absolute left-40 top-0 cursor-pointer"
+              />
             )}
           </LinedField>
         )}
@@ -349,7 +357,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
         {/* ---------- INDUSTRY images (3 li, no nesting) ---------- */}
         {type === 'INDUSTRY' &&
           INDUSTRY_IMAGE_FIELDS.map(
-            ({ label, field, setter, setPreview, preview }) => (
+            ({ label, field, file, setter, setPreview, preview }) => (
               <LinedField
                 key={field}
                 label={label}
@@ -379,8 +387,10 @@ const DataDetailModal = <TRow, TType extends UserType>({
                   <Image
                     src={
                       preview ??
-                      getImageSrcByType(type, data?.result, field) ??
-                      empty
+                      (isEdit && file === null
+                        ? empty
+                        : (getImageSrcByType(type, data?.result, field) ??
+                          empty))
                     }
                     alt={label}
                     width={160}
@@ -388,6 +398,28 @@ const DataDetailModal = <TRow, TType extends UserType>({
                     className="rounded border"
                   />
                 </label>
+                {isEdit && (
+                  <Image
+                    onClick={(e) => {
+                      e.stopPropagation();
+
+                      // 1. 프리뷰 제거
+                      setPreview(null);
+
+                      // 2. 파일 state 제거
+                      setter(null);
+
+                      // 3. form 값 null 처리 + dirty
+                      setValue(field, null, {
+                        shouldDirty: true,
+                      });
+                      console.log();
+                    }}
+                    src={close}
+                    alt="close"
+                    className="absolute left-60 top-0 cursor-pointer"
+                  />
+                )}
               </LinedField>
             )
           )}

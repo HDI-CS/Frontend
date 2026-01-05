@@ -100,17 +100,30 @@ export const updateIndustrialDataset = async ({
    * - null  → 삭제 요청
    * - undefined → 변경 없음
    */
-  const params: Record<string, string> = {};
+  const imagesToDelete: string[] = [];
 
-  if (detailFile === null) params.detailImage = 'DELETE';
-  if (frontFile === null) params.frontImage = 'DELETE';
-  if (sideFile === null) params.sideImage = 'DELETE';
+  if (detailFile === null) imagesToDelete.push('DETAIL');
+  if (frontFile === null) imagesToDelete.push('FRONT');
+  if (sideFile === null) imagesToDelete.push('SIDE');
 
   const res = await apiClient.patch(
     `/api/v1/admin/industry/data/datasets/${id}`,
     validated,
     {
-      params,
+      params: imagesToDelete.length ? { image: imagesToDelete } : undefined,
+
+      // 배열 쿼리 직렬화
+      paramsSerializer: (params) => {
+        const searchParams = new URLSearchParams();
+
+        if (Array.isArray(params.image)) {
+          params.image.forEach((v: string) => {
+            searchParams.append('image', v);
+          });
+        }
+
+        return searchParams.toString();
+      },
     }
   );
 
