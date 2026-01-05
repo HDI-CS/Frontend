@@ -83,6 +83,7 @@ const IndexPage = () => {
           openMenuKey={openMenuKey}
           onSelect={(item) => {
             setPressedKey(item.key);
+
             router.push(item.route);
           }}
           onToggleMenu={(key) =>

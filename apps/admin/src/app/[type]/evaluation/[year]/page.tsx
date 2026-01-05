@@ -9,7 +9,9 @@ import { useCreateEvaluationRound } from '@/src/hooks/evaluation/useCreateEvalua
 import { useEvaluationYears } from '@/src/hooks/evaluation/useEvaluationYears';
 import { useUpdatePhaseSurvey } from '@/src/hooks/evaluation/useUpdateSurvey';
 import { useFolderManager } from '@/src/hooks/useFolderManager';
+import { useSubHeaderStore } from '@/src/store/subHeaderStore';
 import { usePathname, useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 const IndexPage = () => {
   const router = useRouter();
@@ -77,6 +79,15 @@ const IndexPage = () => {
 
   // 차수 폴더 기간 수정을 위한 변수
   const currentRound = rounds.find((round) => round.roundId === createdRoundId);
+
+  const { setExtraLabel } = useSubHeaderStore();
+  useEffect(() => {
+    const folderName = data?.result.find(
+      (d) => d.yearId === Number(year)
+    )?.folderName;
+    setExtraLabel(folderName);
+    return () => setExtraLabel('');
+  }, [data, setExtraLabel, year]);
 
   return (
     <div className="font-pretendard text-blue text-blue pl-47 pr-50 mt-14 grid min-h-screen">
