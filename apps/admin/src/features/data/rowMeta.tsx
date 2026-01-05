@@ -162,70 +162,100 @@ export const rowMeta: MetaByType = {
         header: 'ID',
         thClassName: 'w-[90px]',
         className: 'w-[90px] px-3',
-        cell: (row) => row.code,
+        cell: (row, isActiveRow) =>
+          highlightText(row.code ?? '', getKeyword(), {
+            active: isActiveRow,
+          }),
       },
       {
         key: 'productName',
         header: '제품명',
         thClassName: 'min-w-[200px]',
         className: 'min-w-[200px]',
-        cell: (row) => row.productName,
+        cell: (row, isActiveRow) =>
+          highlightText(row.productName ?? '', getKeyword(), {
+            active: isActiveRow,
+          }),
       },
       {
         key: 'companyName',
         header: '회사',
         thClassName: 'w-[160px]',
         className: 'w-[160px]',
-        cell: (row) => row.companyName,
+        cell: (row, isActiveRow) =>
+          highlightText(row.companyName ?? '', getKeyword(), {
+            active: isActiveRow,
+          }),
       },
       {
         key: 'modelName',
         header: '모델',
         thClassName: 'w-[160px]',
         className: 'w-[160px]',
-        cell: (row) => row.modelName,
+        cell: (row, isActiveRow) =>
+          highlightText(row.modelName ?? '', getKeyword(), {
+            active: isActiveRow,
+          }),
       },
       {
         key: 'price',
         header: '가격',
         thClassName: 'w-[120px]',
         className: 'w-[120px]',
-        cell: (row) => row.price,
+        cell: (row, isActiveRow) =>
+          highlightText(row.price ?? '', getKeyword(), {
+            active: isActiveRow,
+          }),
       },
       {
         key: 'material',
         header: '재질',
         thClassName: 'w-[140px]',
         className: 'w-[140px]',
-        cell: (row) => row.material,
+        cell: (row, isActiveRow) =>
+          highlightText(row.material ?? '', getKeyword(), {
+            active: isActiveRow,
+          }),
       },
       {
         key: 'size',
         header: '크기',
         thClassName: 'w-[140px]',
         className: 'w-[140px]',
-        cell: (row) => row.size,
+        cell: (row, isActiveRow) =>
+          highlightText(row.size ?? '', getKeyword(), {
+            active: isActiveRow,
+          }),
       },
       {
         key: 'weight',
         header: '무게',
         thClassName: 'w-[120px]',
         className: 'w-[120px]',
-        cell: (row) => row.weight,
+        cell: (row, isActiveRow) =>
+          highlightText(row.weight ?? '', getKeyword(), {
+            active: isActiveRow,
+          }),
       },
       {
         key: 'registeredAt',
         header: '출시일',
         thClassName: 'w-[120px]',
         className: 'w-[120px]',
-        cell: (row) => row.weight,
+        cell: (row, isActiveRow) =>
+          highlightText(row.registeredAt ?? '', getKeyword(), {
+            active: isActiveRow,
+          }),
       },
       {
         key: 'productPath',
         header: '제품 카테고리',
         thClassName: 'w-[120px]',
         className: 'w-[120px]',
-        cell: (row) => row.weight,
+        cell: (row, isActiveRow) =>
+          highlightText(row.productPath ?? '', getKeyword(), {
+            active: isActiveRow,
+          }),
       },
       {
         key: 'referenceUrl',
