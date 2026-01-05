@@ -241,7 +241,7 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
       <div className="min-h-screen bg-[#F4F7FF] px-2 pt-1.5">
         <div className="">
           {/* 상단 */}
-          <div className="flex items-center justify-between border-b border-[#E5E5E5]">
+          <div className="relative flex items-center justify-between border-b border-[#E5E5E5]">
             <CategoryTab
               type={type}
               categories={categorieItem}
@@ -251,7 +251,16 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
             />
 
             {/* Grid / Gallery */}
-            <ViewToggle activeTab={activeTab} setActiveTab={setActiveTab} />
+            {/* md 이상에서만 중앙 고정 */}
+
+            <div className="hidden md:absolute md:left-1/2 md:block md:-translate-x-1/2">
+              <ViewToggle activeTab={activeTab} setActiveTab={setActiveTab} />
+            </div>
+
+            {/* 모바일용 위치 */}
+            <div className="ml-auto md:hidden">
+              <ViewToggle activeTab={activeTab} setActiveTab={setActiveTab} />
+            </div>
 
             <div className="flex gap-3">
               {/* 정렬 버튼 & 모달 */}

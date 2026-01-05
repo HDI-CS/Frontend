@@ -1,3 +1,4 @@
+import { datasetQueryKeys } from '@/src/queries/dataQuery';
 import { evaluationQueryKeys } from '@/src/queries/evaluationQuery';
 import { UserType } from '@/src/schemas/auth';
 import {
@@ -17,8 +18,14 @@ export const useCreateEvaluationYear = (
     mutationFn: () => createEvaluation(type),
     onSuccess: (data) => {
       const yearId = data.result.yearId;
+      // 평가 관련
       queryClient.invalidateQueries({
-        queryKey: evaluationQueryKeys.lists(type!),
+        queryKey: evaluationQueryKeys.lists(type),
+      });
+
+      //  데이터 연도 목록도 같이
+      queryClient.invalidateQueries({
+        queryKey: datasetQueryKeys.lists(),
       });
 
       onSuccess?.(yearId);
