@@ -42,7 +42,10 @@ const ModalComponent = ({
   onNext,
 }: BaseModalProps) => {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div 
+    onClick={(e)=>               e.stopPropagation()
+ }
+    className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       {/* wrapper : 모달 + 화살표 기준 */}
       <div className="relative flex items-center">
         {/* ⬅ LEFT ARROW */}
