@@ -257,8 +257,8 @@ const ProfileGridTable = () => {
   };
 
   return (
-    <div className=" ">
-      <div className="mb-1 flex w-full justify-end">
+    <div className="">
+      <div className="flex w-full justify-end">
         <button className="flex h-[32px] w-[32px] items-center justify-center rounded border border-[#E5E5E5] bg-white hover:opacity-50">
           <Image
             onClick={handleDownload}
@@ -281,6 +281,7 @@ const ProfileGridTable = () => {
               전문가 이메일
             </Th>
             <Th className="text-regular16 w-[151px] text-start">연락처</Th>
+            <Th className="text-regular16 w-[151px] text-start">비밀번호</Th>
             <Th className="text-regular16 w-[151px] text-start">성별</Th>
             <Th className="text-regular16 w-[151px] text-start">나이</Th>
             <Th className="text-regular16 w-[151px] text-start">경력</Th>
@@ -292,10 +293,6 @@ const ProfileGridTable = () => {
 
         <tbody>
           {localData?.map((row, index) => {
-            // const qualitativeCount = getQualitativeCount(
-            //   row.qualitativeEvaluation
-            // );
-
             return (
               <tr
                 onDoubleClick={() => {
@@ -331,6 +328,11 @@ const ProfileGridTable = () => {
                 </Td>
                 <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
                   {highlightText(truncateText(row.phone, 11), keyword, {
+                    active: row.id === activeRowIdFromSearch,
+                  })}
+                </Td>
+                <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
+                  {highlightText(truncateText(row.password, 11), keyword, {
                     active: row.id === activeRowIdFromSearch,
                   })}
                 </Td>
@@ -385,7 +387,11 @@ const ProfileGridTable = () => {
         <ModalComponent
           title={selectedIndex ?? ''}
           subtitle={'전문가 인적사항'}
-          onClose={() => setIsEdit(false)}
+          onClose={() => {
+            setIsEdit(false);
+            editForm.reset();
+            setActiveField(null);
+          }}
           onSubmit={editForm.handleSubmit((data) => {
             onSubmit(data);
             setIsEdit(false);
@@ -401,7 +407,10 @@ const ProfileGridTable = () => {
         <ModalComponent
           title={selectedIndex ?? String(lastIndex)}
           subtitle={'전문가 인적사항'}
-          onClose={() => setIsEdit(false)}
+          onClose={() => {
+            setIsAdd(false);
+            createForm.reset();
+          }}
           onSubmit={createForm.handleSubmit(onCreateSubmit)}
           button="저장"
         >
