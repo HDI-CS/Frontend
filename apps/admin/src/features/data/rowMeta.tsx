@@ -344,6 +344,9 @@ export const INDUSTRY_FIELDS = [
   { label: '재질', field: 'material' },
   { label: '크기', field: 'size' },
   { label: '무게', field: 'weight' },
+  { label: '출시일', field: 'registeredAt' },
+  { label: '제품 카테고리', field: 'productPath' },
+
   { label: '홈페이지', field: 'referenceUrl' },
 ] as const;
 

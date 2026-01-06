@@ -229,10 +229,12 @@ const DataDetailModal = <TRow, TType extends UserType>({
             e.stopPropagation();
             setActvieField(label);
           }}
-          className="w-full rounded border border-[#E9E9E7] px-2 py-1 text-base font-normal outline-[#4676FB]"
+          className="mr-2 flex-1 rounded border border-[#E9E9E7] px-2 py-1.5 text-base font-normal outline-[#4676FB]"
         />
       ) : (
-        <span>{item[field] as string}</span>
+        <span className="whitespace-pre-wrap break-all">
+          {item[field] as string}
+        </span>
       )}
     </LinedField>
   );
@@ -406,7 +408,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
           )}
         </div>
 
-        <div className="relative mt-4 h-auto space-y-6 overflow-y-auto pr-2">
+        <div className="h-200 scrollbar-hidden relative mt-4 space-y-6 overflow-y-auto pr-2">
           {/* ---------- VISUAL image ---------- */}
           {type === 'VISUAL' && (
             <LinedField
@@ -450,7 +452,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
                   <label
                     htmlFor={isEdit ? 'logo-upload' : undefined}
                     className={clsx(
-                      'flex justify-center',
+                      'flex items-center justify-center',
                       isEdit && 'cursor-pointer'
                     )}
                   >
@@ -531,7 +533,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
                     }}
                   >
                     <label htmlFor={isEdit ? field : undefined}>
-                      <div className="w-100 relative flex h-60 items-start">
+                      <div className="w-100 h-120 relative flex items-start">
                         <Image
                           src={
                             preview ??

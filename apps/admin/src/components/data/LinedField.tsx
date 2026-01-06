@@ -17,9 +17,9 @@ const LinedField = ({
   return (
     <li
       className={clsx(
-        'border-l-3 relative mb-0 flex w-full justify-between gap-4 pl-2',
+        'border-l-3 mb-0 flex w-full items-center py-1.5 pl-2',
         activeField === label ? 'border-[#4676FB]' : 'border-[#E9E9E7]',
-        isImg ? 'h-45 flex' : 'h-10'
+        isImg ? 'min-h-90 flex' : 'min-h-10'
       )}
     >
       {isImg ? (
@@ -38,10 +38,10 @@ const LinedField = ({
           </span>
         </div>
       ) : (
-        <>
+        <div className="flex flex-1 items-center justify-between">
           <span
             className={clsx(
-              'w-37 text-bold16 mb-0',
+              'w-37 text-bold16 min-w-37 mb-0',
               activeField === label
                 ? 'rounded p-1 font-normal'
                 : 'text-[#3A3A49]'
@@ -50,7 +50,7 @@ const LinedField = ({
             {label}
           </span>
           {children}
-        </>
+        </div>
       )}
     </li>
   );
