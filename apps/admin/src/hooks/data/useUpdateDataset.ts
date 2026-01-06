@@ -8,9 +8,6 @@ export const useUpdateDataset = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    // return useMutation({
-    //   mutationFn: (input: UpdateMutationInput) => {
-
     mutationFn: (input: UpdateMutationInput) => {
       if (input.type === 'VISUAL') {
         return updateDataset({
@@ -30,12 +27,6 @@ export const useUpdateDataset = () => {
         sideFile: input.sideFile,
       });
     },
-    // updateVisualDataset({
-    //   id,
-
-    //   requestData,
-    //   logoFile: logoFile ? logoFile : null,
-    // }),
 
     onSuccess: async (data, variables) => {
       const { type, logoFile, detailFile, frontFile, sideFile } = variables;

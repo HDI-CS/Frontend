@@ -40,15 +40,15 @@ export interface BaseDatasetItem {
   referenceUrl?: string;
 }
 
-function toDatasetItem(
-  type: 'VISUAL',
-  input: DatasetInputByType['VISUAL']
-): ReturnType<typeof mapVisualDatasetItem>;
+// function toDatasetItem(
+//   type: 'VISUAL',
+//   input: DatasetInputByType['VISUAL']
+// ): ReturnType<typeof mapVisualDatasetItem>;
 
-function toDatasetItem(
-  type: 'INDUSTRY',
-  input: DatasetInputByType['INDUSTRY']
-): ReturnType<typeof mapIndustrialDatasetItem>;
+// function toDatasetItem(
+//   type: 'INDUSTRY',
+//   input: DatasetInputByType['INDUSTRY']
+// ): ReturnType<typeof mapIndustrialDatasetItem>;
 
 function toDatasetItem(
   type: UserType,
@@ -77,7 +77,7 @@ export const useCreateDataset = () => {
           requestData: input.requestData,
         });
       }
-
+      console.log('');
       return createDataset({
         type: 'INDUSTRY',
         yearId: input.yearId,
@@ -147,14 +147,68 @@ export const useCreateDataset = () => {
       return { previousData };
     },
 
-    //  2. 실패 시 롤백
-    // onError: (_err, _newItem, context) => {
-    //   if (context?.previousData) {
-    //     queryClient.setQueryData(listQueryKey, context.previousData);
-    //   }
-    // },
+    // 3. 성공 시 이미지 s에 put
+    onSuccess: async (data, variables) => {
+      const { type, logoFile, detailFile, frontFile, sideFile } = variables;
+      const uploadTasks: Promise<Response>[] = [];
+      /** VISUAL */
+      if (type === 'VISUAL' && 'uploadUrl' in data.result) {
+        const uploadUrl = data.result?.uploadUrl;
 
-    // 3. 성공/실패 상관없이 서버와 동기화
+        if (logoFile && uploadUrl) {
+          uploadTasks.push(
+            fetch(uploadUrl, {
+              method: 'PUT',
+              body: logoFile,
+            })
+          );
+        }
+      }
+
+      /** INDUSTRY */
+      if (type === 'INDUSTRY' && 'detailUploadUrl' in data.result) {
+        const { detailUploadUrl, frontUploadUrl, sideUploadUrl } =
+          data.result ?? {};
+
+        if (detailFile && detailUploadUrl) {
+          uploadTasks.push(
+            fetch(detailUploadUrl, { method: 'PUT', body: detailFile })
+          );
+        }
+
+        if (frontFile && frontUploadUrl) {
+          uploadTasks.push(
+            fetch(frontUploadUrl, { method: 'PUT', body: frontFile })
+          );
+        }
+
+        if (sideFile && sideUploadUrl) {
+          uploadTasks.push(
+            fetch(sideUploadUrl, { method: 'PUT', body: sideFile })
+          );
+        }
+      }
+
+      try {
+        if (uploadTasks.length > 0) {
+          const results = await Promise.all(uploadTasks);
+
+          results.forEach((res) => {
+            if (!res.ok) {
+              throw new Error(`S3 upload failed: ${res.status}`);
+            }
+          });
+        }
+      } catch (e) {
+        console.error('S3 upload failed after update', e);
+      } finally {
+        queryClient.invalidateQueries({
+          queryKey: datasetQueryKeys.lists(),
+        });
+      }
+    },
+
+    // 4. 성공/실패 상관없이 서버와 동기화
     onSettled: (_data, _error, input) => {
       queryClient.invalidateQueries({
         queryKey: datasetQueryKeys.listByYear(input.type, input.yearId),

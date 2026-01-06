@@ -36,7 +36,6 @@ const IndexPage = () => {
   } = useFolderManager();
 
   // 년도 조회 api
-
   // const { data } = useEvaluationYears(type);
   const { data: yearData } = useDataYears(type);
 

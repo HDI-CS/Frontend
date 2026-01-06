@@ -85,6 +85,20 @@ export const CreateIndustrialDatasetRequestSchema = z.object({
   industryDataCategory: IndustryCategorySchema,
 });
 
+// 이미지 객체 스키마
+
+export const IndustrialUploadUrlSchema = z.object({
+  detailUploadUrl: z.string(),
+  frontUploadUrl: z.string(),
+  sideUploadUrl: z.string(),
+});
+
+export const CreateIndustrialDatasetResponseSchema = z.object({
+  code: z.number(),
+  message: z.string(),
+  result: IndustrialUploadUrlSchema,
+});
+
 // 시각 디자인 데이터셋 수정 요청 스키마
 export const UpdateIndustrialDatasetRequestSchema = z
   .object({
@@ -130,7 +144,9 @@ export type GetDetailIndustrialDataByCategoryResponse = z.infer<
 export type CreateIndustrialDatasetRequest = z.infer<
   typeof CreateIndustrialDatasetRequestSchema
 >;
-
+export type CreateIndustrialDatasetResponse = z.infer<
+  typeof CreateIndustrialDatasetResponseSchema
+>;
 export type UpdateIndustrialDatasetRequest = z.infer<
   typeof UpdateIndustrialDatasetRequestSchema
 >;

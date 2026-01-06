@@ -104,9 +104,7 @@ const SidebarMenu = ({ type }: SidebarMenuProps) => {
   const openRoot = ROUTE_GROUPS.ROOT(lowerType).some((r) =>
     pathname.startsWith(r)
   );
-  const openData = ROUTE_GROUPS.DATA(lowerType).some((r) =>
-    pathname.startsWith(r)
-  );
+  const openData = pathname.startsWith(ROUTES.DATA.ROOT(lowerType));
 
   const openEvaluation = pathname.startsWith(ROUTES.EVALUATION.ROOT(lowerType));
 

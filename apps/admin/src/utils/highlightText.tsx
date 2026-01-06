@@ -1,27 +1,4 @@
-// export function highlightText(
-//   text: string,
-//   keyword: string,
-//   highlightClass = 'text-green-600 font-semibold'
-// ) {
-//   if (!keyword) return text;
-//   if (!text) return text;
-
-//   const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-//   const regex = new RegExp(`(${escaped})`, 'gi');
-
-//   const parts = text.split(regex);
-
-//   return parts.map((part, idx) =>
-//     regex.test(part) ? (
-//       <span key={idx} className={highlightClass}>
-//         {part}
-//       </span>
-//     ) : (
-//       <span key={idx}>{part}</span>
-//     )
-//   );
-// }
-
+import { truncateText } from '@/src/utils/truncateText';
 
 export function highlightText(
   text: string,
@@ -53,4 +30,20 @@ export function highlightText(
       )}
     </>
   );
+}
+
+export function renderCellText(
+  text: string | null | undefined,
+  keyword: string,
+  options?: {
+    active?: boolean;
+    maxLength?: number;
+  }
+) {
+  const safeText = text ?? '';
+  const truncated = truncateText(safeText, options?.maxLength ?? 20);
+
+  return highlightText(truncated, keyword, {
+    active: options?.active,
+  });
 }

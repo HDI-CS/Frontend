@@ -10,8 +10,10 @@ import {
   WithIndex,
 } from '@/src/types/data/visual-data';
 import { EvaluationYearFolder } from '@/src/types/evaluation';
-import { highlightText } from '@/src/utils/highlightText';
+import { renderCellText } from '@/src/utils/highlightText';
+import { truncateText } from '@/src/utils/truncateText';
 import Image from 'next/image';
+import { CategoryByType } from './DataYearPage';
 import { MetaByType } from './uiDef';
 const getKeyword = () => useSearchStore.getState().keyword;
 
@@ -42,8 +44,9 @@ export const rowMeta: MetaByType = {
         className: 'w-[90px] px-3',
 
         cell: (row, isActiveRow) =>
-          highlightText(row.code ?? '', getKeyword(), {
+          renderCellText(row.code, getKeyword(), {
             active: isActiveRow,
+            maxLength: 6,
           }),
       },
       {
@@ -53,8 +56,9 @@ export const rowMeta: MetaByType = {
         className: 'w-[140px] px-3',
 
         cell: (row, isActiveRow) =>
-          highlightText(row.name ?? '', getKeyword(), {
+          renderCellText(row.name, getKeyword(), {
             active: isActiveRow,
+            maxLength: 6,
           }),
       },
       {
@@ -63,8 +67,9 @@ export const rowMeta: MetaByType = {
         thClassName: 'w-[140px]',
         className: 'w-[140px]',
         cell: (row, isActiveRow) =>
-          highlightText(row.sectorCategory ?? '', getKeyword(), {
+          renderCellText(row.sectorCategory, getKeyword(), {
             active: isActiveRow,
+            maxLength: 6,
           }),
       },
       {
@@ -73,8 +78,9 @@ export const rowMeta: MetaByType = {
         thClassName: 'min-w-[260px]',
         className: 'min-w-[260px]',
         cell: (row, isActiveRow) =>
-          highlightText(row.mainProductCategory ?? '', getKeyword(), {
+          renderCellText(row.mainProductCategory, getKeyword(), {
             active: isActiveRow,
+            maxLength: 20,
           }),
       },
       {
@@ -83,8 +89,9 @@ export const rowMeta: MetaByType = {
         thClassName: 'min-w-[240px]',
         className: 'min-w-[240px]',
         cell: (row, isActiveRow) =>
-          highlightText(row.mainProduct ?? '', getKeyword(), {
+          renderCellText(row.mainProduct, getKeyword(), {
             active: isActiveRow,
+            maxLength: 6,
           }),
       },
       {
@@ -93,8 +100,9 @@ export const rowMeta: MetaByType = {
         thClassName: 'w-[160px]',
         className: 'w-[160px]',
         cell: (row, isActiveRow) =>
-          highlightText(row.target ?? '', getKeyword(), {
+          renderCellText(row.target, getKeyword(), {
             active: isActiveRow,
+            maxLength: 6,
           }),
       },
       {
@@ -111,7 +119,7 @@ export const rowMeta: MetaByType = {
               rel="noreferrer"
               className="text-[#4B5563] underline-offset-2 hover:underline"
             >
-              {row.referenceUrl}
+              {truncateText(String(row.referenceUrl), 20)}
             </a>
           );
         },
@@ -163,8 +171,9 @@ export const rowMeta: MetaByType = {
         thClassName: 'w-[90px]',
         className: 'w-[90px] px-3',
         cell: (row, isActiveRow) =>
-          highlightText(row.code ?? '', getKeyword(), {
+          renderCellText(row.code, getKeyword(), {
             active: isActiveRow,
+            maxLength: 6,
           }),
       },
       {
@@ -173,8 +182,9 @@ export const rowMeta: MetaByType = {
         thClassName: 'min-w-[200px]',
         className: 'min-w-[200px]',
         cell: (row, isActiveRow) =>
-          highlightText(row.productName ?? '', getKeyword(), {
+          renderCellText(row.productName, getKeyword(), {
             active: isActiveRow,
+            maxLength: 6,
           }),
       },
       {
@@ -183,8 +193,9 @@ export const rowMeta: MetaByType = {
         thClassName: 'w-[160px]',
         className: 'w-[160px]',
         cell: (row, isActiveRow) =>
-          highlightText(row.companyName ?? '', getKeyword(), {
+          renderCellText(row.companyName, getKeyword(), {
             active: isActiveRow,
+            maxLength: 6,
           }),
       },
       {
@@ -193,8 +204,9 @@ export const rowMeta: MetaByType = {
         thClassName: 'w-[160px]',
         className: 'w-[160px]',
         cell: (row, isActiveRow) =>
-          highlightText(row.modelName ?? '', getKeyword(), {
+          renderCellText(row.modelName, getKeyword(), {
             active: isActiveRow,
+            maxLength: 6,
           }),
       },
       {
@@ -203,8 +215,9 @@ export const rowMeta: MetaByType = {
         thClassName: 'w-[120px]',
         className: 'w-[120px]',
         cell: (row, isActiveRow) =>
-          highlightText(row.price ?? '', getKeyword(), {
+          renderCellText(row.price, getKeyword(), {
             active: isActiveRow,
+            maxLength: 6,
           }),
       },
       {
@@ -213,8 +226,9 @@ export const rowMeta: MetaByType = {
         thClassName: 'w-[140px]',
         className: 'w-[140px]',
         cell: (row, isActiveRow) =>
-          highlightText(row.material ?? '', getKeyword(), {
+          renderCellText(row.material, getKeyword(), {
             active: isActiveRow,
+            maxLength: 6,
           }),
       },
       {
@@ -223,8 +237,9 @@ export const rowMeta: MetaByType = {
         thClassName: 'w-[140px]',
         className: 'w-[140px]',
         cell: (row, isActiveRow) =>
-          highlightText(row.size ?? '', getKeyword(), {
+          renderCellText(row.size, getKeyword(), {
             active: isActiveRow,
+            maxLength: 6,
           }),
       },
       {
@@ -233,8 +248,9 @@ export const rowMeta: MetaByType = {
         thClassName: 'w-[120px]',
         className: 'w-[120px]',
         cell: (row, isActiveRow) =>
-          highlightText(row.weight ?? '', getKeyword(), {
+          renderCellText(row.weight, getKeyword(), {
             active: isActiveRow,
+            maxLength: 6,
           }),
       },
       {
@@ -243,8 +259,9 @@ export const rowMeta: MetaByType = {
         thClassName: 'w-[120px]',
         className: 'w-[120px]',
         cell: (row, isActiveRow) =>
-          highlightText(row.registeredAt ?? '', getKeyword(), {
+          renderCellText(row.registeredAt, getKeyword(), {
             active: isActiveRow,
+            maxLength: 6,
           }),
       },
       {
@@ -253,8 +270,9 @@ export const rowMeta: MetaByType = {
         thClassName: 'w-[120px]',
         className: 'w-[120px]',
         cell: (row, isActiveRow) =>
-          highlightText(row.productPath ?? '', getKeyword(), {
+          renderCellText(row.productPath, getKeyword(), {
             active: isActiveRow,
+            maxLength: 6,
           }),
       },
       {
@@ -271,7 +289,7 @@ export const rowMeta: MetaByType = {
               rel="noreferrer"
               className="text-[#4B5563] underline-offset-2 hover:underline"
             >
-              {row.referenceUrl}
+              {truncateText(String(row.referenceUrl), 20)}
             </a>
           );
         },
@@ -331,7 +349,10 @@ export const INDUSTRY_FIELDS = [
 
 // get detail API → UpdateForm 변환 mapper
 export const updateRequestMapper = {
-  VISUAL: (detail: GetDetailResponseByType['VISUAL'], category: string) => ({
+  VISUAL: (
+    detail: GetDetailResponseByType['VISUAL'],
+    category: CategoryByType['VISUAL'] | null
+  ) => ({
     code: detail.code ?? '',
     name: detail.name ?? '',
     sectorCategory: detail.sectorCategory ?? '',

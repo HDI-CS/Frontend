@@ -32,7 +32,6 @@ export type DataPageProps =
     };
 
 const IndexPage = () => {
-  // const pathname = usePathname();
   // const type = pathname.startsWith('/industry') ? 'INDUSTRY' : 'VISUAL';
 
   const {
@@ -93,6 +92,5 @@ const IndexPage = () => {
     default:
       throw new Error(`Unsupported dataset type: ${type}`);
   }
-
 };
 export default IndexPage;

@@ -7,7 +7,7 @@ import {
   DuplicateDatasetResponseSchema,
 } from '@/src/schemas/visual-data';
 import {
-  CreateDatasetParams,
+  CreateMutationInput,
   UpdateMutationInput,
 } from '@/src/types/data/visual-data';
 import { safeZodParse } from '@/src/utils/zod';
@@ -119,7 +119,7 @@ export const dispatchSearchDataset = ({
 };
 
 // 생성 공통 함수
-export const createDataset = async (params: CreateDatasetParams) => {
+export const createDataset = async (params: CreateMutationInput) => {
   const { type, yearId } = params;
   switch (type) {
     case 'VISUAL':
@@ -129,6 +129,7 @@ export const createDataset = async (params: CreateDatasetParams) => {
       });
 
     case 'INDUSTRY':
+      console.log('호출');
       return createIndustrialDataset({
         yearId,
         requestData: params.requestData,

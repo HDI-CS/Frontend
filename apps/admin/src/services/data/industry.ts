@@ -2,13 +2,13 @@ import { apiClient } from '@/src/lib/axios';
 import {
   CreateIndustrialDatasetRequest,
   CreateIndustrialDatasetRequestSchema,
+  CreateIndustrialDatasetResponseSchema,
   GetDetailIndustrialDataByCategoryResponseSchema,
   GetIndustrialDataByCategoryResponseSchema,
   GetIndustrialDataByKeywordyResponseSchema,
   UpdateIndustrialDatasetRequest,
   UpdateIndustrialDatasetRequestSchema,
 } from '@/src/schemas/industry-data';
-import { CreateDatasetResponseSchema } from '@/src/schemas/visual-data';
 import { safeZodParse } from '@/src/utils/zod';
 
 export const getIndustrialDatasetsByYear = async (yearId: number) => {
@@ -43,38 +43,8 @@ export const createIndustrialDataset = async ({
     validated
   );
 
-  return CreateDatasetResponseSchema.parse(res.data);
+  return CreateIndustrialDatasetResponseSchema.parse(res.data);
 };
-
-// export const updateIndustrialDataset = async ({
-//   id,
-//   requestData,
-//   detailFile,
-//   frontFile,
-//   sideFile,
-// }: {
-//   id: number;
-//   requestData: UpdateIndustrialDatasetRequest;
-//   detailFile?: File | null;
-//   frontFile?: File | null;
-//   sideFile?: File | null;
-// }) => {
-//   const validated = safeZodParse(
-//     UpdateIndustrialDatasetRequestSchema,
-//     requestData,
-//     { operation: 'I UpdateDataset request validation' }
-//   );
-
-//   const res = await apiClient.patch(
-//     `/api/v1/admin/industry/data/datasets/${id}`,
-//     validated,
-//     {
-//       params: logoFile === null ? { image: 'DELETE' } : {},
-//     }
-//   );
-
-//   return res.data;
-// };
 
 export const updateIndustrialDataset = async ({
   id,

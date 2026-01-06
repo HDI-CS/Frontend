@@ -1,8 +1,8 @@
 import { apiClient } from '@/src/lib/axios';
 import {
-  CreateDatasetResponseSchema,
   CreateVisualDatasetRequest,
   CreateVisualDatasetRequestSchema,
+  CreateVisualDatasetResponseSchema,
   GetDetailVisualDataByCategoryResponseSchema,
   GetVisualDataByCategoryResponseSchema,
   GetVisualDataByKeywordyResponseSchema,
@@ -43,7 +43,7 @@ export const createVisualDataset = async ({
     `/api/v1/admin/visual/data/years/${yearId}/datasets`,
     validated
   );
-  return CreateDatasetResponseSchema.parse(res.data);
+  return CreateVisualDatasetResponseSchema.parse(res.data);
 };
 
 // 검색

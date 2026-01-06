@@ -83,7 +83,7 @@ export const CreateVisualDatasetRequestSchema = z.object({
 });
 
 // 데이터셋 생성 응답 스키마
-export const CreateDatasetResponseSchema = z.object({
+export const CreateVisualDatasetResponseSchema = z.object({
   code: z.number(),
   message: z.string(),
   result: UploadUrlSchema,
@@ -177,7 +177,9 @@ export type GetDetailVisualDataByCategoryResponse = z.infer<
 export type CreateVisualDatasetRequest = z.infer<
   typeof CreateVisualDatasetRequestSchema
 >;
-export type CreateDatasetResponse = z.infer<typeof CreateDatasetResponseSchema>;
+export type CreateVisualDatasetResponse = z.infer<
+  typeof CreateVisualDatasetResponseSchema
+>;
 
 export type DuplicateDatasetRequest = z.infer<
   typeof DuplicateDatasetRequestSchema
