@@ -3,6 +3,7 @@ import AddBtn from '@/src/components/common/AddBtn';
 import AddEvaluation from '@/src/components/evaluation/AddEvaluation';
 import FolderList from '@/src/components/FolderList';
 import FolderModals from '@/src/components/FolderModals';
+import FolderWrapper from '@/src/components/layout/FolderWrapper';
 import { mapEvaluationPhaseToFolders } from '@/src/features/data/rowMeta';
 import { useCreateEvaluationRound } from '@/src/hooks/evaluation/useCreateEvaluationYear';
 import { useEvaluationYears } from '@/src/hooks/evaluation/useEvaluationYears';
@@ -87,7 +88,7 @@ const IndexPage = () => {
   }, [data, setExtraLabel, year]);
 
   return (
-    <div className="font-pretendard text-blue text-blue mt-14 grid min-h-screen pl-40 pr-60">
+    <FolderWrapper>
       <div className="flex flex-col gap-5">
         <div className="flex text-[#4676FB]">
           <p className="ml-21 w-25">Folder</p>
@@ -133,7 +134,7 @@ const IndexPage = () => {
           />
         )}
       </div>
-    </div>
+    </FolderWrapper>
   );
 };
 export default IndexPage;

@@ -1,5 +1,6 @@
 'use client';
 import Folder from '@/src/components/Folder';
+import FolderWrapper from '@/src/components/layout/FolderWrapper';
 import { ADMIN_SECTIONS } from '@/src/constants/adminSection';
 import { UserType } from '@/src/schemas/auth';
 import { usePathname, useRouter } from 'next/navigation';
@@ -20,7 +21,7 @@ const IndexPage = () => {
   }));
 
   return (
-    <div className="font-pretendard text-blue text-blue pl-47 mt-14 grid min-h-screen pr-80">
+    <FolderWrapper>
       <div className="flex flex-col gap-5">
         <div className="text-primary-blue flex">
           <p className="ml-21 w-25">Folder</p>
@@ -40,7 +41,7 @@ const IndexPage = () => {
           />
         ))}
       </div>
-    </div>
+    </FolderWrapper>
   );
 };
 export default IndexPage;

@@ -89,7 +89,7 @@ const Folder = ({
           {/* 폴더명 */}
           <p
             className={clsx(
-              'w-26 font-light transition-colors group-hover:text-white',
+              'w-25 font-light transition-colors group-hover:text-white',
               isMenuOpen ? 'text-[#ffffff]' : 'text-[#4676FB]'
             )}
           >

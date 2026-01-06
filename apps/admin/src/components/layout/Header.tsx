@@ -1,5 +1,6 @@
 'use client';
 import { useLogout } from '@/src/hooks/useLogout';
+import { usePathname, useRouter } from 'next/navigation';
 import SearchInput from '../SearchInput';
 
 interface HeaderProps {
@@ -9,6 +10,10 @@ interface HeaderProps {
 
 const Header = ({ name, isInput }: HeaderProps) => {
   const logoutMutation = useLogout();
+  const router = useRouter();
+
+  const pathname = usePathname();
+  const type = pathname.startsWith('/industry') ? 'INDUSTRY' : 'VISUAL';
 
   // 로그아웃 중일 때는 useMe 훅 비활성화하여 불필요한 API 호출 방지
   // const { data: meData, isLoading, error } = useMe(!logoutMutation.isPending);
@@ -23,7 +28,12 @@ const Header = ({ name, isInput }: HeaderProps) => {
 
   return (
     <div className="h-18 flex w-full items-center justify-between gap-5 border-b border-[#E9E9E7] px-10 py-4">
-      <span className="text-xl font-bold text-[#001D6C]">{name}</span>
+      <span
+        onClick={() => router.push(`/${type.toLowerCase()}`)}
+        className="cursor-pointer text-xl font-bold text-[#001D6C]"
+      >
+        {name}
+      </span>
       <div>{isInput && <SearchInput />}</div>
       <div
         onClick={handleLogout}

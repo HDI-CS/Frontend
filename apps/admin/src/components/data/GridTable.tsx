@@ -78,7 +78,7 @@ const GridTable = <T extends { id: number }, TType extends UserType>({
           <table className="w-full border-separate border-spacing-0">
             {/* 헤더 */}
             <thead className="sticky top-0 z-10 bg-white">
-              <tr className=" text-left text-sm font-light text-[#8D8D8D]">
+              <tr className="text-left text-sm font-light text-[#8D8D8D]">
                 {columns.map((col) =>
                   col.key === 'code' ? (
                     <Th
