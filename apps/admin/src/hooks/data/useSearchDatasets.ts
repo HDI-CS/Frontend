@@ -8,7 +8,7 @@ import { useQuery } from '@tanstack/react-query';
 interface useSearchDatasetsParams {
   type: UserType;
   keyword: string;
-  category: string;
+  category?: string;
 }
 
 export const useSearchDatasets = ({
@@ -25,6 +25,6 @@ export const useSearchDatasets = ({
 
       return searchIndustrialDataset({ keyword, category });
     },
-    enabled: keyword.trim().length >= 2,
+    enabled: !!category && keyword.trim().length >= 2,
   });
 };

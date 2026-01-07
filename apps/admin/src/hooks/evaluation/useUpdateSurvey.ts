@@ -1,3 +1,4 @@
+import { datasetQueryKeys } from '@/src/queries/dataQuery';
 import { evaluationQueryKeys } from '@/src/queries/evaluationQuery';
 import { UserType } from '@/src/schemas/auth';
 import { UpdateOriginalSurvey } from '@/src/schemas/evaluation';
@@ -24,6 +25,11 @@ export const useUpdateSurvey = (type: UserType) => {
       queryClient.invalidateQueries({
         queryKey: evaluationQueryKeys.lists(type),
       });
+
+      //  데이터 연도 목록도 같이
+      queryClient.invalidateQueries({
+        queryKey: datasetQueryKeys.lists(type),
+      });
     },
   });
 };
@@ -41,6 +47,10 @@ export const useUpdatePhaseSurvey = (type: UserType) => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: evaluationQueryKeys.lists(type),
+      });
+      //  데이터 연도 목록도 같이
+      queryClient.invalidateQueries({
+        queryKey: datasetQueryKeys.lists(type),
       });
     },
   });

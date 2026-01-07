@@ -104,9 +104,7 @@ const SidebarMenu = ({ type }: SidebarMenuProps) => {
   const openRoot = ROUTE_GROUPS.ROOT(lowerType).some((r) =>
     pathname.startsWith(r)
   );
-  const openData = ROUTE_GROUPS.DATA(lowerType).some((r) =>
-    pathname.startsWith(r)
-  );
+  const openData = pathname.startsWith(ROUTES.DATA.ROOT(lowerType));
 
   const openEvaluation = pathname.startsWith(ROUTES.EVALUATION.ROOT(lowerType));
 
@@ -176,13 +174,14 @@ const SidebarMenu = ({ type }: SidebarMenuProps) => {
                   <SubMenuItem
                     key={round.roundId}
                     label={`${round.roundName}`}
-                    active={pathname.startsWith(
+                    active={
+                      pathname ===
                       ROUTES.EVALUATION.PHASE(
                         lowerType,
                         year.yearId,
                         round.roundId ?? 0
                       )
-                    )}
+                    }
                     onClick={() =>
                       router.push(
                         ROUTES.EVALUATION.PHASE(

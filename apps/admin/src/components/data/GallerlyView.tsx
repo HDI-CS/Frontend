@@ -3,6 +3,8 @@ import empty from '@/public/data/EmptyIMg.svg';
 import { GalleryFieldDef } from '@/src/features/data/uiDef';
 import useGridManager from '@/src/hooks/useGridManager';
 import { UserType } from '@/src/schemas/auth';
+import { IndustryCategory } from '@/src/schemas/industry-data';
+import { VisualCategory } from '@/src/schemas/visual-data';
 import { BaseRow, VisualRow, WithIndex } from '@/src/types/data/visual-data';
 import { truncateText } from '@/src/utils/truncateText';
 import clsx from 'clsx';
@@ -169,7 +171,7 @@ const GalleryView = <T extends BaseRow>({
                   type={'VISUAL'}
                   row={visualRow}
                   dataId={dataId}
-                  activeCategory={activeCategory}
+                  activeCategory={activeCategory as VisualCategory}
                   isEdit={isEdit}
                   onClose={() => {
                     setIsEdit(false);
@@ -196,7 +198,7 @@ const GalleryView = <T extends BaseRow>({
                   type={'INDUSTRY'}
                   row={industryRow}
                   dataId={dataId}
-                  activeCategory={activeCategory}
+                  activeCategory={activeCategory as IndustryCategory}
                   isEdit={isEdit}
                   onClose={() => {
                     setIsEdit(false);

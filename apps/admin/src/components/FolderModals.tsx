@@ -8,6 +8,7 @@ interface FolderModalsProps {
   onCloseAdd: () => void;
   onCloseEdit: () => void;
   onSubmit: () => void;
+  onEdit?: () => void;
 }
 
 const FolderModals = ({
@@ -18,6 +19,7 @@ const FolderModals = ({
   onCloseAdd,
   onCloseEdit,
   onSubmit,
+  onEdit,
 }: FolderModalsProps) => {
   return (
     <>
@@ -37,13 +39,13 @@ const FolderModals = ({
         </ModalComponent>
       )}
 
-      {editName && (
+      {!add && editName && onEdit && (
         <ModalComponent
           title="폴더 이름"
           button="저장"
           editBasicInfo={true}
           onClose={onCloseEdit}
-          onSubmit={onSubmit}
+          onSubmit={onEdit}
         >
           <input
             value={editFolderName ?? ''}

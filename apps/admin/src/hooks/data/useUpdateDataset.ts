@@ -8,9 +8,6 @@ export const useUpdateDataset = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    // return useMutation({
-    //   mutationFn: (input: UpdateMutationInput) => {
-
     mutationFn: (input: UpdateMutationInput) => {
       if (input.type === 'VISUAL') {
         return updateDataset({
@@ -25,19 +22,13 @@ export const useUpdateDataset = () => {
         type: 'INDUSTRY',
         id: input.id,
         requestData: input.requestData,
-        detailFile: input.logoFile ? input.logoFile : null,
+        detailFile: input.detailFile,
+        frontFile: input.frontFile,
+        sideFile: input.sideFile,
       });
     },
-    // updateVisualDataset({
-    //   id,
-
-    //   requestData,
-    //   logoFile: logoFile ? logoFile : null,
-    // }),
 
     onSuccess: async (data, variables) => {
-      console.log('🔥 update success data', data);
-      console.log('🔥 update variables', variables);
       const { type, logoFile, detailFile, frontFile, sideFile } = variables;
       const uploadTasks: Promise<Response>[] = [];
       /** VISUAL */

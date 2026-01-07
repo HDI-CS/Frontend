@@ -14,16 +14,15 @@ import SubHeader from './SubHeader';
 const HIDE_HEADER_ROUTES = ['/auth'];
 
 // SubHeader 보여주는 라우터들
-const SUB_HEADER_RULES = new Map<string, number>([
-  ['/index', 1],
-  ['/index/data', 2],
-  ['/index/expert', 2],
-  ['/index/evaluation', 2],
-  ['/index/evaluation/year1', 3],
-  ['/index/evaluation/year2', 3],
-  ['/index/expert/id-mapping', 3],
-  ['/index/expert/id-mapping/year1', 4],
-]);
+const SUB_HEADER_RULES = [
+  { pattern: /^\/(industry|visual)$/, depth: 1 },
+  { pattern: /^\/(industry|visual)\/data$/, depth: 2 },
+  { pattern: /^\/(industry|visual)\/expert$/, depth: 2 },
+  { pattern: /^\/(industry|visual)\/evaluation$/, depth: 2 },
+  { pattern: /^\/(industry|visual)\/evaluation\/[^/]+$/, depth: 3 },
+  { pattern: /^\/(industry|visual)\/expert\/id-mapping$/, depth: 3 },
+  { pattern: /^\/(industry|visual)\/expert\/id-mapping\/[^/]+$/, depth: 4 },
+];
 
 export default function LayoutWrapper({
   children,
@@ -67,9 +66,10 @@ export default function LayoutWrapper({
   const getPathDepth = (pathname: string) =>
     pathname.split('/').filter(Boolean).length;
 
-  const showSubHeader =
-    SUB_HEADER_RULES.get(pathname) === getPathDepth(pathname);
-
+  const showSubHeader = SUB_HEADER_RULES.some(
+    ({ pattern, depth }) =>
+      pattern.test(pathname) && depth === getPathDepth(pathname)
+  );
   return (
     <div className="">
       {/*  기본 가로 스크롤 차단 */}

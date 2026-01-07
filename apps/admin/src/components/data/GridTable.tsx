@@ -1,5 +1,8 @@
+import { CategoryByType } from '@/src/features/data/DataYearPage';
 import useGridManager from '@/src/hooks/useGridManager';
 import { UserType } from '@/src/schemas/auth';
+import { IndustryCategory } from '@/src/schemas/industry-data';
+import { VisualCategory } from '@/src/schemas/visual-data';
 import { useSearchStore } from '@/src/store/searchStore';
 import { ColumnDef, VisualRow, WithIndex } from '@/src/types/data/visual-data';
 import clsx from 'clsx';
@@ -9,18 +12,18 @@ import IdSortMenu from './table/IdSortMenu';
 import Td from './table/Td';
 import Th from './table/Th';
 
-interface GridTableProps<T extends { id: number }> {
+interface GridTableProps<T extends { id: number }, TType extends UserType> {
   type: UserType;
   rows: WithIndex<T>[];
   columns: ColumnDef<WithIndex<T>>[];
   lastIndex: number;
   orderBy: 'first' | 'last';
-  activeCategory: string;
+  activeCategory: CategoryByType[TType] | null;
   setOrderBy: (sort: 'first' | 'last') => void;
   onAddRow: () => void;
 }
 
-const GridTable = <T extends { id: number }>({
+const GridTable = <T extends { id: number }, TType extends UserType>({
   type,
   rows,
   columns,
@@ -29,7 +32,7 @@ const GridTable = <T extends { id: number }>({
   setOrderBy,
   lastIndex,
   activeCategory,
-}: GridTableProps<T>) => {
+}: GridTableProps<T, TType>) => {
   const {
     dataId,
     activeRowId,
@@ -75,7 +78,7 @@ const GridTable = <T extends { id: number }>({
           <table className="w-full border-separate border-spacing-0">
             {/* 헤더 */}
             <thead className="sticky top-0 z-10 bg-white">
-              <tr className="border text-left text-sm font-light text-[#8D8D8D]">
+              <tr className="text-left text-sm font-light text-[#8D8D8D]">
                 {columns.map((col) =>
                   col.key === 'code' ? (
                     <Th
@@ -144,7 +147,7 @@ const GridTable = <T extends { id: number }>({
                 <Td className="flex w-[64px] items-center justify-center hover:bg-[#F4F7FF]">
                   <button
                     onClick={onAddRow}
-                    className="flex h-full w-[28px] items-center justify-center rounded py-5 text-center text-3xl text-[#4676FB]"
+                    className="flex h-full cursor-pointer items-center justify-center rounded px-5 py-5 text-center text-3xl text-[#4676FB]"
                     aria-label="add row"
                   >
                     +
@@ -192,7 +195,7 @@ const GridTable = <T extends { id: number }>({
                     type={'VISUAL'}
                     row={visualRow}
                     dataId={dataId}
-                    activeCategory={activeCategory}
+                    activeCategory={activeCategory as VisualCategory}
                     isEdit={isEdit}
                     onClose={() => {
                       setIsEdit(false);
@@ -219,7 +222,7 @@ const GridTable = <T extends { id: number }>({
                     type={'INDUSTRY'}
                     row={industryRow}
                     dataId={dataId}
-                    activeCategory={activeCategory}
+                    activeCategory={activeCategory as IndustryCategory}
                     isEdit={isEdit}
                     onClose={() => {
                       setIsEdit(false);

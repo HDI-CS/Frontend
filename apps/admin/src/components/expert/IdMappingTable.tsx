@@ -227,7 +227,7 @@ const IdMappingTable = ({ type, round }: IdMappingTableProps) => {
           {mappingData?.map((row, index) => {
             return (
               <tr
-                key={row.memberId}
+                key={`${row.memberId}-${index}`}
                 className={clsx(
                   'h-21 text-neutral-regularBlack hover:bg-[#F4F7FF]',
                   activeRowId === row.memberId
@@ -325,9 +325,9 @@ const IdMappingTable = ({ type, round }: IdMappingTableProps) => {
                     className="flex h-full w-full items-center"
                   >
                     <div className="flex flex-wrap items-center gap-1">
-                      {row.dataIds.map((product) => (
+                      {row.dataIds.map((product, index) => (
                         <IdNumberBtn
-                          key={product.datasetId}
+                          key={`${product.datasetId}-${index}`}
                           item={product.dataCode}
                         />
                       ))}

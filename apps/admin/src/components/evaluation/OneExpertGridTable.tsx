@@ -25,6 +25,7 @@ const OneExpertGridTable = ({ expertData }: OneExpertGridTableProps) => {
     orderBy,
     selectedRow,
     showQuestion,
+    selectedIndex,
 
     setDataId,
     setIdMenu,
@@ -35,6 +36,7 @@ const OneExpertGridTable = ({ expertData }: OneExpertGridTableProps) => {
     setOrderBy,
     setSelectedRow,
     setShowQuestion,
+    setSelectedIndex,
   } = useGridManager(type!);
 
   // 화살표 disabled 관리
@@ -174,6 +176,7 @@ const OneExpertGridTable = ({ expertData }: OneExpertGridTableProps) => {
                   setSelectedRow(row);
                   setActiveRowId(row.dataId);
                   setDataId(row.dataId);
+                  setSelectedIndex(String(index + 1));
                 }}
                 onContextMenu={(e) => {
                   e.preventDefault();
@@ -191,26 +194,6 @@ const OneExpertGridTable = ({ expertData }: OneExpertGridTableProps) => {
                     : 'bg-neutral-white'
                 )}
               >
-                {/* check Box */}
-                {/* <Td className="text-regular16 h-25 group flex cursor-pointer justify-center py-1 text-center"> */}
-                {/* 기본 이미지 */}
-                {/* <Image
-                    src={nocheck}
-                    alt="check"
-                    width={10}
-                    className="block group-hover:hidden"
-                  /> */}
-                {/* hover 이미지 */}
-                {/* <Image
-                    src={check}
-                    alt="check-hover"
-                    width={20}
-                    className="hidden scale-105 group-hover:block"
-                  />{' '} */}
-                {/* </Td> */}
-                {/* <Td className="text-regular16 py-1 text-center">
-                  <Image src={icon} alt="icon" />
-                </Td> */}
                 <Td className="text-regular16 text-neutral-regularBlack px-4 py-1 text-center">
                   {index + 1}
                 </Td>
@@ -272,7 +255,7 @@ const OneExpertGridTable = ({ expertData }: OneExpertGridTableProps) => {
       {/* 설문결과 Modal 오픈 */}
       {dataId && (
         <ResultModal
-          dataId={dataId}
+          selectedIndex={selectedIndex}
           row={selectedRow}
           expertName={expertData.memberName}
           currentIndex={currentIndex}

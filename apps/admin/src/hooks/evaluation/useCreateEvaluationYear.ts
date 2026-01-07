@@ -11,15 +11,13 @@ export const useCreateEvaluationYear = (
   type: UserType,
   onSuccess?: (yearId: number) => void
 ) => {
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: () => createEvaluation(type),
     onSuccess: (data) => {
       const yearId = data.result.yearId;
-      queryClient.invalidateQueries({
-        queryKey: evaluationQueryKeys.lists(type!),
-      });
+      // 평가 관련
 
       onSuccess?.(yearId);
     },

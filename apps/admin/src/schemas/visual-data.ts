@@ -1,7 +1,8 @@
 import z from 'zod';
 
-export type VisualCategory = 'COSMETIC' | 'FB';
+export const VisualCategorySchema = z.enum(['COSMETIC', 'FB']);
 
+export type VisualCategory = z.infer<typeof VisualCategorySchema>;
 // 연도 스키마
 export const YearSchema = z.object({
   yearId: z.number(),
@@ -78,11 +79,11 @@ export const CreateVisualDatasetRequestSchema = z.object({
   target: z.string(),
   referenceUrl: z.string(),
   originalLogoImage: z.string().nullable(),
-  visualDataCategory: z.string(),
+  visualDataCategory: VisualCategorySchema,
 });
 
 // 데이터셋 생성 응답 스키마
-export const CreateDatasetResponseSchema = z.object({
+export const CreateVisualDatasetResponseSchema = z.object({
   code: z.number(),
   message: z.string(),
   result: UploadUrlSchema,
@@ -104,7 +105,7 @@ export const UpdateVisualDatasetRequestSchema = z
     target: z.string(),
     referenceUrl: z.string(),
     originalLogoImage: z.string().nullable(), // 빈 값일 땐 널
-    visualDataCategory: z.string(),
+    visualDataCategory: VisualCategorySchema,
   })
   .partial();
 
@@ -176,7 +177,9 @@ export type GetDetailVisualDataByCategoryResponse = z.infer<
 export type CreateVisualDatasetRequest = z.infer<
   typeof CreateVisualDatasetRequestSchema
 >;
-export type CreateDatasetResponse = z.infer<typeof CreateDatasetResponseSchema>;
+export type CreateVisualDatasetResponse = z.infer<
+  typeof CreateVisualDatasetResponseSchema
+>;
 
 export type DuplicateDatasetRequest = z.infer<
   typeof DuplicateDatasetRequestSchema

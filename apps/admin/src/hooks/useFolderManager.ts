@@ -44,8 +44,8 @@ export const useFolderManager = () => {
       onClick: () => {
         setEditTarget({ key: item.key, name: item.label });
         setEditName(true);
+        setAdd(false);
         setCreatedYearId(Number(item.key));
-
         setOpenMenuKey(null);
       },
     },
@@ -84,6 +84,7 @@ export const useFolderManager = () => {
       onClick: () => {
         setEditTarget({ key: item.key, name: item.label });
         setEditName(true);
+        setEditFolderName('');
         setCreatedRoundId(Number(item.key));
 
         setOpenMenuKey(null);

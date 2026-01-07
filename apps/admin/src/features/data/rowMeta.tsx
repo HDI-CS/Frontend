@@ -10,8 +10,10 @@ import {
   WithIndex,
 } from '@/src/types/data/visual-data';
 import { EvaluationYearFolder } from '@/src/types/evaluation';
-import { highlightText } from '@/src/utils/highlightText';
+import { renderCellText } from '@/src/utils/highlightText';
+import { truncateText } from '@/src/utils/truncateText';
 import Image from 'next/image';
+import { CategoryByType } from './DataYearPage';
 import { MetaByType } from './uiDef';
 const getKeyword = () => useSearchStore.getState().keyword;
 
@@ -42,8 +44,9 @@ export const rowMeta: MetaByType = {
         className: 'w-[90px] px-3',
 
         cell: (row, isActiveRow) =>
-          highlightText(row.code ?? '', getKeyword(), {
+          renderCellText(row.code, getKeyword(), {
             active: isActiveRow,
+            maxLength: 6,
           }),
       },
       {
@@ -53,8 +56,9 @@ export const rowMeta: MetaByType = {
         className: 'w-[140px] px-3',
 
         cell: (row, isActiveRow) =>
-          highlightText(row.name ?? '', getKeyword(), {
+          renderCellText(row.name, getKeyword(), {
             active: isActiveRow,
+            maxLength: 6,
           }),
       },
       {
@@ -63,8 +67,9 @@ export const rowMeta: MetaByType = {
         thClassName: 'w-[140px]',
         className: 'w-[140px]',
         cell: (row, isActiveRow) =>
-          highlightText(row.sectorCategory ?? '', getKeyword(), {
+          renderCellText(row.sectorCategory, getKeyword(), {
             active: isActiveRow,
+            maxLength: 6,
           }),
       },
       {
@@ -73,8 +78,9 @@ export const rowMeta: MetaByType = {
         thClassName: 'min-w-[260px]',
         className: 'min-w-[260px]',
         cell: (row, isActiveRow) =>
-          highlightText(row.mainProductCategory ?? '', getKeyword(), {
+          renderCellText(row.mainProductCategory, getKeyword(), {
             active: isActiveRow,
+            maxLength: 20,
           }),
       },
       {
@@ -83,8 +89,9 @@ export const rowMeta: MetaByType = {
         thClassName: 'min-w-[240px]',
         className: 'min-w-[240px]',
         cell: (row, isActiveRow) =>
-          highlightText(row.mainProduct ?? '', getKeyword(), {
+          renderCellText(row.mainProduct, getKeyword(), {
             active: isActiveRow,
+            maxLength: 6,
           }),
       },
       {
@@ -93,8 +100,9 @@ export const rowMeta: MetaByType = {
         thClassName: 'w-[160px]',
         className: 'w-[160px]',
         cell: (row, isActiveRow) =>
-          highlightText(row.target ?? '', getKeyword(), {
+          renderCellText(row.target, getKeyword(), {
             active: isActiveRow,
+            maxLength: 6,
           }),
       },
       {
@@ -111,7 +119,7 @@ export const rowMeta: MetaByType = {
               rel="noreferrer"
               className="text-[#4B5563] underline-offset-2 hover:underline"
             >
-              {row.referenceUrl}
+              {truncateText(String(row.referenceUrl), 20)}
             </a>
           );
         },
@@ -162,70 +170,110 @@ export const rowMeta: MetaByType = {
         header: 'ID',
         thClassName: 'w-[90px]',
         className: 'w-[90px] px-3',
-        cell: (row) => row.code,
+        cell: (row, isActiveRow) =>
+          renderCellText(row.code, getKeyword(), {
+            active: isActiveRow,
+            maxLength: 6,
+          }),
       },
       {
         key: 'productName',
         header: '제품명',
         thClassName: 'min-w-[200px]',
         className: 'min-w-[200px]',
-        cell: (row) => row.productName,
+        cell: (row, isActiveRow) =>
+          renderCellText(row.productName, getKeyword(), {
+            active: isActiveRow,
+            maxLength: 6,
+          }),
       },
       {
         key: 'companyName',
         header: '회사',
         thClassName: 'w-[160px]',
         className: 'w-[160px]',
-        cell: (row) => row.companyName,
+        cell: (row, isActiveRow) =>
+          renderCellText(row.companyName, getKeyword(), {
+            active: isActiveRow,
+            maxLength: 6,
+          }),
       },
       {
         key: 'modelName',
         header: '모델',
         thClassName: 'w-[160px]',
         className: 'w-[160px]',
-        cell: (row) => row.modelName,
+        cell: (row, isActiveRow) =>
+          renderCellText(row.modelName, getKeyword(), {
+            active: isActiveRow,
+            maxLength: 6,
+          }),
       },
       {
         key: 'price',
         header: '가격',
         thClassName: 'w-[120px]',
         className: 'w-[120px]',
-        cell: (row) => row.price,
+        cell: (row, isActiveRow) =>
+          renderCellText(row.price, getKeyword(), {
+            active: isActiveRow,
+            maxLength: 6,
+          }),
       },
       {
         key: 'material',
         header: '재질',
         thClassName: 'w-[140px]',
         className: 'w-[140px]',
-        cell: (row) => row.material,
+        cell: (row, isActiveRow) =>
+          renderCellText(row.material, getKeyword(), {
+            active: isActiveRow,
+            maxLength: 6,
+          }),
       },
       {
         key: 'size',
         header: '크기',
         thClassName: 'w-[140px]',
         className: 'w-[140px]',
-        cell: (row) => row.size,
+        cell: (row, isActiveRow) =>
+          renderCellText(row.size, getKeyword(), {
+            active: isActiveRow,
+            maxLength: 6,
+          }),
       },
       {
         key: 'weight',
         header: '무게',
         thClassName: 'w-[120px]',
         className: 'w-[120px]',
-        cell: (row) => row.weight,
+        cell: (row, isActiveRow) =>
+          renderCellText(row.weight, getKeyword(), {
+            active: isActiveRow,
+            maxLength: 6,
+          }),
       },
       {
         key: 'registeredAt',
         header: '출시일',
         thClassName: 'w-[120px]',
         className: 'w-[120px]',
-        cell: (row) => row.weight,
+        cell: (row, isActiveRow) =>
+          renderCellText(row.registeredAt, getKeyword(), {
+            active: isActiveRow,
+            maxLength: 6,
+          }),
       },
       {
         key: 'productPath',
         header: '제품 카테고리',
         thClassName: 'w-[120px]',
         className: 'w-[120px]',
-        cell: (row) => row.weight,
+        cell: (row, isActiveRow) =>
+          renderCellText(row.productPath, getKeyword(), {
+            active: isActiveRow,
+            maxLength: 6,
+          }),
       },
       {
         key: 'referenceUrl',
@@ -241,7 +289,7 @@ export const rowMeta: MetaByType = {
               rel="noreferrer"
               className="text-[#4B5563] underline-offset-2 hover:underline"
             >
-              {row.referenceUrl}
+              {truncateText(String(row.referenceUrl), 20)}
             </a>
           );
         },
@@ -296,12 +344,18 @@ export const INDUSTRY_FIELDS = [
   { label: '재질', field: 'material' },
   { label: '크기', field: 'size' },
   { label: '무게', field: 'weight' },
+  { label: '출시일', field: 'registeredAt' },
+  { label: '제품 카테고리', field: 'productPath' },
+
   { label: '홈페이지', field: 'referenceUrl' },
 ] as const;
 
 // get detail API → UpdateForm 변환 mapper
 export const updateRequestMapper = {
-  VISUAL: (detail: GetDetailResponseByType['VISUAL'], category: string) => ({
+  VISUAL: (
+    detail: GetDetailResponseByType['VISUAL'],
+    category: CategoryByType['VISUAL'] | null
+  ) => ({
     code: detail.code ?? '',
     name: detail.name ?? '',
     sectorCategory: detail.sectorCategory ?? '',
@@ -347,7 +401,11 @@ export function normalizeImageUrl(url?: string | null): string | null {
 
 export function getImageSrcByType(
   type: UserType,
-  detail?: GetDetailResponseByType[keyof GetDetailResponseByType]
+  detail?: GetDetailResponseByType[keyof GetDetailResponseByType],
+  field?:
+    | 'originalDetailImagePath'
+    | 'originalFrontImagePath'
+    | 'originalSideImagePath'
 ): string | null {
   if (!detail) return null;
 
@@ -356,16 +414,18 @@ export function getImageSrcByType(
       (detail as GetDetailResponseByType['VISUAL']).logoImage
     );
   }
+  const industry = detail as GetDetailResponseByType['INDUSTRY'];
 
-  return (
-    normalizeImageUrl(
-      (detail as GetDetailResponseByType['INDUSTRY']).detailImagePath
-    ) ??
-    normalizeImageUrl(
-      (detail as GetDetailResponseByType['INDUSTRY']).frontImagePath
-    ) ??
-    null
-  );
+  switch (field) {
+    case 'originalDetailImagePath':
+      return normalizeImageUrl(industry.detailImagePath);
+    case 'originalFrontImagePath':
+      return normalizeImageUrl(industry.frontImagePath);
+    case 'originalSideImagePath':
+      return normalizeImageUrl(industry.sideImagePath);
+    default:
+      return null;
+  }
 }
 
 // 폴더 프롭으로 넘기기 위한 가공 함수

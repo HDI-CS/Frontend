@@ -141,14 +141,22 @@ export type CreateMutationInput =
   | {
       type: 'VISUAL';
       yearId: number;
-      categoryName: string;
+      categoryName?: string;
       requestData: CreateVisualDatasetRequest;
+      logoFile?: File | null;
+      detailFile?: File | null;
+      frontFile?: File | null;
+      sideFile?: File | null;
     }
   | {
       type: 'INDUSTRY';
       yearId: number;
-      categoryName: string;
+      categoryName?: string;
       requestData: CreateIndustrialDatasetRequest;
+      logoFile?: File | null;
+      detailFile?: File | null;
+      frontFile?: File | null;
+      sideFile?: File | null;
     };
 
 export type UpdateMutationInput =
@@ -166,7 +174,6 @@ export type UpdateMutationInput =
       id: number;
       requestData: UpdateIndustrialDatasetRequest;
       logoFile?: File | null;
-
       detailFile?: File | null;
       frontFile?: File | null;
       sideFile?: File | null;
@@ -258,6 +265,10 @@ export type UpdateRequestByType = {
   VISUAL: UpdateVisualDatasetRequest;
   INDUSTRY: UpdateIndustrialDatasetRequest;
 };
+
+export type CreateForm =
+  | CreateVisualDatasetRequest
+  | CreateIndustrialDatasetRequest;
 
 export type UpdateForm =
   | UpdateVisualDatasetRequest

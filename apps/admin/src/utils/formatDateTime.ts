@@ -1,6 +1,7 @@
 export function formatDateTime(value: string) {
   if (!value) return;
   const d = new Date(value);
+  d.setHours(d.getHours() - 3); // 서버 보정
 
   const yyyy = d.getFullYear();
   const mm = String(d.getMonth() + 1).padStart(2, '0');

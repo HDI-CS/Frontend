@@ -3,10 +3,10 @@ import AddBtn from '@/src/components/common/AddBtn';
 import AddEvaluation from '@/src/components/evaluation/AddEvaluation';
 import FolderList from '@/src/components/FolderList';
 import FolderModals from '@/src/components/FolderModals';
+import FolderWrapper from '@/src/components/layout/FolderWrapper';
 import { mapEvaluationYearsToFoldersForDataPage } from '@/src/features/data/rowMeta';
 import { useDataYears } from '@/src/hooks/data/useDataYears';
 import { useCreateEvaluationYear } from '@/src/hooks/evaluation/useCreateEvaluationYear';
-import { useEvaluationYears } from '@/src/hooks/evaluation/useEvaluationYears';
 import { useUpdateSurvey } from '@/src/hooks/evaluation/useUpdateSurvey';
 import { useFolderManager } from '@/src/hooks/useFolderManager';
 import { EvaluationYearFolder } from '@/src/types/evaluation';
@@ -25,17 +25,18 @@ const IndexPage = () => {
     editName,
     editSurvey,
     editFolderName,
+    createdYearId,
     setPressedKey,
     setOpenMenuKey,
     setAdd,
     setEditName,
     setEditSurvey,
     setEditFolderName,
+    setCreatedYearId,
     getFieldMenuItems,
   } = useFolderManager();
 
   // 년도 조회 api
-
   // const { data } = useEvaluationYears(type);
   const { data: yearData } = useDataYears(type);
 
@@ -70,6 +71,23 @@ const IndexPage = () => {
       )
     : [];
 
+  // 년도 폴더 이름 수정
+  const { mutate: updateName } = useUpdateSurvey(type);
+
+  const hanleEditName = () => {
+    const body = {
+      folderName: editFolderName,
+      yearId: createdYearId ?? 0,
+    };
+    updateName(body, {
+      onSuccess: () => {
+        setEditName(false);
+        setEditFolderName('');
+        setCreatedYearId(null);
+      },
+    });
+  };
+
   // const yearFolders = useMemo(() => {
   //   console.log(data?.result,'dsads');
   //   if (!data?.result) return [];
@@ -81,7 +99,7 @@ const IndexPage = () => {
   }
 
   return (
-    <div className="font-pretendard text-blue text-blue pl-47 mt-14 grid min-h-screen pr-80">
+    <FolderWrapper>
       <div className="flex flex-col gap-5">
         <div className="flex text-[#4676FB]">
           <p className="ml-21 w-25">Folder</p>
@@ -116,6 +134,7 @@ const IndexPage = () => {
           onCloseAdd={() => setAdd(false)}
           onCloseEdit={() => setEditName(false)}
           onSubmit={handleSubmit}
+          onEdit={hanleEditName}
         />
 
         {editSurvey && (
@@ -126,7 +145,7 @@ const IndexPage = () => {
           />
         )}
       </div>
-    </div>
+    </FolderWrapper>
   );
 };
 export default IndexPage;

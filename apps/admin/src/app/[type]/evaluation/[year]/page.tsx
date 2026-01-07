@@ -3,13 +3,16 @@ import AddBtn from '@/src/components/common/AddBtn';
 import AddEvaluation from '@/src/components/evaluation/AddEvaluation';
 import EditDuration from '@/src/components/evaluation/EditDuration';
 import FolderList from '@/src/components/FolderList';
+import FolderWrapper from '@/src/components/layout/FolderWrapper';
 import ModalComponent from '@/src/components/ModalComponent';
 import { mapEvaluationPhaseToFolders } from '@/src/features/data/rowMeta';
 import { useCreateEvaluationRound } from '@/src/hooks/evaluation/useCreateEvaluationYear';
 import { useEvaluationYears } from '@/src/hooks/evaluation/useEvaluationYears';
 import { useUpdatePhaseSurvey } from '@/src/hooks/evaluation/useUpdateSurvey';
 import { useFolderManager } from '@/src/hooks/useFolderManager';
+import { useSubHeaderStore } from '@/src/store/subHeaderStore';
 import { usePathname, useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 const IndexPage = () => {
   const router = useRouter();
@@ -78,8 +81,17 @@ const IndexPage = () => {
   // 차수 폴더 기간 수정을 위한 변수
   const currentRound = rounds.find((round) => round.roundId === createdRoundId);
 
+  const { setExtraLabel } = useSubHeaderStore();
+  useEffect(() => {
+    const folderName = data?.result.find(
+      (d) => d.yearId === Number(year)
+    )?.folderName;
+    setExtraLabel(folderName);
+    return () => setExtraLabel('');
+  }, [data, setExtraLabel, year]);
+
   return (
-    <div className="font-pretendard text-blue text-blue pl-47 pr-50 mt-14 grid min-h-screen">
+    <FolderWrapper>
       <div className="flex flex-col gap-5">
         <div className="flex text-[#4676FB]">
           <p className="ml-21 w-25">Folder</p>
@@ -121,7 +133,7 @@ const IndexPage = () => {
             onSubmit={handleEditName}
           >
             <input
-              value={editFolderName}
+              value={editFolderName ?? ''}
               onChange={(e) => setEditFolderName(e.target.value)}
               className="border-1 focus:outline-primary-blue w-full rounded border-[#E9E9E7] p-3 text-lg text-[#3A3A49]"
             />
@@ -138,7 +150,7 @@ const IndexPage = () => {
           />
         )}
       </div>
-    </div>
+    </FolderWrapper>
   );
 };
 export default IndexPage;

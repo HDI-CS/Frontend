@@ -93,7 +93,7 @@ const Folder = ({
               isMenuOpen ? 'text-[#ffffff]' : 'text-[#4676FB]'
             )}
           >
-            {name}
+            {name ?? ''}
           </p>
         </div>
 

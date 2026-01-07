@@ -3,7 +3,7 @@ import { UserType } from '@/src/schemas/auth';
 export const datasetQueryKeys = {
   all: ['datasets'] as const,
 
-  lists: () => [...datasetQueryKeys.all, 'list'] as const,
+  lists: (type?: UserType) => [...datasetQueryKeys.all, 'list', type] as const,
 
   listByYear: (type?: UserType, year?: number) =>
     [...datasetQueryKeys.lists(), type, year] as const,
@@ -15,5 +15,5 @@ export const datasetQueryKeys = {
     [...datasetQueryKeys.all, 'candidates', type, yearId] as const,
 
   detail: (datasetId: number) =>
-    [...datasetQueryKeys.all, 'detail', datasetId] as const,
+    [...datasetQueryKeys.lists(), 'detail', datasetId] as const,
 };
