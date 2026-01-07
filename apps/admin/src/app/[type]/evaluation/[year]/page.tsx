@@ -133,7 +133,7 @@ const IndexPage = () => {
             onSubmit={handleEditName}
           >
             <input
-              value={editFolderName}
+              value={editFolderName ?? ''}
               onChange={(e) => setEditFolderName(e.target.value)}
               className="border-1 focus:outline-primary-blue w-full rounded border-[#E9E9E7] p-3 text-lg text-[#3A3A49]"
             />

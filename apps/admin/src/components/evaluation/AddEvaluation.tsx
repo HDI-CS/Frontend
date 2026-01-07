@@ -134,7 +134,7 @@ const AddEvaluation = ({
     if (subjective.trim()) {
       result.push({
         type: 'TEXT',
-        surveyNumber: 1,
+        surveyNumber: questions.length + 1,
         surveyCode: 'PR_FRM_QT',
         surveyContent: subjective,
         sampleText: sampleText,

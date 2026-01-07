@@ -174,12 +174,12 @@ const SidebarMenu = ({ type }: SidebarMenuProps) => {
                   <SubMenuItem
                     key={round.roundId}
                     label={`${round.roundName}`}
-                    active={pathname.startsWith(
+                    active={pathname === 
                       ROUTES.EVALUATION.PHASE(
                         lowerType,
                         year.yearId,
                         round.roundId ?? 0
-                      )
+                      
                     )}
                     onClick={() =>
                       router.push(
