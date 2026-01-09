@@ -53,15 +53,17 @@ export default function ProductSurvey({
 
   const product = detail.result.industryDataSetResponse;
   const questions: ProductSurveyQuestion[] =
-    detail.result.productSurveyResponse?.surveyResponses ?? [];
+    detail.result.productSurveyResponse?.response ?? [];
+  const textSurveyId =
+    detail.result.productSurveyResponse.textResponse?.surveyId;
 
   // 서버에서 받아온 데이터를 클라이언트 상태에 반영
   useEffect(() => {
-    if (!detail.result.productSurveyResponse?.surveyResponses) return;
+    if (!detail.result.productSurveyResponse?.response) return;
 
     const serverAnswers: Record<string, number> = {};
 
-    detail.result.productSurveyResponse.surveyResponses.forEach((question) => {
+    detail.result.productSurveyResponse.response.forEach((question) => {
       if (question.response && question.response > 0) {
         serverAnswers[String(question.surveyId)] = question.response;
       }
@@ -70,9 +72,9 @@ export default function ProductSurvey({
     setAnswers(serverAnswers);
 
     // 정성평가 응답도 서버 데이터에서 초기화
-    if (detail.result.productSurveyResponse?.textSurveyResponse?.response) {
+    if (detail.result.productSurveyResponse?.textResponse?.response) {
       setQualitativeAnswer(
-        detail.result.productSurveyResponse.textSurveyResponse.response
+        detail.result.productSurveyResponse.textResponse.response
       );
     }
   }, [detail]);
@@ -117,7 +119,7 @@ export default function ProductSurvey({
         type: surveyType,
         productResponseId: Number(surveyId),
         requestData: {
-          surveyId: null,
+          surveyId: textSurveyId ?? 1,
           response: null,
           textResponse,
         },
@@ -185,7 +187,7 @@ export default function ProductSurvey({
 
   // 정성평가 유효성 검사
   const currentQualitativeValue =
-    detail.result.productSurveyResponse?.textSurveyResponse?.response ||
+    detail.result.productSurveyResponse?.textResponse?.response ||
     qualitativeAnswer;
   const isQualitativeValid = currentQualitativeValue.length >= 300;
 
@@ -247,8 +249,9 @@ export default function ProductSurvey({
             <SurveyHeader type="industry" />
 
             <div className="space-y-8">
-              {questions.map((question) => {
+              {questions.map((question, index) => {
                 const qId = String(question.surveyId);
+                const qIndex = String(index + 1);
                 const qText = String(question.survey ?? `문항 ${qId}`);
                 const currentValue =
                   question.response && question.response > 0
@@ -259,7 +262,7 @@ export default function ProductSurvey({
                   <SurveyQuestion
                     key={qId}
                     questionId={qId}
-                    questionNumber={qId}
+                    questionNumber={qIndex}
                     question={qText}
                     value={currentValue}
                     onChange={(value) => handleAnswerChange(qId, value)}

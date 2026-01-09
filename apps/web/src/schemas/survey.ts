@@ -57,13 +57,13 @@ export const ProductDataSetResponseSchema = z.object({
   material: z.string(),
   size: z.string(),
   weight: z.string(),
-  referenceUrl: z.url().nullable(),
+  referenceUrl: z.string().nullable(),
   registeredAt: z.string(),
   productPath: z.string().nullable(),
   productTypeName: z.string().nullable(),
-  detailImagePath: z.url().nullable(),
-  frontImagePath: z.url().nullable(),
-  sideImagePath: z.url().nullable(),
+  detailImagePath: z.string().nullable(),
+  frontImagePath: z.string().nullable(),
+  sideImagePath: z.string().nullable(),
 });
 
 export const ProductSurveyQuestionSchema = z.object({
@@ -84,8 +84,9 @@ export const ProductSurveyDataSchema = z.object({
   // 일부 응답에서 null이 올 수 있어 nullable로 허용하되, 서비스 레이어에서 필수 보장 처리
   industryDataSetResponse: ProductDataSetResponseSchema,
   productSurveyResponse: z.object({
-    surveyResponses: z.array(ProductSurveyQuestionSchema),
-    textSurveyResponse: ProductTextSurveyResponseSchema,
+    dataCode: z.string(),
+    response: z.array(ProductSurveyQuestionSchema),
+    textResponse: ProductTextSurveyResponseSchema.nullable(),
   }),
 });
 

@@ -63,7 +63,7 @@ export const surveyService = {
     const normalizedType = type.toUpperCase();
 
     // type에 따라 동적으로 스키마 선택
-    if (normalizedType === 'PRODUCT') {
+    if (normalizedType === 'INDUSTRY') {
       console.log('Validating with ProductSurveyDataSchema...');
       console.log('Raw response.data:', response.data);
       console.log('response.data.data:', response.data.result);

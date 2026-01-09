@@ -138,7 +138,7 @@ const getWeightEvaluationCategories = (
         },
       },
     ],
-    product: [
+    industry: [
       {
         id: 'vacuum',
         name: '핸디스틱청소기',
@@ -189,6 +189,7 @@ const getWeightEvaluationCategories = (
 
 // 카테고리 ID를 API 카테고리로 매핑하는 함수
 const mapCategoryToApiCategory = (categoryId: string): ApiCategory => {
+  console.log(categoryId);
   const categoryMap: Record<string, ApiCategory> = {
     cosmetics: 'COSMETIC',
     fnb: 'FB',
