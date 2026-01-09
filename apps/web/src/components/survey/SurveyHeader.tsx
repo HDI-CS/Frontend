@@ -2,18 +2,18 @@ import { clsx } from 'clsx';
 
 interface SurveyHeaderProps {
   className?: string;
-  type?: 'brand' | 'product';
+  type?: 'visual' | 'industry';
 }
 
 export default function SurveyHeader({
   className,
-  type = 'product',
+  type = 'industry',
 }: SurveyHeaderProps) {
   const getTitle = () => {
     switch (type) {
-      case 'brand':
+      case 'visual':
         return '시각 디자인 해석·평가 AI 개발을 위한 설문지';
-      case 'product':
+      case 'industry':
         return '제품 디자인 해석·평가 AI 개발을 위한 설문지';
       default:
         return '제품 디자인 해석·평가 AI 개발을 위한 설문지';

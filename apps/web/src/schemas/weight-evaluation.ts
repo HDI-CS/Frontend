@@ -48,9 +48,9 @@ export const WeightedScoreResponseSchema = z.object({
 
 // 가중치 평가 응답 데이터 스키마 (API 응답 구조)
 export const WeightedScoreApiResponseSchema = z.object({
-  status: z.number(),
+  code: z.number(),
   message: z.string(),
-  data: z.array(WeightedScoreResponseSchema),
+  result: z.array(WeightedScoreResponseSchema),
 });
 
 // 스키마에서 추출한 타입들

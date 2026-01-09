@@ -51,28 +51,28 @@ export default function ProductSurvey({
   );
   const [isSavingQualitative, setIsSavingQualitative] = useState(false);
 
-  const product = detail.data.productDataSetResponse;
+  const product = detail.result.industryDataSetResponse;
   const questions: ProductSurveyQuestion[] =
-    detail.data.productSurveyResponse?.surveyResponses ?? [];
+    detail.result.productSurveyResponse?.surveyResponses ?? [];
 
   // 서버에서 받아온 데이터를 클라이언트 상태에 반영
   useEffect(() => {
-    if (!detail.data.productSurveyResponse?.surveyResponses) return;
+    if (!detail.result.productSurveyResponse?.surveyResponses) return;
 
     const serverAnswers: Record<string, number> = {};
 
-    detail.data.productSurveyResponse.surveyResponses.forEach((question) => {
+    detail.result.productSurveyResponse.surveyResponses.forEach((question) => {
       if (question.response && question.response > 0) {
-        serverAnswers[String(question.index)] = question.response;
+        serverAnswers[String(question.surveyId)] = question.response;
       }
     });
 
     setAnswers(serverAnswers);
 
     // 정성평가 응답도 서버 데이터에서 초기화
-    if (detail.data.productSurveyResponse?.textSurveyResponse?.response) {
+    if (detail.result.productSurveyResponse?.textSurveyResponse?.response) {
       setQualitativeAnswer(
-        detail.data.productSurveyResponse.textSurveyResponse.response
+        detail.result.productSurveyResponse.textSurveyResponse.response
       );
     }
   }, [detail]);
@@ -92,7 +92,7 @@ export default function ProductSurvey({
         type: surveyType,
         productResponseId: Number(surveyId),
         requestData: {
-          index: Number(questionId),
+          surveyId: Number(questionId),
           response: value,
           textResponse: null,
         },
@@ -117,7 +117,7 @@ export default function ProductSurvey({
         type: surveyType,
         productResponseId: Number(surveyId),
         requestData: {
-          index: null,
+          surveyId: null,
           response: null,
           textResponse,
         },
@@ -179,13 +179,13 @@ export default function ProductSurvey({
   };
 
   const isAllAnswered = questions.every((q) => {
-    const key = String(q.index);
+    const key = String(q.surveyId);
     return (q.response && q.response > 0) || answers[key] !== undefined;
   });
 
   // 정성평가 유효성 검사
   const currentQualitativeValue =
-    detail.data.productSurveyResponse?.textSurveyResponse?.response ||
+    detail.result.productSurveyResponse?.textSurveyResponse?.response ||
     qualitativeAnswer;
   const isQualitativeValid = currentQualitativeValue.length >= 300;
 
@@ -211,7 +211,7 @@ export default function ProductSurvey({
             <p className="text-sm text-gray-600">브랜드 및 제품 상세 정보</p>
           </div>
           <div className="scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 flex-1 space-y-6 overflow-y-auto p-6">
-            <ProductInfo type="product" data={product} />
+            <ProductInfo type="industry" data={product} />
 
             {/* 제품 이미지들 */}
             {productImages.length > 0 && (
@@ -244,11 +244,11 @@ export default function ProductSurvey({
 
           {/* 스크롤 가능한 설문 내용 영역 */}
           <div className="scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 flex-1 space-y-6 overflow-y-auto p-6 pb-8">
-            <SurveyHeader type="product" />
+            <SurveyHeader type="industry" />
 
             <div className="space-y-8">
               {questions.map((question) => {
-                const qId = String(question.index);
+                const qId = String(question.surveyId);
                 const qText = String(question.survey ?? `문항 ${qId}`);
                 const currentValue =
                   question.response && question.response > 0

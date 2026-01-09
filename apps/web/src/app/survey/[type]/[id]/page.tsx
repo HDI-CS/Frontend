@@ -63,7 +63,7 @@ export default function SurveyPage() {
   // type에 따라 적절한 컴포넌트 렌더링
   const normalizedType = (type as string).toUpperCase() as UserType;
 
-  if (normalizedType === 'PRODUCT' && 'productDataSetResponse' in detail.data) {
+  if (normalizedType === 'INDUSTRY' && 'industryDataSetResponse' in detail.result) {
     return (
       <ProductSurvey
         surveyId={surveyId}
@@ -72,7 +72,7 @@ export default function SurveyPage() {
     );
   }
 
-  if (normalizedType === 'BRAND' && 'brandDatasetResponse' in detail.data) {
+  if (normalizedType === 'VISUAL' && 'visualDatasetResponse' in detail.result) {
     return (
       <BrandSurvey
         surveyId={surveyId}
@@ -89,7 +89,7 @@ export default function SurveyPage() {
           지원하지 않는 설문 타입입니다: {type}
         </p>
         <p className="text-xs text-gray-500">
-          PRODUCT 또는 BRAND 타입만 지원됩니다.
+          INDUSTRY 또는 VISUAL 타입만 지원됩니다.
         </p>
       </div>
     </div>
