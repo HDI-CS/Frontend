@@ -17,6 +17,7 @@ import {
   type WeightedScoreResponse,
   WeightEvaluationCategoryType as ApiCategory,
 } from '@/schemas/weight-evaluation';
+import { clearSurveyProgressStorage } from '@/utils/survey';
 
 // 타입별 가중치 평가 요소들 정의
 const getWeightEvaluationFactors = (type: 'visual' | 'industry') => {
@@ -323,6 +324,11 @@ export default function WeightEvaluationPage() {
   const submitWeightedScoresMutation = useSubmitWeightedScores(
     evaluationType.toUpperCase() as UserType
   );
+
+  // 정성 평가 로컬스토리지 응답 데이터 제거
+  useEffect(() => {
+    clearSurveyProgressStorage();
+  }, []);
 
   // 가중치 데이터를 불러와서 초기화
   useEffect(() => {

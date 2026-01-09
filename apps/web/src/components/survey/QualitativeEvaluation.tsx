@@ -2,9 +2,11 @@ import { clsx } from 'clsx';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { loadSurveyProgress } from '@/utils/survey';
 
 interface QualitativeEvaluationProps {
   value?: string;
+  surveyId: string;
   onChange: (value: string) => void;
   onSave?: (textResponse: string) => void;
   isSaving?: boolean;
@@ -13,6 +15,7 @@ interface QualitativeEvaluationProps {
 
 export default function QualitativeEvaluation({
   value = '',
+  surveyId,
   onChange,
   onSave,
   isSaving = false,
@@ -31,6 +34,26 @@ export default function QualitativeEvaluation({
   const lastSavedValueRef = useRef<string>(value); // 마지막 저장된 값 추적
   const firstUnsavedChangeTimeRef = useRef<number | null>(null); // 첫 미저장 변경 시간
   const pendingValueRef = useRef<string>(localValue); // 저장 대기 중인 값
+  const isMinimumMet = characterCount >= minCharacters;
+
+  // 글자수가 300자 이하인 경우 서버에 요청은 하지 않지만 브라우저에는 남아있고
+  // 새로 고침 시에도 값을 그대로 가져올 수 있도록
+  useEffect(() => {
+    const saved = loadSurveyProgress(surveyId);
+
+    // 서버 값이 없을 때거나 localstorage 정성평가 글자수가 300 이하인 경우 localStorage 복원
+    if (
+      saved?.qualitativeAnswer &&
+      value === '' &&
+      !hasUserInput &&
+      !isFocused &&
+      saved.qualitativeAnswer.length < 300
+    ) {
+      setLocalValue(saved.qualitativeAnswer);
+      setCharacterCount(saved.qualitativeAnswer.length);
+      lastSavedValueRef.current = saved.qualitativeAnswer;
+    }
+  }, [surveyId, hasUserInput, value, isFocused]);
 
   // 서버 데이터가 변경되면 로컬 상태도 업데이트 (매우 안전한 조건으로만)
   useEffect(() => {
@@ -39,12 +62,18 @@ export default function QualitativeEvaluation({
     // 2. 저장 중
     // 3. 한글 조합 중 (IME 보호)
     // 4. 포커스되어 있는 경우 (사용자가 현재 편집 중)
-    if (!hasUserInput && !isSaving && !isComposing && !isFocused) {
+    if (
+      !hasUserInput &&
+      !isSaving &&
+      !isComposing &&
+      !isFocused &&
+      !isMinimumMet
+    ) {
       setLocalValue(value);
       setCharacterCount(value.length);
       lastSavedValueRef.current = value;
     }
-  }, [value, hasUserInput, isSaving, isComposing, isFocused]);
+  }, [value, hasUserInput, isSaving, isComposing, isFocused, isMinimumMet]);
 
   // 실제 저장 실행 함수
   const executeSave = useCallback(
@@ -269,8 +298,6 @@ export default function QualitativeEvaluation({
     }
   };
 
-  const isMinimumMet = characterCount >= minCharacters;
-
   return (
     <div className={clsx('min-h-30 flex gap-4', className)}>
       {/* Vertical Bar */}
@@ -296,11 +323,22 @@ export default function QualitativeEvaluation({
                 <span>• 입력 중 (곧 자동 저장됩니다)</span>
               </div>
             )}
-            {!hasUserInput && !isSaving && localValue !== '' && (
-              <div className="animate-fade-in flex items-center gap-1 text-xs text-green-600">
-                <span>✓ 저장됨</span>
-              </div>
-            )}
+            {!hasUserInput &&
+              !isSaving &&
+              localValue !== '' &&
+              isMinimumMet && (
+                <div className="animate-fade-in flex items-center gap-1 text-xs text-green-600">
+                  <span>✓ 저장됨</span>
+                </div>
+              )}
+            {!hasUserInput &&
+              !isSaving &&
+              localValue !== '' &&
+              !isMinimumMet && (
+                <div className="animate-fade-in flex items-center gap-1 text-xs text-green-800">
+                  <span>✓ 임시 저장됨 (300자 이상 시 최종 저장)</span>
+                </div>
+              )}
           </div>
           <p className="text-sm leading-relaxed text-gray-700">
             앞서 평가한 내용에 대한 전반적인 이유를 구체적으로 작성해 주세요.

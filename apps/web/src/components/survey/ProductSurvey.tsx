@@ -19,7 +19,11 @@ import {
   type ProductSurveyDetailResponse,
   type ProductSurveyQuestion,
 } from '@/schemas/survey';
-import { saveSurveyProgress } from '@/utils/survey';
+import {
+  clearSurveyProgress,
+  loadSurveyProgress,
+  saveSurveyProgress,
+} from '@/utils/survey';
 
 interface ProductSurveyProps {
   surveyId: string;
@@ -60,6 +64,7 @@ export default function ProductSurvey({
   // 서버에서 받아온 데이터를 클라이언트 상태에 반영
   useEffect(() => {
     if (!detail.result.productSurveyResponse?.response) return;
+    const saved = loadSurveyProgress(surveyId);
 
     const serverAnswers: Record<string, number> = {};
 
@@ -72,12 +77,14 @@ export default function ProductSurvey({
     setAnswers(serverAnswers);
 
     // 정성평가 응답도 서버 데이터에서 초기화
-    if (detail.result.productSurveyResponse?.textResponse?.response) {
+    if (saved?.qualitativeAnswer && saved?.qualitativeAnswer.length < 300) {
+      setQualitativeAnswer(saved.qualitativeAnswer);
+    } else if (detail.result.productSurveyResponse?.textResponse?.response) {
       setQualitativeAnswer(
         detail.result.productSurveyResponse.textResponse.response
       );
     }
-  }, [detail]);
+  }, [detail, surveyId]);
 
   // 설문 응답 저장 mutation
   const saveSurveyResponseMutation = useSaveSurveyResponse();
@@ -124,6 +131,8 @@ export default function ProductSurvey({
           textResponse,
         },
       });
+      // 제출 완료 후 로컬스토리지 draft 정리
+      clearSurveyProgress(surveyId);
     } catch (error) {
       console.error('정성평가 저장 실패:', error);
     } finally {
@@ -274,7 +283,8 @@ export default function ProductSurvey({
 
               {/* 정성평가 섹션 */}
               <QualitativeEvaluation
-                value={currentQualitativeValue}
+                value={qualitativeAnswer}
+                surveyId={surveyId}
                 onChange={handleQualitativeChange}
                 onSave={handleQualitativeSave}
                 isSaving={isSavingQualitative}

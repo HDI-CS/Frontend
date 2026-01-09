@@ -13,6 +13,7 @@ import {
 } from '@/hooks/useSurveyProducts';
 import { SurveyProductResponseStatus, SurveyResult } from '@/schemas/survey';
 import { WeightedScoreResponse } from '@/schemas/weight-evaluation';
+import { clearSurveyProgressStorage } from '@/utils/survey';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
@@ -37,6 +38,11 @@ export default function InboxPage() {
   });
   const { data: weightedScoresData, isFetching: isWeightedScoresFetching } =
     useWeightedScores(userType ?? 'VISUAL');
+
+    // 정성 평가 로컬스토리지 응답 데이터 제거
+  useEffect(() => {
+    clearSurveyProgressStorage();
+  }, []);
 
   // 페이지 포커스 시 데이터 refetch
   useEffect(() => {
