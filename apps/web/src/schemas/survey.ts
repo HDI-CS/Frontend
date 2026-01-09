@@ -7,7 +7,7 @@ export const SurveyProductResponseStatusSchema = z.enum([
   'DONE',
 ]);
 
-// 설문 제품 스키마
+// (기존) 설문 제품 스키마
 export const SurveyProductSchema = z.object({
   name: z.string(),
   image: z.url(),
@@ -15,23 +15,29 @@ export const SurveyProductSchema = z.object({
   responseId: z.int64(),
 });
 
+// (변경) 설문
+export const SurveyResultSchema = z.object({
+  name: z.string(),
+  image: z.string().nullable(),
+  responseStatus: SurveyProductResponseStatusSchema,
+  dataId: z.number(),
+});
+
 // 설문 제품 API 응답 스키마 (임시로 유연하게 처리)
-export const SurveyProductApiResponseSchema = z.unknown().transform((data) => {
-  // 실제 API 응답 구조에 맞게 변환
-  if (Array.isArray(data)) {
-    return { data };
-  }
-  if (data && typeof data === 'object' && 'data' in data) {
-    return data as { data: unknown };
-  }
-  return { data: [] };
+export const SurveyProductApiResponseSchema = z.object({
+  code: z.number(),
+  message: z.string(),
+  result: z.array(SurveyResultSchema),
 });
 
 // 타입 추출
 export type SurveyProductResponseStatus = z.infer<
   typeof SurveyProductResponseStatusSchema
 >;
+
 export type SurveyProduct = z.infer<typeof SurveyProductSchema>;
+export type SurveyResult = z.infer<typeof SurveyResultSchema>;
+
 export type SurveyProductApiResponse = z.infer<
   typeof SurveyProductApiResponseSchema
 >;
@@ -51,41 +57,44 @@ export const ProductDataSetResponseSchema = z.object({
   material: z.string(),
   size: z.string(),
   weight: z.string(),
-  referenceUrl: z.url().nullable(),
+  referenceUrl: z.string().nullable(),
   registeredAt: z.string(),
   productPath: z.string().nullable(),
   productTypeName: z.string().nullable(),
-  detailImagePath: z.url().nullable(),
-  frontImagePath: z.url().nullable(),
-  sideImagePath: z.url().nullable(),
+  detailImagePath: z.string().nullable(),
+  frontImagePath: z.string().nullable(),
+  sideImagePath: z.string().nullable(),
 });
 
 export const ProductSurveyQuestionSchema = z.object({
-  index: z.int32().nullable(),
+  surveyId: z.number().nullable(),
   survey: z.string().nullable(),
   response: z.int32().nullable(),
 });
 
 export const ProductTextSurveyResponseSchema = z.object({
+  surveyId: z.number().nullable(),
   survey: z.string().nullable(),
+  sampleText: z.string().nullable(),
   response: z.string().nullable(),
 });
 
 // data 부분만 검증하는 스키마
 export const ProductSurveyDataSchema = z.object({
   // 일부 응답에서 null이 올 수 있어 nullable로 허용하되, 서비스 레이어에서 필수 보장 처리
-  productDataSetResponse: ProductDataSetResponseSchema,
+  industryDataSetResponse: ProductDataSetResponseSchema,
   productSurveyResponse: z.object({
-    surveyResponses: z.array(ProductSurveyQuestionSchema),
-    textSurveyResponse: ProductTextSurveyResponseSchema,
+    dataCode: z.string(),
+    response: z.array(ProductSurveyQuestionSchema),
+    textResponse: ProductTextSurveyResponseSchema.nullable(),
   }),
 });
 
 // 전체 응답 스키마 (타입 추출용)
 export const ProductSurveyDetailResponseSchema = z.object({
-  status: z.number(),
-  message: z.string(),
-  data: ProductSurveyDataSchema,
+  code: z.number(),
+  message: z.string().nullable(),
+  result: ProductSurveyDataSchema,
 });
 
 export type ProductSurveyDetailResponse = z.infer<
@@ -110,26 +119,28 @@ export const BrandDataSetResponseSchema = z.object({
   mainProductCategory: z.string(),
   mainProduct: z.string(),
   target: z.string(),
-  referenceUrl: z.url().nullable(),
-  image: z.url().nullable(),
+  referenceUrl: z.string().nullable(),
+  image: z.string().nullable(),
 });
 
 export const BrandSurveyQuestionSchema = z.object({
-  index: z.int32().nullable(),
+  surveyId: z.number().nullable(),
   survey: z.string().nullable(),
   response: z.int32().nullable(),
 });
 
 export const BrandTextSurveyResponseSchema = z.object({
+  surveyId: z.number().nullable(),
   survey: z.string().nullable(),
+  sampleText: z.string().nullable(),
   response: z.string().nullable(),
 });
 
 // data 부분만 검증하는 스키마
 export const BrandSurveyDataSchema = z.object({
-  brandDatasetResponse: BrandDataSetResponseSchema, // API 응답과 일치하도록 필드명 수정
+  visualDatasetResponse: BrandDataSetResponseSchema.optional(), // API 응답과 일치하도록 필드명 수정
   brandSurveyResponse: z.object({
-    dataId: z.string(),
+    dataCode: z.string(),
     response: z.array(BrandSurveyQuestionSchema),
     textResponse: BrandTextSurveyResponseSchema,
   }),
@@ -137,9 +148,9 @@ export const BrandSurveyDataSchema = z.object({
 
 // 전체 응답 스키마 (타입 추출용)
 export const BrandSurveyDetailResponseSchema = z.object({
-  status: z.number(),
-  message: z.string(),
-  data: BrandSurveyDataSchema,
+  code: z.number(),
+  message: z.string().nullable(),
+  result: BrandSurveyDataSchema,
 });
 
 export type BrandDataSetResponse = z.infer<typeof BrandDataSetResponseSchema>;
@@ -157,7 +168,7 @@ export type BrandTextSurveyResponse = z.infer<
 
 // 설문 응답 저장 요청 DTO (정량 평가, 정성 평가 응답 제출)
 export const SurveyResponseRequestSchema = z.object({
-  index: z.int32().nullable(),
+  surveyId: z.int32().nullable(),
   response: z.int32().nullable(),
   textResponse: z.string().nullable(),
 });

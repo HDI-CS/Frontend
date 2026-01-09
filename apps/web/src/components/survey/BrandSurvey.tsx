@@ -48,28 +48,29 @@ export default function BrandSurvey({ surveyId, detail }: BrandSurveyProps) {
   );
   const [isSavingQualitative, setIsSavingQualitative] = useState(false);
 
-  const brand = detail.data.brandDatasetResponse;
+  const brand = detail.result.visualDatasetResponse;
   const questions: BrandSurveyQuestion[] =
-    detail.data.brandSurveyResponse?.response ?? [];
+    detail.result.brandSurveyResponse?.response ?? [];
+  const textSurveyId = detail.result.brandSurveyResponse.textResponse.surveyId;
 
   // 서버에서 받아온 데이터를 클라이언트 상태에 반영
   useEffect(() => {
-    if (!detail.data.brandSurveyResponse?.response) return;
+    if (!detail.result.brandSurveyResponse?.response) return;
 
     const serverAnswers: Record<string, number> = {};
 
-    detail.data.brandSurveyResponse.response.forEach((question) => {
-      if (question.response && question.response > 0 && question.index) {
-        serverAnswers[String(question.index)] = question.response;
+    detail.result.brandSurveyResponse.response.forEach((question) => {
+      if (question.response && question.response > 0 && question.surveyId) {
+        serverAnswers[String(question.surveyId)] = question.response;
       }
     });
 
     setAnswers(serverAnswers);
 
     // 정성평가 응답도 서버 데이터에서 초기화
-    if (detail.data.brandSurveyResponse?.textResponse?.response) {
+    if (detail.result.brandSurveyResponse?.textResponse?.response) {
       setQualitativeAnswer(
-        detail.data.brandSurveyResponse.textResponse.response
+        detail.result.brandSurveyResponse.textResponse.response
       );
     }
   }, [detail]);
@@ -89,7 +90,7 @@ export default function BrandSurvey({ surveyId, detail }: BrandSurveyProps) {
         type: surveyType,
         productResponseId: Number(surveyId), // API는 여전히 productResponseId 필드를 사용
         requestData: {
-          index: Number(questionId),
+          surveyId: Number(questionId),
           response: value,
           textResponse: null,
         },
@@ -114,7 +115,7 @@ export default function BrandSurvey({ surveyId, detail }: BrandSurveyProps) {
         type: surveyType,
         productResponseId: Number(surveyId), // API는 여전히 productResponseId 필드를 사용
         requestData: {
-          index: null,
+          surveyId: textSurveyId, // 정량평가 문항 개수 + 1
           response: null,
           textResponse,
         },
@@ -176,13 +177,13 @@ export default function BrandSurvey({ surveyId, detail }: BrandSurveyProps) {
   };
 
   const isAllAnswered = questions.every((q) => {
-    const key = String(q.index);
+    const key = String(q.surveyId);
     return (q.response && q.response > 0) || answers[key] !== undefined;
   });
 
   // 정성평가 유효성 검사
   const currentQualitativeValue =
-    detail.data.brandSurveyResponse?.textResponse?.response ||
+    detail.result.brandSurveyResponse?.textResponse?.response ||
     qualitativeAnswer;
   const isQualitativeValid = currentQualitativeValue.length >= 300;
 
@@ -198,12 +199,12 @@ export default function BrandSurvey({ surveyId, detail }: BrandSurveyProps) {
             <p className="text-sm text-gray-600">로고 상세 정보</p>
           </div>
           <div className="scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 flex-1 space-y-6 overflow-y-auto p-6">
-            <ProductInfo type="brand" data={brand} />
+            <ProductInfo type="visual" data={brand!} />
 
             {/* 브랜드 이미지 */}
-            {brand.image && (
+            {brand?.image && (
               <div className="space-y-4">
-                <ProductImage imagePath={brand.image} label="로고 이미지" />
+                <ProductImage imagePath={brand?.image} label="로고 이미지" />
               </div>
             )}
           </div>
@@ -222,11 +223,12 @@ export default function BrandSurvey({ surveyId, detail }: BrandSurveyProps) {
 
           {/* 스크롤 가능한 설문 내용 영역 */}
           <div className="scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 flex-1 space-y-6 overflow-y-auto p-6 pb-8">
-            <SurveyHeader type="brand" />
+            <SurveyHeader type="visual" />
 
             <div className="space-y-8">
-              {questions.map((question) => {
-                const qId = String(question.index);
+              {questions.map((question, index) => {
+                const qId = String(question.surveyId);
+                const qIndex = String(index + 1);
                 const qText = String(question.survey ?? `문항 ${qId}`);
                 const currentValue =
                   question.response && question.response > 0
@@ -237,7 +239,7 @@ export default function BrandSurvey({ surveyId, detail }: BrandSurveyProps) {
                   <SurveyQuestion
                     key={qId}
                     questionId={qId}
-                    questionNumber={qId}
+                    questionNumber={qIndex}
                     question={qText}
                     value={currentValue}
                     onChange={(value) => handleAnswerChange(qId, value)}

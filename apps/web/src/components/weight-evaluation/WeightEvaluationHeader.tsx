@@ -1,12 +1,12 @@
 interface WeightEvaluationHeaderProps {
-  type?: 'brand' | 'product';
+  type?: 'visual' | 'industry';
 }
 
 export default function WeightEvaluationHeader({
-  type = 'brand',
+  type = 'visual',
 }: WeightEvaluationHeaderProps) {
   const getHeaderContent = () => {
-    if (type === 'brand') {
+    if (type === 'visual') {
       return {
         title: '부문별 평가요인 가중치',
         description:

@@ -26,14 +26,16 @@ export const login = async (
 };
 
 export const logout = async (): Promise<LogoutResponse> => {
-  const response = await apiClient.post<LogoutResponse>('/auth/logout');
+  const response = await apiClient.post<LogoutResponse>(
+    '/api/v1/user/auth/logout'
+  );
 
   // 응답 데이터 검증
   return LogoutResponseSchema.parse(response.data);
 };
 
 export const getMe = async (): Promise<MeResponse> => {
-  const response = await apiClient.get('/user/auth/me');
+  const response = await apiClient.get('/api/v1/user/auth/me');
 
   // 응답 데이터 검증
   return MeResponseSchema.parse(response.data);

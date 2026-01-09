@@ -12,19 +12,20 @@ import {
   useSubmitWeightedScores,
   useWeightedScores,
 } from '@/hooks/useSurveyProducts';
+import { UserType } from '@/schemas/auth';
 import {
   type WeightedScoreResponse,
   WeightEvaluationCategoryType as ApiCategory,
 } from '@/schemas/weight-evaluation';
 
 // 타입별 가중치 평가 요소들 정의
-const getWeightEvaluationFactors = (type: 'brand' | 'product') => {
+const getWeightEvaluationFactors = (type: 'visual' | 'industry') => {
   const baseFactors = [
     {
       id: 'aesthetics',
       name: '심미성',
       description:
-        type === 'brand'
+        type === 'visual'
           ? '로고 디자인이 주는 시각적 아름다움과 감성적 만족감에 대한 정도'
           : 'CMF(Color, Material, Finish)의 우수성, 제품 디자인이 주는 감성적 인상(고급스러움, 세련됨 등)',
     },
@@ -32,7 +33,7 @@ const getWeightEvaluationFactors = (type: 'brand' | 'product') => {
       id: 'formative',
       name: '조형성',
       description:
-        type === 'brand'
+        type === 'visual'
           ? '로고 디자인이 시각적으로 얼마나 균형있고 조화롭게 느끼는지에 대한 객관·주관적 평가'
           : '형태 문법의 우수성(부피감, 비례, 균형, 리듬, 선·면의 연속성, 실루엣, 부품 분할/조립선 배치, 디테일 해결 등)',
     },
@@ -40,7 +41,7 @@ const getWeightEvaluationFactors = (type: 'brand' | 'product') => {
       id: 'originality',
       name: '독창성',
       description:
-        type === 'brand'
+        type === 'visual'
           ? '로고가 브랜드의 고유성을 효과적으로 드러내고 모방 가능성을 최소화하면서도 새로운 미적·상징적 가치를 제시하는 정도'
           : '고유성을 표현하려는 창의적 시도로 소비자가 기존 제품과의 차별화를 바탕으로 새로움을 인지할 수 있는 정도',
     },
@@ -48,7 +49,7 @@ const getWeightEvaluationFactors = (type: 'brand' | 'product') => {
       id: 'usability',
       name: '사용성',
       description:
-        type === 'brand'
+        type === 'visual'
           ? '로고가 다양한 매체·환경에서 문제없이 변형 및 적용할 수 있는 정도'
           : '사용자가 의도된 사용 맥락에서 원하는 목표를 효과적, 효율적, 편리하게 달성할 수 있는 정도',
     },
@@ -56,7 +57,7 @@ const getWeightEvaluationFactors = (type: 'brand' | 'product') => {
       id: 'functionality',
       name: '기능성',
       description:
-        type === 'brand'
+        type === 'visual'
           ? '사용자가 로고를 직관적으로 이해하고 인식하며, 혼란 없이 받아들일 수 있는 정도'
           : '제품의 디자인이나 전체 시스템/기능이 목적에 맞게 완전성(completeness), 정확성(accuracy), 적절성(suitability)을 제공하는 정도',
     },
@@ -64,7 +65,7 @@ const getWeightEvaluationFactors = (type: 'brand' | 'product') => {
       id: 'ethics',
       name: '윤리성',
       description:
-        type === 'brand'
+        type === 'visual'
           ? '디자인이 사회·문화적 책임을 통합적으로 고려하며, 준법에 위배되지 않는 정도'
           : '사용자, 사회, 자연 간의 상호의존적 관계에서 올바르고 책임감 있는 행동 원칙을 바탕으로 지속가능한 발전을 이루는 정도',
     },
@@ -72,7 +73,7 @@ const getWeightEvaluationFactors = (type: 'brand' | 'product') => {
       id: 'economy',
       name: '경제성',
       description:
-        type === 'brand'
+        type === 'visual'
           ? '로고가 최소한의 색상·공정으로 제작 비용을 절감하면서도 추가 수정 없이 다양한 매체·크기·환경에 재사용·확장되어 운용 비용을 낮출 수 있는 정도'
           : '제품이 제조, 조립, 생애주기 전반에 걸쳐 전체 비용을 최소화하면서도 목표 성능과 품질을 유지하도록 설계된 정도',
     },
@@ -80,7 +81,7 @@ const getWeightEvaluationFactors = (type: 'brand' | 'product') => {
       id: 'purpose',
       name: '목적성',
       description:
-        type === 'brand'
+        type === 'visual'
           ? '브랜드 로고 또는 시각 시스템이 그 브랜드의 정체성, 가치, 사명, 혹은 의도된 메시지를 명확하고 의미 있게 전달한다고 인식하는 정도'
           : "사용자의 명시적, 암시적 목적과 요구사항을 만족시키기 위해 필요한 기능, 가치, 의도가 정확하게 제공되어 사용자가 의도한 '작업'을 달성할 수 있게 하는 정도",
     },
@@ -91,7 +92,7 @@ const getWeightEvaluationFactors = (type: 'brand' | 'product') => {
 
 // 타입별 카테고리 데이터 정의
 const getWeightEvaluationCategories = (
-  type: 'brand' | 'product'
+  type: 'visual' | 'industry'
 ): Array<{
   id: string;
   name: string;
@@ -107,7 +108,7 @@ const getWeightEvaluationCategories = (
       responseId?: number;
     }>
   > = {
-    brand: [
+    visual: [
       {
         id: 'cosmetics',
         name: '코스메틱',
@@ -137,7 +138,7 @@ const getWeightEvaluationCategories = (
         },
       },
     ],
-    product: [
+    industry: [
       {
         id: 'vacuum',
         name: '핸디스틱청소기',
@@ -188,6 +189,7 @@ const getWeightEvaluationCategories = (
 
 // 카테고리 ID를 API 카테고리로 매핑하는 함수
 const mapCategoryToApiCategory = (categoryId: string): ApiCategory => {
+  console.log(categoryId);
   const categoryMap: Record<string, ApiCategory> = {
     cosmetics: 'COSMETIC',
     fnb: 'FB',
@@ -215,7 +217,7 @@ const mapApiCategoryToCategoryId = (apiCategory: ApiCategory): string => {
 // API 응답 데이터를 페이지 형식으로 변환하는 함수
 const transformApiDataToCategories = (
   apiData: WeightedScoreResponse[],
-  evaluationType: 'brand' | 'product'
+  evaluationType: 'visual' | 'industry'
 ) => {
   const initialCategories = getWeightEvaluationCategories(evaluationType);
 
@@ -223,8 +225,8 @@ const transformApiDataToCategories = (
   if (!apiData || apiData.length === 0) {
     return initialCategories;
   }
-
   // API 데이터를 카테고리 형식으로 변환
+  // ( 수정 : 배열 요청 -> 배열이 아닌 카테고리 별로 별도의 객체 API 요청 )
   const categoriesMap = new Map(
     initialCategories.map((cat) => [
       cat.id,
@@ -290,14 +292,14 @@ const transformWeightsToApiFormat = (
 
 export default function WeightEvaluationPage() {
   const { type } = useParams();
-  const evaluationType = type as 'brand' | 'product';
+  const evaluationType = type as 'visual' | 'industry';
 
   // 타입에 따른 데이터 가져오기
   const weightEvaluationFactors = getWeightEvaluationFactors(
-    type as 'brand' | 'product'
+    type as 'visual' | 'industry'
   );
   const initialCategories = getWeightEvaluationCategories(
-    type as 'brand' | 'product'
+    type as 'visual' | 'industry'
   );
 
   const [categories, setCategories] = useState<
@@ -315,16 +317,18 @@ export default function WeightEvaluationPage() {
 
   // Query hook으로 가중치 데이터 조회
   const { data: weightedScoresData, isLoading: isLoadingWeightedScores } =
-    useWeightedScores();
+    useWeightedScores(evaluationType.toUpperCase() as UserType);
 
   // Mutation hook 사용
-  const submitWeightedScoresMutation = useSubmitWeightedScores();
+  const submitWeightedScoresMutation = useSubmitWeightedScores(
+    evaluationType.toUpperCase() as UserType
+  );
 
   // 가중치 데이터를 불러와서 초기화
   useEffect(() => {
-    if (weightedScoresData?.data) {
+    if (weightedScoresData?.result) {
       const transformedCategories = transformApiDataToCategories(
-        weightedScoresData.data,
+        weightedScoresData.result,
         evaluationType
       );
       if (transformedCategories) {
@@ -387,12 +391,17 @@ export default function WeightEvaluationPage() {
     if (isAllValid) {
       try {
         // API 형식으로 데이터 변환
-        const apiData = transformWeightsToApiFormat(categories);
+        // (기존) 배열 형태 요청
+        const apiDatas = transformWeightsToApiFormat(categories);
 
+        // (수정) 개별로 요청
+        for (const apiData of apiDatas) {
+          await submitWeightedScoresMutation.mutateAsync(apiData);
+        }
+        //
         // API 호출
-        await submitWeightedScoresMutation.mutateAsync(apiData);
 
-        console.log('가중치 평가 API 제출 완료:', apiData);
+        console.log('가중치 평가 API 제출 완료:', apiDatas);
 
         // 성공 상태로 이동
         setIsCompleted(true);
@@ -405,7 +414,7 @@ export default function WeightEvaluationPage() {
   }, [categories, submitWeightedScoresMutation, isAllValid]);
 
   // 타입이 유효하지 않은 경우 처리
-  if (!evaluationType || !['brand', 'product'].includes(evaluationType)) {
+  if (!evaluationType || !['visual', 'industry'].includes(evaluationType)) {
     return (
       <div className="mx-auto h-full px-4 py-4 sm:px-6 lg:px-8">
         <div className="flex h-full flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg">
@@ -426,7 +435,7 @@ export default function WeightEvaluationPage() {
   if (isLoadingWeightedScores) {
     const skeletonFactors = Array(8).fill(null);
     const skeletonCategories =
-      evaluationType === 'brand' ? Array(2).fill(null) : Array(3).fill(null);
+      evaluationType === 'visual' ? Array(2).fill(null) : Array(3).fill(null);
 
     return (
       <div className="mx-auto h-full px-4 py-4 sm:px-6 lg:px-8">
@@ -551,7 +560,9 @@ export default function WeightEvaluationPage() {
     <div className="mx-auto h-full px-4 py-4 sm:px-6 lg:px-8">
       <div className="flex h-full flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg">
         {/* 헤더 */}
-        <WeightEvaluationHeader type={evaluationType as 'brand' | 'product'} />
+        <WeightEvaluationHeader
+          type={evaluationType as 'visual' | 'industry'}
+        />
 
         {/* 메인 콘텐츠 */}
         <div className="flex-1 overflow-hidden p-4 sm:p-6">
