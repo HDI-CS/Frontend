@@ -19,7 +19,11 @@ import {
   type BrandSurveyDetailResponse,
   type BrandSurveyQuestion,
 } from '@/schemas/survey';
-import { saveSurveyProgress } from '@/utils/survey';
+import {
+  clearSurveyProgress,
+  loadSurveyProgress,
+  saveSurveyProgress,
+} from '@/utils/survey';
 
 interface BrandSurveyProps {
   surveyId: string;
@@ -56,6 +60,7 @@ export default function BrandSurvey({ surveyId, detail }: BrandSurveyProps) {
   // 서버에서 받아온 데이터를 클라이언트 상태에 반영
   useEffect(() => {
     if (!detail.result.brandSurveyResponse?.response) return;
+    const saved = loadSurveyProgress(surveyId);
 
     const serverAnswers: Record<string, number> = {};
 
@@ -68,12 +73,15 @@ export default function BrandSurvey({ surveyId, detail }: BrandSurveyProps) {
     setAnswers(serverAnswers);
 
     // 정성평가 응답도 서버 데이터에서 초기화
-    if (detail.result.brandSurveyResponse?.textResponse?.response) {
+    // 300자 이하인 경우는 브라우저 우선
+    if (saved?.qualitativeAnswer && saved?.qualitativeAnswer.length < 300) {
+      setQualitativeAnswer(saved.qualitativeAnswer);
+    } else if (detail.result.brandSurveyResponse?.textResponse?.response) {
       setQualitativeAnswer(
         detail.result.brandSurveyResponse.textResponse.response
       );
     }
-  }, [detail]);
+  }, [detail, surveyId]);
 
   // 설문 응답 저장 mutation
   const saveSurveyResponseMutation = useSaveSurveyResponse();
@@ -108,6 +116,9 @@ export default function BrandSurvey({ surveyId, detail }: BrandSurveyProps) {
 
   // 정성평가 저장 핸들러
   const handleQualitativeSave = async (textResponse: string) => {
+    if (textResponse.length < 300) {
+      return;
+    }
     setIsSavingQualitative(true);
 
     try {
@@ -115,11 +126,13 @@ export default function BrandSurvey({ surveyId, detail }: BrandSurveyProps) {
         type: surveyType,
         productResponseId: Number(surveyId), // API는 여전히 productResponseId 필드를 사용
         requestData: {
-          surveyId: textSurveyId, // 정량평가 문항 개수 + 1
+          surveyId: textSurveyId, 
           response: null,
           textResponse,
         },
       });
+      // 제출 완료 후 로컬스토리지 draft 정리
+      clearSurveyProgress(surveyId);
     } catch (error) {
       console.error('정성평가 저장 실패:', error);
     } finally {
@@ -251,7 +264,8 @@ export default function BrandSurvey({ surveyId, detail }: BrandSurveyProps) {
 
               {/* 정성평가 섹션 */}
               <QualitativeEvaluation
-                value={currentQualitativeValue}
+                surveyId={surveyId}
+                value={qualitativeAnswer}
                 onChange={handleQualitativeChange}
                 onSave={handleQualitativeSave}
                 isSaving={isSavingQualitative}
