@@ -252,7 +252,12 @@ const ProfileGridTable = () => {
       company: data.company ?? null,
     };
 
-    createExpert(payload);
+    createExpert(payload, {
+      onError: () => {
+        // 400 에러로 모달이 닫힐 시에도 폼 리셋
+        createForm.reset();
+      },
+    });
     setIsAdd(false);
   };
 
