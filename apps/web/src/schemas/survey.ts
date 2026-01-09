@@ -18,7 +18,7 @@ export const SurveyProductSchema = z.object({
 // (변경) 설문
 export const SurveyResultSchema = z.object({
   name: z.string(),
-  image: z.string(),
+  image: z.string().nullable(),
   responseStatus: SurveyProductResponseStatusSchema,
   dataId: z.number(),
 });
@@ -120,7 +120,7 @@ export const BrandDataSetResponseSchema = z.object({
   mainProduct: z.string(),
   target: z.string(),
   referenceUrl: z.string().nullable(),
-  image: z.string(),
+  image: z.string().nullable(),
 });
 
 export const BrandSurveyQuestionSchema = z.object({
