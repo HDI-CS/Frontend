@@ -12,9 +12,9 @@ import {
 } from '@/schemas/survey';
 import {
   WeightedScoreApiResponseSchema,
-  WeightedScoreRequestArraySchema,
+  WeightedScoreRequest,
+  WeightedScoreRequestSchema,
   type WeightedScoreApiResponse,
-  type WeightedScoreRequestArray,
 } from '@/schemas/weight-evaluation';
 import { analyzeDataStructure, safeZodParse } from '@/utils/zod';
 
@@ -244,12 +244,12 @@ export const surveyService = {
    * 가중치 평가 점수 제출 (수정/등록)
    */
   async submitWeightedScores(
-    requestData: WeightedScoreRequestArray,
+    requestData: WeightedScoreRequest,
     type: UserType
   ): Promise<void> {
     // 요청 데이터 검증
     const validatedData = safeZodParse(
-      WeightedScoreRequestArraySchema,
+      WeightedScoreRequestSchema,
       requestData,
       {
         operation: 'WeightedScoreRequestArray validation',

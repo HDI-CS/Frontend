@@ -390,12 +390,17 @@ export default function WeightEvaluationPage() {
     if (isAllValid) {
       try {
         // API 형식으로 데이터 변환
-        const apiData = transformWeightsToApiFormat(categories);
+        // (기존) 배열 형태 요청
+        const apiDatas = transformWeightsToApiFormat(categories);
 
+        // (수정) 개별로 요청
+        for (const apiData of apiDatas) {
+          await submitWeightedScoresMutation.mutateAsync(apiData);
+        }
+        //
         // API 호출
-        await submitWeightedScoresMutation.mutateAsync(apiData);
 
-        console.log('가중치 평가 API 제출 완료:', apiData);
+        console.log('가중치 평가 API 제출 완료:', apiDatas);
 
         // 성공 상태로 이동
         setIsCompleted(true);

@@ -27,7 +27,7 @@ export const WeightedScoreRequestSchema = z.object({
   score8: z.int32(),
 });
 
-// 가중치 평가 요청 배열 스키마 (API는 배열을 받음)
+// 가중치 평가 요청 배열 스키마 (API는 배열을 받음 -> 수정: 카테고리 별로 하나씩)
 export const WeightedScoreRequestArraySchema = z.array(
   WeightedScoreRequestSchema
 );

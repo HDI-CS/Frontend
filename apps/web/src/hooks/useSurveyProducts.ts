@@ -1,6 +1,6 @@
 import { UserType } from '@/schemas/auth';
 import { type SurveyResponseRequest } from '@/schemas/survey';
-import { type WeightedScoreRequestArray } from '@/schemas/weight-evaluation';
+import { WeightedScoreRequest } from '@/schemas/weight-evaluation';
 import { surveyService } from '@/services/survey';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -116,7 +116,7 @@ export const useSubmitWeightedScores = (type: UserType) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (requestData: WeightedScoreRequestArray) =>
+    mutationFn: (requestData: WeightedScoreRequest) =>
       surveyService.submitWeightedScores(requestData, type),
     onSuccess: () => {
       // 가중치 평가 제출 성공 시 weightedScores 데이터를 다시 fetch하여 최신 상태로 업데이트

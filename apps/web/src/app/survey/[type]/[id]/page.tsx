@@ -63,7 +63,10 @@ export default function SurveyPage() {
   // type에 따라 적절한 컴포넌트 렌더링
   const normalizedType = (type as string).toUpperCase() as UserType;
 
-  if (normalizedType === 'INDUSTRY' && 'industryDataSetResponse' in detail.result) {
+  if (
+    normalizedType === 'INDUSTRY' &&
+    'industryDataSetResponse' in detail.result
+  ) {
     return (
       <ProductSurvey
         surveyId={surveyId}

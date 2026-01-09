@@ -26,7 +26,9 @@ export const login = async (
 };
 
 export const logout = async (): Promise<LogoutResponse> => {
-  const response = await apiClient.post<LogoutResponse>('/api/v1/user/auth/logout');
+  const response = await apiClient.post<LogoutResponse>(
+    '/api/v1/user/auth/logout'
+  );
 
   // 응답 데이터 검증
   return LogoutResponseSchema.parse(response.data);
