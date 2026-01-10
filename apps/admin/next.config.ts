@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+const ADMIN_APP_URL = process.env.ADMIN_APP_URL;
 
 const nextConfig: NextConfig = {
   basePath: '/admin',
@@ -27,6 +28,10 @@ const nextConfig: NextConfig = {
       {
         source: '/api/:path*',
         destination: 'https://api.hdi.ai.kr/:path*',
+      },
+      {
+        source: '/admin/:path*',
+        destination: `${ADMIN_APP_URL}/admin/:path*`,
       },
     ];
   },
