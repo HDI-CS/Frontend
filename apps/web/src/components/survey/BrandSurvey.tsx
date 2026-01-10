@@ -116,9 +116,13 @@ export default function BrandSurvey({ surveyId, detail }: BrandSurveyProps) {
 
   // 정성평가 저장 핸들러
   const handleQualitativeSave = async (textResponse: string) => {
+    console.log('🔥 handleQualitativeSave called');
     if (textResponse.length < 300) {
+      console.log('⛔️ blocked by length check');
+
       return;
     }
+
     setIsSavingQualitative(true);
 
     try {
@@ -126,11 +130,13 @@ export default function BrandSurvey({ surveyId, detail }: BrandSurveyProps) {
         type: surveyType,
         productResponseId: Number(surveyId), // API는 여전히 productResponseId 필드를 사용
         requestData: {
-          surveyId: textSurveyId, 
+          surveyId: textSurveyId,
           response: null,
           textResponse,
         },
       });
+      console.log('✅ passed length check -> request will be sent');
+
       // 제출 완료 후 로컬스토리지 draft 정리
       clearSurveyProgress(surveyId);
     } catch (error) {
