@@ -1,6 +1,10 @@
 import type { NextConfig } from 'next';
+const ADMIN_APP_URL = process.env.ADMIN_APP_URL;
 
 const nextConfig: NextConfig = {
+  // basePath: '/admin',
+  // assetPrefix: '/admin', 이미지/에셋 문제 생기면
+
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -24,6 +28,10 @@ const nextConfig: NextConfig = {
       {
         source: '/api/:path*',
         destination: 'https://api.hdi.ai.kr/:path*',
+      },
+      {
+        source: '/admin/:path*',
+        destination: `${ADMIN_APP_URL}/admin/:path*`,
       },
     ];
   },
