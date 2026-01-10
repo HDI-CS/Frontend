@@ -31,7 +31,7 @@ const MenuItem = ({
             active && 'text-[#ffffff]'
           )}
         />
-      {truncateText(label, 8)}
+        {truncateText(label, 8)}
       </div>
 
       {open && <div className="mt-1 flex flex-col gap-1 pl-4">{children}</div>}
