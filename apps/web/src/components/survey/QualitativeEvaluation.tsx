@@ -291,8 +291,10 @@ export default function QualitativeEvaluation({
       !isSaving &&
       localValue !== lastSavedValueRef.current
     ) {
+      console.log(localValue);
       lastSavedValueRef.current = localValue;
-      onSave(localValue);
+      onSave(localValue); // 이게 주범
+
       setHasUserInput(false);
       firstUnsavedChangeTimeRef.current = null; // 초기화
     }

@@ -119,6 +119,9 @@ export default function ProductSurvey({
 
   // 정성평가 저장 핸들러
   const handleQualitativeSave = async (textResponse: string) => {
+    if (textResponse.length < 300) {
+      return;
+    }
     setIsSavingQualitative(true);
 
     try {
