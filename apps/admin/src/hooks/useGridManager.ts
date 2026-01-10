@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { FieldActionMenuItem } from '../components/FieldActionMenu';
-import { ExpertProfile } from '../constants/expert';
 import { UserType } from '../schemas/auth';
 import { SurveyData } from '../schemas/evaluation';
-import { dataIdsSet } from '../schemas/expert';
+import { dataIdsSet, ExpertMember } from '../schemas/expert';
 import { VisualDataItem } from '../types/data/visual-data';
 import { useDeleteDataset } from './data/useDeleteDataset';
 import { useDuplicateDataset } from './data/useDuplicateDataset';
@@ -50,7 +49,7 @@ export const useFolderManager = (type: UserType) => {
   } | null>(null);
 
   const [selectedExpertData, setSelectedExpertData] =
-    useState<ExpertProfile | null>();
+    useState<ExpertMember | null>();
 
   // const [questions, setQuestions] = useState<Question[]>();
 
