@@ -161,7 +161,7 @@ export const downloadEvaluationExcel = async ({
 }) => {
   try {
     const res = apiClient.get(
-      `/api/v1/admin/${type.toLowerCase()}/evaluations/assessment/${assessmentRoundId}/datasets/export`,
+      `/api/v1/admin/${type}/evaluations/assessment/${assessmentRoundId}/datasets/export`,
 
       {
         responseType: 'blob', // 이건 JSON이 아니라 binary라서 파싱 대상 아님
