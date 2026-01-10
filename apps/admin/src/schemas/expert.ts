@@ -23,6 +23,7 @@ export const ExpertMemberSchema = z.object({
   academic: z.string().nullable(), // 학계
   expertise: z.string().nullable(), // 전문 분야
   company: z.string().nullable(), // 회사
+  note: z.string().nullable // 비고란
 });
 
 export const ExpertListResponseSchema = z.object({

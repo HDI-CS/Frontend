@@ -1,9 +1,17 @@
+import clsx from 'clsx';
+
 interface FolderWrapperProps {
   children: React.ReactNode;
+  isManage?: boolean;
 }
-const FolderWrapper = ({ children }: FolderWrapperProps) => {
+const FolderWrapper = ({ children, isManage = true }: FolderWrapperProps) => {
   return (
-    <div className="font-pretendard mx-50 text-blue mb-10 mt-14 min-h-screen">
+    <div
+      className={clsx(
+        'font-pretendard text-blue mb-10 mt-14 min-h-screen',
+        isManage ? 'mx-30' : 'mx-60'
+      )}
+    >
       {children}
     </div>
   );

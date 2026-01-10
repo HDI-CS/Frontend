@@ -1,3 +1,4 @@
+import { truncateText } from '@/src/utils/truncateText';
 import clsx from 'clsx';
 import { ChevronRight } from 'lucide-react';
 
@@ -30,7 +31,7 @@ const MenuItem = ({
             active && 'text-[#ffffff]'
           )}
         />
-        <span>{label}</span>
+      {truncateText(label, 8)}
       </div>
 
       {open && <div className="mt-1 flex flex-col gap-1 pl-4">{children}</div>}

@@ -21,10 +21,10 @@ const IndexPage = () => {
   }));
 
   return (
-    <FolderWrapper>
+    <FolderWrapper isManage={false}>
       <div className="flex flex-col gap-5">
         <div className="text-primary-blue flex">
-          <p className="ml-21 w-25">Folder</p>
+          <p className="ml-21 w-5">Folder</p>
         </div>
         {sections.map((section) => (
           <Folder
