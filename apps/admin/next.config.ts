@@ -2,7 +2,7 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   basePath: '/admin',
-  // assetPrefix: '/admin', 이미지/에셋 문제 생기면
+  assetPrefix: '/admin', // asset 경로가 깨지는 걸 방지
 
   typescript: {
     ignoreBuildErrors: true,
