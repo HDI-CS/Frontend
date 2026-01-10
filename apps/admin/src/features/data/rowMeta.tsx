@@ -58,7 +58,7 @@ export const rowMeta: MetaByType = {
         cell: (row, isActiveRow) =>
           renderCellText(row.name, getKeyword(), {
             active: isActiveRow,
-            maxLength: 6,
+            maxLength: 8,
           }),
       },
       {
@@ -69,13 +69,13 @@ export const rowMeta: MetaByType = {
         cell: (row, isActiveRow) =>
           renderCellText(row.sectorCategory, getKeyword(), {
             active: isActiveRow,
-            maxLength: 6,
+            maxLength: 9,
           }),
       },
       {
         key: 'mainProductCategory',
         header: '대표 제품 카테고리',
-        thClassName: 'min-w-[260px]',
+        thClassName: 'w-[260px]',
         className: 'min-w-[260px]',
         cell: (row, isActiveRow) =>
           renderCellText(row.mainProductCategory, getKeyword(), {
@@ -91,7 +91,7 @@ export const rowMeta: MetaByType = {
         cell: (row, isActiveRow) =>
           renderCellText(row.mainProduct, getKeyword(), {
             active: isActiveRow,
-            maxLength: 6,
+            maxLength: 16,
           }),
       },
       {
@@ -168,8 +168,8 @@ export const rowMeta: MetaByType = {
       {
         key: 'code',
         header: 'ID',
-        thClassName: 'w-[90px]',
-        className: 'w-[90px] px-3',
+        thClassName: 'w-[80px]',
+        className: 'w-[80px] px-3',
         cell: (row, isActiveRow) =>
           renderCellText(row.code, getKeyword(), {
             active: isActiveRow,
@@ -184,25 +184,25 @@ export const rowMeta: MetaByType = {
         cell: (row, isActiveRow) =>
           renderCellText(row.productName, getKeyword(), {
             active: isActiveRow,
-            maxLength: 6,
+            maxLength: 21,
           }),
       },
       {
         key: 'companyName',
         header: '회사',
-        thClassName: 'w-[160px]',
-        className: 'w-[160px]',
+        thClassName: 'w-[150px]',
+        className: 'w-[150px]',
         cell: (row, isActiveRow) =>
           renderCellText(row.companyName, getKeyword(), {
             active: isActiveRow,
-            maxLength: 6,
+            maxLength: 8,
           }),
       },
       {
         key: 'modelName',
         header: '모델',
-        thClassName: 'w-[160px]',
-        className: 'w-[160px]',
+        thClassName: 'w-[120px]',
+        className: 'w-[120px]',
         cell: (row, isActiveRow) =>
           renderCellText(row.modelName, getKeyword(), {
             active: isActiveRow,
@@ -217,25 +217,25 @@ export const rowMeta: MetaByType = {
         cell: (row, isActiveRow) =>
           renderCellText(row.price, getKeyword(), {
             active: isActiveRow,
-            maxLength: 6,
+            maxLength: 7,
           }),
       },
       {
         key: 'material',
         header: '재질',
-        thClassName: 'w-[140px]',
-        className: 'w-[140px]',
+        thClassName: 'w-[120px]',
+        className: 'w-[120px]',
         cell: (row, isActiveRow) =>
           renderCellText(row.material, getKeyword(), {
             active: isActiveRow,
-            maxLength: 6,
+            maxLength: 7,
           }),
       },
       {
         key: 'size',
         header: '크기',
-        thClassName: 'w-[140px]',
-        className: 'w-[140px]',
+        thClassName: 'w-[120px]',
+        className: 'w-[120px]',
         cell: (row, isActiveRow) =>
           renderCellText(row.size, getKeyword(), {
             active: isActiveRow,
@@ -261,18 +261,18 @@ export const rowMeta: MetaByType = {
         cell: (row, isActiveRow) =>
           renderCellText(row.registeredAt, getKeyword(), {
             active: isActiveRow,
-            maxLength: 6,
+            maxLength: 10,
           }),
       },
       {
         key: 'productPath',
         header: '제품 카테고리',
-        thClassName: 'w-[120px]',
+        thClassName: 'w-[300px]',
         className: 'w-[120px]',
         cell: (row, isActiveRow) =>
           renderCellText(row.productPath, getKeyword(), {
             active: isActiveRow,
-            maxLength: 6,
+            maxLength: 20,
           }),
       },
       {
@@ -295,13 +295,43 @@ export const rowMeta: MetaByType = {
         },
       },
       {
-        key: 'logoImage',
-        header: <span className="block text-center">로고이미지</span>,
+        key: 'detailImagePath',
+        header: <span className="block text-center">상세이미지</span>,
         thClassName: 'w-[120px]',
         className: 'w-[120px] text-center',
         cell: (row: IndustrialRow) => (
           <Image
             src={row.detailImagePath ? row.detailImagePath : empty}
+            alt={`${row.modelName} logo`}
+            className="mx-auto h-[44px] w-[44px] rounded object-cover"
+            width={44}
+            height={44}
+          />
+        ),
+      },
+      {
+        key: 'frontImagePath',
+        header: <span className="block text-center">정면이미지</span>,
+        thClassName: 'w-[120px]',
+        className: 'w-[120px] text-center',
+        cell: (row: IndustrialRow) => (
+          <Image
+            src={row.frontImagePath ? row.frontImagePath : empty}
+            alt={`${row.modelName} logo`}
+            className="mx-auto h-[44px] w-[44px] rounded object-cover"
+            width={44}
+            height={44}
+          />
+        ),
+      },
+      {
+        key: 'sideImagePath',
+        header: <span className="block text-center">측면이미지</span>,
+        thClassName: 'w-[120px]',
+        className: 'w-[120px] text-center',
+        cell: (row: IndustrialRow) => (
+          <Image
+            src={row.sideImagePath ? row.sideImagePath : empty}
             alt={`${row.modelName} logo`}
             className="mx-auto h-[44px] w-[44px] rounded object-cover"
             width={44}
@@ -346,7 +376,6 @@ export const INDUSTRY_FIELDS = [
   { label: '무게', field: 'weight' },
   { label: '출시일', field: 'registeredAt' },
   { label: '제품 카테고리', field: 'productPath' },
-
   { label: '홈페이지', field: 'referenceUrl' },
 ] as const;
 

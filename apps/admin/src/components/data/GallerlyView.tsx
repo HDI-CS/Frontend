@@ -17,10 +17,10 @@ interface GalleryViewProps<T extends BaseRow> {
   rows: WithIndex<T>[];
   galleryFields: GalleryFieldDef<WithIndex<T>>[];
   lastIndex: number;
-  orderBy: 'first' | 'last';
+  orderBy: 'ASC' | 'DESC';
   activeCategory: string;
 
-  setOrderBy: (sort: 'first' | 'last') => void;
+  setOrderBy: (sort: 'ASC' | 'DESC') => void;
   onAdd: () => void;
 }
 

@@ -4,17 +4,11 @@ interface ContextMenuProps {
   x: number;
   y: number;
   onClose: () => void;
-  orderBy: 'first' | 'last';
-  setOrderBy: (order: 'first' | 'last') => void;
+  orderBy?: 'ASC' | 'DESC';
+  setOrderBy: (order: 'ASC' | 'DESC') => void;
 }
 
-const IdSortMenu = ({
-  x,
-  y,
-  onClose,
-  setOrderBy,
-  orderBy,
-}: ContextMenuProps) => {
+const IdSortMenu = ({ x, y, onClose, setOrderBy }: ContextMenuProps) => {
   useEffect(() => {
     const close = () => onClose();
     window.addEventListener('click', close);
@@ -28,21 +22,19 @@ const IdSortMenu = ({
     >
       <button
         onClick={() => {
-          setOrderBy('first');
-          console.log(orderBy);
+          setOrderBy('ASC');
         }}
         className="block w-full px-4 py-2 text-left hover:bg-gray-100"
       >
-        sort First → Last
+        {'sort First → Last'}
       </button>
       <button
         onClick={() => {
-          setOrderBy('last');
-          console.log(orderBy);
+          setOrderBy('DESC');
         }}
         className="block w-full px-4 py-2 text-left hover:bg-gray-100"
       >
-        sort Last → First
+        {'sort Last → First'}
       </button>
     </div>
   );

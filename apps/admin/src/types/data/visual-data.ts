@@ -22,22 +22,48 @@ export interface DatasetUIItem {
   code: string;
   referenceUrl?: string;
   _no?: number;
+  // 정렬을 위한 필드 추가
+  // visual
+  name?: string;
+  sectorCategory?: string;
+  mainProductCategory?: string;
+  mainProduct?: string;
+
+  // industry
+  productName?: string;
+  companyName?: string;
+  modelName?: string;
 }
 
 export const mapVisualToUIItem = (
   item: VisualDataItem,
-  index: number
+  index: number,
+  name: string,
+  sectorCategory: string,
+  mainProductCategory: string,
+  mainProduct: string
 ): DatasetUIItem => ({
   ...item,
   _no: index + 1,
+  name,
+  sectorCategory,
+  mainProductCategory,
+  mainProduct,
 });
 
 export const mapIndustryToUIItem = (
   item: IndustrialDataItem,
-  index: number
+  index: number,
+  // 정렬을 위한 필드 추가
+  productName: string,
+  companyName: string,
+  modelName: string
 ): DatasetUIItem => ({
   ...item,
   _no: index + 1,
+  productName,
+  companyName,
+  modelName,
 });
 
 export type VisualDataItem = {
@@ -52,25 +78,15 @@ export type VisualDataItem = {
   logoImage: string | null;
 };
 
-export type VisualDataItemWithUI = VisualDataItem & {
-  _no: number;
-};
-
 export type VisualDataCategory = {
   categoryName: string;
   data: VisualDataItem[];
-};
-
-export type IndustrialDataItemWithUI = IndustrialDataItem & {
-  _no: number;
 };
 
 export type IndustriaDataCategory = {
   categoryName: string;
   data: IndustrialDataItem[];
 };
-
-export type CategoryKey = string;
 
 export const mapVisualDatasetItem = (
   input: UpdateVisualDatasetRequest & { id: number }

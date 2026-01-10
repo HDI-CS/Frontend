@@ -1,5 +1,5 @@
 import { CategoryByType } from '@/src/features/data/DataYearPage';
-import useGridManager from '@/src/hooks/useGridManager';
+import useGridManager, { SortType } from '@/src/hooks/useGridManager';
 import { UserType } from '@/src/schemas/auth';
 import { IndustryCategory } from '@/src/schemas/industry-data';
 import { VisualCategory } from '@/src/schemas/visual-data';
@@ -17,11 +17,30 @@ interface GridTableProps<T extends { id: number }, TType extends UserType> {
   rows: WithIndex<T>[];
   columns: ColumnDef<WithIndex<T>>[];
   lastIndex: number;
-  orderBy: 'first' | 'last';
+  orderBy: 'ASC' | 'DESC';
   activeCategory: CategoryByType[TType] | null;
-  setOrderBy: (sort: 'first' | 'last') => void;
+  setSortType: (sortType: SortType) => void;
+  setOrderBy: (sort: 'ASC' | 'DESC') => void;
   onAddRow: () => void;
 }
+
+const typeMapper = {
+  code: 'ID',
+  companyName: 'COMPANY',
+  productName: 'PRODUCT',
+  modelName: 'MODEL',
+
+  name: 'NAME',
+  sectorCategory: 'SECTOR',
+  mainProduct: 'MAINPRODUCT',
+  mainProductCategory: 'MAINCATEGORY',
+} as const;
+
+type SortableKey = keyof typeof typeMapper;
+
+const isSortableKey = (key: string): key is SortableKey => {
+  return key in typeMapper;
+};
 
 const GridTable = <T extends { id: number }, TType extends UserType>({
   type,
@@ -30,6 +49,7 @@ const GridTable = <T extends { id: number }, TType extends UserType>({
   onAddRow,
   orderBy,
   setOrderBy,
+  setSortType,
   lastIndex,
   activeCategory,
 }: GridTableProps<T, TType>) => {
@@ -75,31 +95,28 @@ const GridTable = <T extends { id: number }, TType extends UserType>({
       <div className="border border-t-0 border-[#E5E5E5] bg-white p-2">
         {/* 테이블 스크롤 영역 */}
         <div className="max-h-[680px] overflow-auto">
-          <table className="w-full border-separate border-spacing-0">
+          <table className="min-w-max border-separate border-spacing-0 whitespace-nowrap">
             {/* 헤더 */}
             <thead className="sticky top-0 z-10 bg-white">
               <tr className="text-left text-sm font-light text-[#8D8D8D]">
-                {columns.map((col) =>
-                  col.key === 'code' ? (
-                    <Th
-                      key={col.key}
-                      className={col.thClassName}
-                      onContextMenu={(e) => {
-                        e.preventDefault();
+                {columns.map((col) => (
+                  <Th
+                    key={col.key}
+                    className={col.thClassName}
+                    onContextMenu={(e) => {
+                      e.preventDefault();
+                      if (isSortableKey(col.key)) {
+                        setSortType(typeMapper[col.key]);
                         setIdMenu({
                           x: e.clientX,
                           y: e.clientY,
                         });
-                      }}
-                    >
-                      {col.header}
-                    </Th>
-                  ) : (
-                    <Th key={col.key} className={col.thClassName}>
-                      {col.header}
-                    </Th>
-                  )
-                )}
+                      }
+                    }}
+                  >
+                    {col.header}
+                  </Th>
+                ))}
               </tr>
             </thead>
 
@@ -107,6 +124,7 @@ const GridTable = <T extends { id: number }, TType extends UserType>({
             <tbody>
               {rows.map((row, idx) => {
                 const isActiveRow = idx + 1 === activeIndex;
+                console.log(row);
 
                 return (
                   <tr
@@ -142,7 +160,7 @@ const GridTable = <T extends { id: number }, TType extends UserType>({
                 );
               })}
 
-              {/* 하단 + 추가 행 (스샷 느낌) */}
+              {/* 하단 + 추가 행  */}
               <tr>
                 <Td className="flex w-[64px] items-center justify-center hover:bg-[#F4F7FF]">
                   <button
@@ -158,6 +176,7 @@ const GridTable = <T extends { id: number }, TType extends UserType>({
             </tbody>
           </table>
 
+          {/* id (Code) 정렬 드롭다운 */}
           {idMenu && (
             <IdSortMenu
               x={idMenu.x}
@@ -167,6 +186,7 @@ const GridTable = <T extends { id: number }, TType extends UserType>({
               setOrderBy={setOrderBy}
             />
           )}
+
           {rowMenu && (
             <FieldActionMenu
               x={rowMenu.x}
