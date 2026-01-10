@@ -5,11 +5,13 @@ import { ChevronRight } from 'lucide-react';
 const MenuItem = ({
   label,
   open,
+  isBold = false,
   children,
   onClick,
   active,
 }: {
   label: string;
+  isBold?: boolean;
   open?: boolean;
   active?: boolean;
   children?: React.ReactNode;
@@ -21,7 +23,8 @@ const MenuItem = ({
         onClick={onClick}
         className={clsx(
           'text-neutral-regularBlack text-regular16 flex cursor-pointer items-center gap-1 px-3 py-2.5',
-          active && 'bg-[#4676FB] text-white'
+          active && 'bg-[#4676FB] text-white',
+          isBold ? 'text-bold16 ': 'text-regular16 '
         )}
       >
         <ChevronRight

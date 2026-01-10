@@ -41,9 +41,6 @@ const PhasePage = () => {
     return [];
   }, [keyword, searchData, data]);
 
-  
-
-
   return (
     <div className="bg-system-blueBg p-1.5">
       <AllExpertGridTable

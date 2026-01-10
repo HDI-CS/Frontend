@@ -104,29 +104,29 @@ const IndexPage = () => {
         </div>
 
         {/* 테이블 Skeleton */}
-          <BaseGridTable>
-            <thead className="sticky top-0 z-10 bg-white">
-              <tr className="text-left text-sm font-light text-[#8D8D8D]">
-                {tableHeaders.map((_, idx) => (
-                  <Th key={idx} className="px-4 py-4">
-                    <div className="h-4 w-20 animate-pulse rounded bg-gray-200" />
-                  </Th>
+        <BaseGridTable>
+          <thead className="sticky top-0 z-10 bg-white">
+            <tr className="text-left text-sm font-light text-[#8D8D8D]">
+              {tableHeaders.map((_, idx) => (
+                <Th key={idx} className="px-4 py-4">
+                  <div className="h-4 w-20 animate-pulse rounded bg-gray-200" />
+                </Th>
+              ))}
+            </tr>
+          </thead>
+
+          <tbody>
+            {tableRows.map((_, rowIdx) => (
+              <tr key={rowIdx} className="h-21">
+                {tableHeaders.map((_, colIdx) => (
+                  <Td key={colIdx} className="px-4 py-4">
+                    <div className="h-4 w-full animate-pulse rounded bg-gray-100" />
+                  </Td>
                 ))}
               </tr>
-            </thead>
-
-            <tbody>
-              {tableRows.map((_, rowIdx) => (
-                <tr key={rowIdx} className="h-21">
-                  {tableHeaders.map((_, colIdx) => (
-                    <Td key={colIdx} className="px-4 py-4">
-                      <div className="h-4 w-full animate-pulse rounded bg-gray-100" />
-                    </Td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </BaseGridTable>
+            ))}
+          </tbody>
+        </BaseGridTable>
       </div>
     );
   }

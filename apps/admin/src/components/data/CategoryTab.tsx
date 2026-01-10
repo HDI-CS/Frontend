@@ -29,18 +29,23 @@ const CategoryTab = <T extends UserType>({
   const [open, setOpen] = useState(false);
   if (isLoading) {
     const skeletonFactors = Array(2).fill(null);
-    return skeletonFactors.map((_, index) => (
-      <button
-        key={index}
-        className={clsx(
-          'flex w-35 items-center gap-1 rounded-t-[4px] border border-b-0 border-[#E5E5E5] px-4 text-lg',
-          'h-9 bg-[#F6F7F8] p-2 text-[#3A3A49] hover:bg-gray-200'
-        )}
-      >
-        {''}
-      </button>
-    ));
+    return (
+      <div className="flex items-end gap-1">
+        {skeletonFactors.map((_, index) => (
+          <button
+            key={index}
+            className={clsx(
+              'w-35 flex items-center gap-1 rounded-t-[4px] border border-b-0 border-[#E5E5E5] px-4 text-lg',
+              'h-9 bg-[#F6F7F8] p-2 text-[#3A3A49] hover:bg-gray-200'
+            )}
+          >
+            {''}
+          </button>
+        ))}
+      </div>
+    );
   }
+
   if (categories && onChange)
     return (
       <div className="flex items-end gap-1">
