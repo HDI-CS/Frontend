@@ -2,7 +2,7 @@ import type { NextConfig } from 'next';
 const ADMIN_APP_URL = process.env.ADMIN_APP_URL;
 
 const nextConfig: NextConfig = {
-  basePath: '/admin',
+  // basePath: '/admin',
   // assetPrefix: '/admin', 이미지/에셋 문제 생기면
 
   typescript: {
