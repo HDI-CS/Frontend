@@ -73,6 +73,8 @@ const OneExpertGridTable = ({ expertData }: OneExpertGridTableProps) => {
   /* ---------- coloumnCount ---------- */
 
   const MIN_COL_COUNT = 8;
+  const MIN_ROW = 6;
+  const rowCount = Math.max(MIN_ROW - expertData.surveyDatas.length, 0);
 
   const questionData = responses[0]?.surveys ?? [];
   const columnCount = Math.max(MIN_COL_COUNT, questionData.length);
@@ -113,7 +115,7 @@ const OneExpertGridTable = ({ expertData }: OneExpertGridTableProps) => {
             className="hover:bg-system-blueBg cursor-pointer"
           >
             <Th className="text-regular16 w-[63px] text-center">번호</Th>
-            <Th className="text-regular16 w-[108px] text-start">평가자명</Th>
+            <Th className="text-regular16 w-[120px] text-start">평가자명</Th>
             <Th
               onContextMenu={(e) => {
                 e.preventDefault();
@@ -163,10 +165,6 @@ const OneExpertGridTable = ({ expertData }: OneExpertGridTableProps) => {
 
         <tbody>
           {expertData.surveyDatas.map((row, index) => {
-            // const qualitativeCount = getQualitativeCount(
-            //   row.qualitativeEvaluation
-            // );
-
             return (
               <tr
                 key={row.dataId}
@@ -199,7 +197,7 @@ const OneExpertGridTable = ({ expertData }: OneExpertGridTableProps) => {
                 </Td>
 
                 <Td className="text-regular16 text-neutral-regularBlack px-4 py-1">
-                  {expertData.memberName}
+                  {truncateText(expertData.memberName, 7)}
                 </Td>
                 <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
                   {row.dataCode}
@@ -225,6 +223,38 @@ const OneExpertGridTable = ({ expertData }: OneExpertGridTableProps) => {
             );
           })}
         </tbody>
+
+        {/* 비어보이는 화면 UI 개선용 추가 행*/}
+        {rowCount > 0 &&
+          Array.from({ length: rowCount }).map((_, index) => (
+            <tr
+              key={index}
+              className={clsx('h-25 hover:bg-[#F4F7FF]', 'bg-neutral-white')}
+            >
+              <Td className="text-regular16 px-4 py-1 text-center">
+                {expertData.surveyDatas.length + 1 + index}
+              </Td>
+
+              <Td className="text-regular16 px-4 py-1"></Td>
+              <Td className="px-4 py-1 text-start">
+                <div className="flex w-full items-center gap-0.5"></div>
+              </Td>
+              {/* 가중치 데이터 */}
+              <Td className="px-4 py-1">
+                <div className="flex items-center justify-center"></div>
+              </Td>
+              {/* 정성평가 데이터 */}
+              {Array.from({ length: columnCount }).map((_, index) => {
+                return (
+                  <Td key={index} className="w-[125px] px-4 py-1">
+                    <div className="flex items-center justify-center">
+                      <div className="h-[20px] w-[20px]" />
+                    </div>
+                  </Td>
+                );
+              })}
+            </tr>
+          ))}
       </BaseGridTable>
 
       {/* ID sort dropdown 오픈 */}

@@ -62,17 +62,10 @@ const IndexPage = () => {
 
   const { userType } = userInfo?.result || {};
 
-  const { data, isLoading, isError } = useDatasetsByYear({
+  const { data, isLoading } = useDatasetsByYear({
     type: userType ?? 'VISUAL',
     yearId: yearId,
   });
-
-  if (!userType) {
-    return null; // 또는 로딩 UI
-  }
-
-  if (isMeLoading) return <div> 어드민 정보 로딩 중..</div>;
-  if (meError) return <div> 데이터를 불러오는 중 오류가 발생했습니다.</div>;
 
   if (isLoading) {
     const tableHeaders = Array.from({ length: 12 });
@@ -131,9 +124,27 @@ const IndexPage = () => {
     );
   }
 
-  if (meError) return <div>유저 정보 에러</div>;
-  if (!userType) return null;
-  if (isError) return <div>에러 발생</div>;
+  if (isMeLoading)
+    return (
+      <div className="text-primary-blue text-regular16 flex min-h-screen items-center justify-center bg-[#F4F7FF] px-2 pt-1.5">
+        어드민 정보 로딩 중..{' '}
+      </div>
+    );
+  if (meError)
+    return (
+      <div className="text-primary-blue text-regular16 flex min-h-screen items-center justify-center bg-[#F4F7FF] px-2 pt-1.5">
+        사용자 정보를 확인할 수 없습니다
+      </div>
+    );
+
+  if (!userType) {
+    return (
+      <div className="text-primary-blue text-regular16 flex min-h-screen items-center justify-center bg-[#F4F7FF] px-2 pt-1.5">
+        사용자 정보를 불러오지 못했습니다
+      </div>
+    );
+  }
+
   if (!data) return null;
 
   switch (userType) {

@@ -3,7 +3,7 @@ import falseImg from '@/public/evaluation/false.svg';
 import { UserType } from '@/src/schemas/auth';
 import { MemberEvaluationStatus } from '@/src/schemas/evaluation';
 import { useSearchStore } from '@/src/store/searchStore';
-import { highlightText } from '@/src/utils/highlightText';
+import { renderCellText } from '@/src/utils/highlightText';
 import clsx from 'clsx';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -35,6 +35,7 @@ const AllExpertGridTable = ({
   /* ---------- table ui ---------- */
 
   const MIN_QUALITATIVE_COL = 8;
+  const MIN_ROW = 6;
 
   const qualitativeCount =
     rows.length > 0
@@ -47,10 +48,11 @@ const AllExpertGridTable = ({
         )
       : 0;
   const columnCount = Math.max(MIN_QUALITATIVE_COL, qualitativeCount);
+  const rowCount = Math.max(MIN_ROW - rows.length, 0);
 
   /* ---------- highlight ---------- */
 
-  const { keyword, activeIndex , setResultFromData} = useSearchStore();
+  const { keyword, activeIndex, setResultFromData } = useSearchStore();
   const activeRowIdFromSearch =
     keyword && activeIndex > 0 ? rows[activeIndex - 1]?.memberId : null;
 
@@ -65,9 +67,9 @@ const AllExpertGridTable = ({
   return (
     <BaseGridTable>
       <thead className="text-neutral-gray sticky top-0 bg-white">
-        <tr className="">
+        <tr>
           <Th className="text-regular16 w-[60px] text-start">번호</Th>
-          <Th className="text-regular16 w-[108px] text-start">평가자명</Th>
+          <Th className="text-regular16 w-[120px] text-start">평가자명</Th>
           <Th className="text-regular16 w-[150px] text-start">진행도</Th>
           <Th className="text-regular16 w-[146px] text-start">
             가중치 평가 유무
@@ -88,9 +90,6 @@ const AllExpertGridTable = ({
 
       <tbody>
         {rows.map((row, index) => {
-          // const qualitativeCount = getQualitativeCount(
-          //   row.qualitativeEvaluation
-          // );
           // 가중치 평가 수행 유무
           const isWeightedDone = row.evalStatuses.some(
             (s) => s.evalType === 'WEIGHTED' && s.evalStatus === 'DONE'
@@ -116,12 +115,13 @@ const AllExpertGridTable = ({
               </Td>
 
               <Td className="text-regular16 px-4 py-1">
-                {highlightText(row.memberName, keyword, {
+                {renderCellText(row.memberName, keyword, {
                   active: row.memberId === activeRowIdFromSearch,
+                  maxLength: 7, // 평가자명은 7글자까지만
                 })}
               </Td>
               <Td className="px-4 py-1 text-start">
-                <div className="flex items-center gap-0.5">
+                <div className="flex w-full gap-0.5">
                   <ProgressBar
                     current={row.evaluatedCount}
                     total={row.totalCount}
@@ -170,6 +170,40 @@ const AllExpertGridTable = ({
             </tr>
           );
         })}
+
+        {/* 비어보이는 화면 UI 개선용 추가 행*/}
+        {rowCount > 0 &&
+          Array.from({ length: rowCount }).map((_, index) => (
+            <tr
+              key={index}
+              className={clsx('h-25 hover:bg-[#F4F7FF]', 'bg-neutral-white')}
+            >
+              <Td className="text-regular16 px-4 py-1 text-center">
+                {rows.length + 1 + index}
+              </Td>
+
+              <Td className="text-regular16 px-4 py-1"></Td>
+              <Td className="px-4 py-1 text-start">
+                <div className="flex w-full items-center gap-0.5">
+                  <ProgressBar current={0} total={0} />
+                </div>
+              </Td>
+              {/* 가중치 데이터 */}
+              <Td className="px-4 py-1">
+                <div className="flex items-center justify-center"></div>
+              </Td>
+              {/* 정성평가 데이터 */}
+              {Array.from({ length: columnCount }).map((_, index) => {
+                return (
+                  <Td key={index} className="w-[125px] px-4 py-1">
+                    <div className="flex items-center justify-center">
+                      <div className="h-[20px] w-[20px]" />
+                    </div>
+                  </Td>
+                );
+              })}
+            </tr>
+          ))}
       </tbody>
     </BaseGridTable>
   );

@@ -24,7 +24,7 @@ const MenuItem = ({
         className={clsx(
           'text-neutral-regularBlack text-regular16 flex cursor-pointer items-center gap-1 px-3 py-2.5',
           active && 'bg-[#4676FB] text-white',
-          isBold ? 'text-bold16 ': 'text-regular16 '
+          isBold ? 'text-bold16' : 'text-regular16'
         )}
       >
         <ChevronRight
