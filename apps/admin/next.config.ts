@@ -1,6 +1,9 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  basePath: '/admin',
+  // assetPrefix: '/admin', 이미지/에셋 문제 생기면
+
   typescript: {
     ignoreBuildErrors: true,
   },
