@@ -30,8 +30,12 @@ const SubHeader = () => {
   const { extraLabel } = useSubHeaderStore();
 
   if (!mounted) {
-    // ⭐️ SSR + hydration 단계에서는 아무것도 렌더하지 않음
-    return null;
+    // ⭐️ SSR + hydration 단계에서는 Home만 렌더링
+    return (
+      <div className="w-full bg-[#F4F7FF] px-8 py-4 text-xl font-bold text-[#001D6C]">
+        <span>Home: </span>
+      </div>
+    );
   }
 
   const segments = pathname.split('/').filter(Boolean);

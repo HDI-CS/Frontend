@@ -23,6 +23,8 @@ interface FolderProps {
   isActive?: boolean;
 
   isMenuOpen?: boolean;
+  isSkeleton?: boolean;
+
   onToggleMenu?: () => void;
   onCloseMenu?: () => void;
 
@@ -39,6 +41,7 @@ const Folder = ({
   isManage = false,
   isPhase,
   isActive,
+  isSkeleton = false,
   onClick,
   getFieldMenuItems,
   isMenuOpen,
@@ -46,6 +49,34 @@ const Folder = ({
   onCloseMenu,
 }: FolderProps) => {
   const menuItems = getFieldMenuItems?.() ?? [];
+
+  // 로딩 ui 처리
+  if (isSkeleton) {
+    return (
+      <div className="shadow-card flex h-20 w-full items-center justify-between border border-[#E9EFF4] bg-white p-6">
+        <div className="gap-25 flex items-center">
+          <div className="flex items-center gap-8">
+            {/* 아이콘 자리 */}
+            <div className="h-6 w-6 animate-pulse rounded bg-gray-200" />
+
+            {/* 폴더명 자리 */}
+            <div className="w-26 h-4 animate-pulse rounded bg-gray-200" />
+          </div>
+
+          {/* 수정/생성 날짜 자리 */}
+          <div className="w-38 h-4 animate-pulse rounded bg-gray-200" />
+          <div className="w-38 h-4 animate-pulse rounded bg-gray-200" />
+          {/* phase 기간 자리 */}
+          {startDate && (
+            <div className="ml-10 h-4 w-44 animate-pulse rounded bg-gray-200" />
+          )}
+        </div>
+
+        {/* 옵션 아이콘 자리 */}
+        <div className="h-5 w-5 animate-pulse rounded bg-gray-200" />
+      </div>
+    );
+  }
 
   return (
     <div

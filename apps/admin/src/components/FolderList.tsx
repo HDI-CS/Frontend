@@ -24,18 +24,6 @@ interface FolderListProps<T extends BaseFolderItem> {
   getFieldMenuItems: GetFieldMenuItems;
 }
 
-// interface FolderListProps {
-//   isPhase: boolean;
-//   items: EvaluationYearFolder[];
-//   pressedKey: string | null;
-//   openMenuKey: string | null;
-//   isManage?: boolean;
-//   onSelect: (item: EvaluationYearFolder) => void;
-//   onToggleMenu: (key: string) => void;
-//   onCloseMenu: () => void;
-//   getFieldMenuItems: GetFieldMenuItems;
-// }
-
 const FolderList = <T extends BaseFolderItem>({
   isPhase = false,
   items,

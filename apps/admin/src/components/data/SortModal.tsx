@@ -3,8 +3,8 @@ import { ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 
 interface SortModalProps {
-  sort: 'first' | 'last';
-  setSort: (sort: 'first' | 'last') => void;
+  sort: 'ASC' | 'DESC';
+  setSort: (sort: 'ASC' | 'DESC') => void;
 }
 
 const SortModal = ({ sort, setSort }: SortModalProps) => {
@@ -19,7 +19,7 @@ const SortModal = ({ sort, setSort }: SortModalProps) => {
           onClick={() => setOpen((prev) => !prev)}
           className="border-1 flex items-center justify-between border-[#E9E9E7] p-2"
         >
-          {sort === 'first' ? 'sort First → Last' : 'sort Last → First'}
+          {sort === 'ASC' ? 'sort First → Last' : 'sort Last → First'}
           <ChevronRight
             className={clsx(
               'h-4.5 w-4.5 text-[#D0D7DD] transition-transform',
@@ -30,13 +30,13 @@ const SortModal = ({ sort, setSort }: SortModalProps) => {
         {open && (
           <div className="border-1 border-[#E9E9E7]">
             <div
-              onClick={() => setSort('first')}
+              onClick={() => setSort('ASC')}
               className="px-4 py-2 text-start hover:bg-[#E9E9E7]"
             >
               sort First → Last
             </div>
             <div
-              onClick={() => setSort('last')}
+              onClick={() => setSort('DESC')}
               className="px-4 py-2 text-start hover:bg-[#E9E9E7]"
             >
               sort Last → First
