@@ -7,7 +7,6 @@ import GalleryView from '@/src/components/data/GallerlyView';
 import GridTable from '@/src/components/data/GridTable';
 import SortModal from '@/src/components/data/SortModal';
 import ViewToggle from '@/src/components/data/ViewToggle';
-import { useCreateDataset } from '@/src/hooks/data/useCreateVisualDataset';
 import { useSearchDatasets } from '@/src/hooks/data/useSearchDatasets';
 import {
   IndustrialDataItem,
@@ -117,64 +116,10 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
     return init;
   }, [keyword, activeCategory, categories, data]);
 
-  const { mutate: createDataset } = useCreateDataset();
-
-  // 생성
+  // 생성 핸들 함수 -> (변경) 디테일 조회 모달 창이랑 동일하게 사용해서 생성
   const handleAddRow = () => {
     if (!activeCategory) return;
     setIsAdd(true);
-
-    if (type === 'VISUAL') {
-      const visualCategory = activeCategory as VisualCategory;
-
-      createDataset({
-        type: 'VISUAL',
-        yearId,
-        categoryName: activeCategory,
-        requestData: {
-          code: '',
-          name: '',
-          sectorCategory: '',
-          mainProductCategory: '',
-          mainProduct: '',
-          target: '',
-          referenceUrl: '',
-          originalLogoImage: null,
-          visualDataCategory: visualCategory,
-        },
-      });
-      return;
-    }
-
-    if (type === 'INDUSTRY') {
-      const industryDataCategory = activeCategory as IndustryCategory;
-
-      createDataset({
-        type: 'INDUSTRY',
-        yearId,
-        categoryName: activeCategory,
-        requestData: {
-          code: '',
-          productName: '',
-          companyName: '',
-          modelName: '',
-          price: '',
-          material: '',
-          size: '',
-          weight: '',
-          referenceUrl: '',
-          registeredAt: '',
-          productPath: '',
-          productTypeName: '',
-          // 이미지들은 초기엔 없음
-          originalDetailImagePath: null,
-          originalFrontImagePath: null,
-          originalSideImagePath: null,
-          industryDataCategory: industryDataCategory,
-        },
-      });
-      return;
-    }
   };
 
   // 테이블 정리 함수
@@ -238,18 +183,6 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
             item.companyName ?? ''
           )
     );
-
-    // return sorted.map((item, idx) =>
-    //   type === 'VISUAL'
-    //     ? mapVisualToUIItem(item as ItemByType['VISUAL'], idx)
-    //     : mapIndustryToUIItem(
-    //         item as ItemByType['INDUSTRY'],
-    //         idx,
-    //         item.productName ?? '',
-    //         item.modelName ?? '',
-    //         item.companyName ?? ''
-    //       )
-    // );
   }, [localData, activeCategory, orderBy, type, sortType]);
 
   useEffect(() => {

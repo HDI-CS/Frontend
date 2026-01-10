@@ -40,7 +40,7 @@ const FolderList = <T extends BaseFolderItem>({
       | AdminEvaluationPhase
       | EvaluationYearFolder
       | BaseFolderItem
-  ): item is AdminEvaluationPhase  => {
+  ): item is AdminEvaluationPhase => {
     return 'startDate' in item && 'endDate' in item;
   };
 
