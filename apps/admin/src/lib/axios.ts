@@ -4,12 +4,14 @@ import { clearAuthCookies } from '@/src/utils/cookies';
 
 // 프록시를 통한 안정적인 API 호출
 const getBaseURL = () => {
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? ''; // '' or '/admin' // axios getBaseURL 수정
+
   if (typeof window !== 'undefined') {
     // 클라이언트 사이드에서는 프록시 사용 (같은 도메인으로 요청)
     console.log('🌐 클라이언트 사이드 - 프록시 사용: /api');
     console.log('🌐 현재 URL:', window.location.href);
     console.log('🌐 프록시 대상: https://api.hdi.ai.kr');
-    return '/api';
+    return `${basePath}/api`;
   }
   // 서버 사이드에서는 직접 API 호출
   console.log('🌐 서버 사이드 - 직접 호출: https://api.hdi.ai.kr');
@@ -97,10 +99,12 @@ apiClient.interceptors.response.use(
       });
 
       if (!isLoginEndpoint) {
+        const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+
         // 로그인 API가 아닌 경우에만 쿠키 제거 및 리다이렉트
         console.log('🔒 인증 실패 - 모든 인증 쿠키 삭제 및 리다이렉트');
         clearAuthCookies(); // 모든 인증 관련 쿠키 삭제 (JSESSIONID 포함)
-        window.location.href = '/auth';
+        window.location.href = `${basePath}/auth`;
       } else {
         console.log(
           '🔒 401 에러이지만 로그인 엔드포인트이므로 리다이렉트하지 않음'
