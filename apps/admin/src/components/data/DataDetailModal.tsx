@@ -98,6 +98,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
   isAdd,
   isFirst,
   isLast,
+  totalLength,
 
   onClose,
   onPrev,
@@ -385,7 +386,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
 
   return (
     <ModalComponent
-      title={String(row?._no)}
+      title={String(row?._no ?? totalLength + 1)}
       onClose={onClose}
       onSubmit={onClose}
       allow={!isEdit}

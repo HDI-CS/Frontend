@@ -39,7 +39,7 @@ const Folder = ({
   startDate,
   endDate,
   isManage = false,
-  isPhase,
+  isPhase = false,
   isActive,
   isSkeleton = false,
   onClick,
@@ -60,7 +60,7 @@ const Folder = ({
             <div className="h-6 w-6 animate-pulse rounded bg-gray-200" />
 
             {/* 폴더명 자리 */}
-            <div className="w-26 h-4 animate-pulse rounded bg-gray-200" />
+            <div className="w-70 h-4 animate-pulse rounded bg-gray-200" />
           </div>
 
           {/* 수정/생성 날짜 자리 */}
@@ -82,7 +82,7 @@ const Folder = ({
     <div
       onClick={onClick}
       className={clsx(
-        'shadow-card group relative flex h-20 w-full cursor-pointer items-center justify-between border p-6 transition-colors duration-150',
+        'shadow-card group relative flex h-20 cursor-pointer items-center justify-between border p-6 transition-colors duration-150',
         isActive || isMenuOpen
           ? 'border-white bg-[#4676FB]'
           : 'border-[#E9EFF4] bg-white hover:border-white hover:bg-[#4676FB]'
@@ -120,8 +120,9 @@ const Folder = ({
           {/* 폴더명 */}
           <p
             className={clsx(
-              'w-26 font-light transition-colors group-hover:text-white',
-              isMenuOpen ? 'text-[#ffffff]' : 'text-[#4676FB]'
+              'font-light transition-colors group-hover:text-white',
+              isMenuOpen ? 'text-[#ffffff]' : 'text-[#4676FB]',
+              !isManage && !isPhase ? 'w-26' : 'w-70'
             )}
           >
             {name ?? ''}
@@ -133,7 +134,7 @@ const Folder = ({
             {/* 수정 날짜 */}
             <p
               className={clsx(
-                'flex items-center whitespace-nowrap text-base transition-colors group-hover:text-white',
+                'w-22 flex items-center whitespace-nowrap text-base transition-colors group-hover:text-white',
                 isMenuOpen ? 'text-[#ffffff]' : 'text-[#3A3A49]'
               )}
             >
@@ -161,7 +162,7 @@ const Folder = ({
                 isMenuOpen ? 'text-[#ffffff]' : 'text-[#3A3A49]'
               )}
             >
-              <div>{formatDate(startDate ?? '')}</div>
+              <div className="w-22">{formatDate(startDate ?? '')}</div>
               {'-'}
               <div>{formatDate(endDate ?? '')}</div>
             </span>

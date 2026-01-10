@@ -117,9 +117,10 @@ const SidebarMenu = ({ type }: SidebarMenuProps) => {
 
   return (
     <div className="flex flex-col">
-      {/* 시각디자인 */}
+      {/* 디자인 */}
       <MenuItem
         label={typeLable[type]}
+        isBold
         open={openRoot}
         active={pathname === ROUTES.ROOT(lowerType)}
         onClick={() => router.push(ROUTES.ROOT(lowerType))}
@@ -127,6 +128,7 @@ const SidebarMenu = ({ type }: SidebarMenuProps) => {
         {/* 데이터 관리 */}
         <MenuItem
           label="데이터 관리"
+          isBold
           open={openData}
           active={pathname === ROUTES.DATA.ROOT(lowerType)}
           onClick={() => router.push(ROUTES.DATA.ROOT(lowerType))}
@@ -146,6 +148,7 @@ const SidebarMenu = ({ type }: SidebarMenuProps) => {
         {/* 평가 관리  */}
         <MenuItem
           label="평가 관리"
+          isBold
           open={openEvaluation}
           active={pathname === ROUTES.EVALUATION.ROOT(lowerType)}
           onClick={() => router.push(ROUTES.EVALUATION.ROOT(lowerType))}
@@ -201,6 +204,7 @@ const SidebarMenu = ({ type }: SidebarMenuProps) => {
         {/* 전문가 관리  */}
         <MenuItem
           label="전문가 관리"
+          isBold
           open={openExpert}
           active={pathname === ROUTES.EXPERT.ROOT(lowerType)}
           onClick={() => router.push(ROUTES.EXPERT.ROOT(lowerType))}

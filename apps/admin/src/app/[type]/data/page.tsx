@@ -107,9 +107,9 @@ const IndexPage = () => {
       <FolderWrapper>
         <div className="flex flex-col gap-5">
           <div className="flex text-[#4676FB]">
-            <p className="ml-21 w-25">Folder</p>
+            <p className="ml-21 w-70">Folder</p>
             <span className="ml-25 w-25">Last Modified</span>
-            <span className="ml-31 w-25">Created</span>
+            <span className="ml-21 w-25">Created</span>
           </div>
           {/* Folder List */}
           {skeletonFactors.map((_, index) => (
@@ -126,9 +126,9 @@ const IndexPage = () => {
     <FolderWrapper>
       <div className="flex flex-col gap-5">
         <div className="flex text-[#4676FB]">
-          <p className="ml-21 w-25">Folder</p>
+          <p className="ml-21 w-70">Folder</p>
           <span className="ml-25 w-25">Last Modified</span>
-          <span className="ml-31 w-25">Created</span>
+          <span className="ml-21 w-25">Created</span>
         </div>
         {/* Folder List */}
         <FolderList<EvaluationYearFolder>

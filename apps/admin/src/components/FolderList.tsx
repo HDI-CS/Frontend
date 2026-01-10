@@ -1,6 +1,5 @@
 import Folder from '@/src/components/Folder';
 import { AdminEvaluationPhase, AdminYear } from '../constants/adminSection';
-import { IdMappingFolder } from '../constants/expert';
 import { GetFieldMenuItems } from '../hooks/useFolderManager';
 import { EvaluationYearFolder } from '../types/evaluation';
 
@@ -39,10 +38,9 @@ const FolderList = <T extends BaseFolderItem>({
     item:
       | AdminYear
       | AdminEvaluationPhase
-      | IdMappingFolder
       | EvaluationYearFolder
       | BaseFolderItem
-  ): item is AdminEvaluationPhase | IdMappingFolder => {
+  ): item is AdminEvaluationPhase => {
     return 'startDate' in item && 'endDate' in item;
   };
 

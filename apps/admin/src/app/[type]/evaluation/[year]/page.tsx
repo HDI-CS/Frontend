@@ -2,6 +2,7 @@
 import AddBtn from '@/src/components/common/AddBtn';
 import AddEvaluation from '@/src/components/evaluation/AddEvaluation';
 import EditDuration from '@/src/components/evaluation/EditDuration';
+import Folder from '@/src/components/Folder';
 import FolderList from '@/src/components/FolderList';
 import FolderWrapper from '@/src/components/layout/FolderWrapper';
 import ModalComponent from '@/src/components/ModalComponent';
@@ -41,7 +42,7 @@ const IndexPage = () => {
     getFieldEvaluationRangeMenuItems,
   } = useFolderManager();
 
-  const { data } = useEvaluationYears(type);
+  const { data, isLoading: yearDataLoading } = useEvaluationYears(type);
   const rounds =
     data?.result.find((y) => y.yearId === Number(year))?.rounds ?? [];
 
@@ -90,14 +91,38 @@ const IndexPage = () => {
     return () => setExtraLabel('');
   }, [data, setExtraLabel, year]);
 
+  // 로딩 중 스켈레톤
+  if (yearDataLoading) {
+    const skeletonFactors = Array(7).fill(null);
+
+    return (
+      <FolderWrapper>
+        <div className="flex flex-col gap-5">
+          <div className="flex text-[#4676FB]">
+            <p className="ml-21 w-70">Folder</p>
+            <span className="ml-25 w-25">Last Modified</span>
+            <span className="ml-21 w-25">Created</span>
+            <span className="ml-33 w-25">Duration</span>
+          </div>
+          {/* Folder List */}
+          {skeletonFactors.map((_, index) => (
+            <Folder key={index} name={''} isSkeleton isPhase={false} />
+          ))}
+          {/* ADD BTN */}
+          <AddBtn isEvaluation={false} setAdd={setAdd} />
+        </div>
+      </FolderWrapper>
+    );
+  }
+
   return (
     <FolderWrapper>
       <div className="flex flex-col gap-5">
         <div className="flex text-[#4676FB]">
-          <p className="ml-21 w-25">Folder</p>
+          <p className="ml-21 w-70">Folder</p>
           <span className="ml-25 w-25">Last Modified</span>
-          <span className="ml-31 w-25">Created</span>
-          <span className="ml-31 w-25">Duration</span>
+          <span className="ml-21 w-25">Created</span>
+          <span className="ml-33 w-25">Duration</span>
         </div>
         {/* Folder List */}
         <FolderList

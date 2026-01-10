@@ -23,6 +23,7 @@ export const ExpertMemberSchema = z.object({
   academic: z.string().nullable(), // 학계
   expertise: z.string().nullable(), // 전문 분야
   company: z.string().nullable(), // 회사
+  note: z.string().nullable(), // 비고란
 });
 
 export const ExpertListResponseSchema = z.object({
@@ -44,6 +45,7 @@ export const CreateExpertMemberSchema = z.object({
   academic: z.string(), // 학계
   expertise: z.string(), // 전문 분야
   company: z.string(), // 회사
+  note: z.string().nullable(), // 비고란
 });
 
 // 전문가 인적사항 등록 응답 스키마
@@ -61,6 +63,7 @@ export const UpdateExpertMemberSchema = z.object({
   academic: z.string(), // 학계
   expertise: z.string(), // 전문 분야
   company: z.string(), // 회사
+  note: z.string(),
 });
 
 // 전문가 인적사항 수정 응답 스키마
