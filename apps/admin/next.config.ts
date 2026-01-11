@@ -1,6 +1,9 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  basePath: '/admin',
+  assetPrefix: '/admin', // asset 경로가 깨지는 걸 방지
+
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -22,7 +25,7 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
-        source: '/api/:path*',
+        source: '/admin/api/:path*',
         destination: 'https://api.hdi.ai.kr/:path*',
       },
     ];

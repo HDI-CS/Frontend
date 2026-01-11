@@ -1,5 +1,4 @@
 import excelIcon from '@/public/data/Excel.svg';
-import { ExpertProfile } from '@/src/constants/expert';
 import useGridManager from '@/src/hooks/useGridManager';
 
 import {
@@ -55,19 +54,20 @@ const ProfileGridTable = () => {
   const [activeField, setActiveField] = useState<string | null>();
 
   const { data } = useExpertProfile(type!);
-  const mapExpertToProfile = (expert: ExpertMember): ExpertProfile => ({
-    id: expert.memberId ?? '',
+  const mapExpertToProfile = (expert: ExpertMember): ExpertMember => ({
+    memberId: expert.memberId ?? '',
     name: expert.name ?? '',
-    participation: expert.rounds.join(', '),
+    rounds: expert.rounds,
     email: expert.email ?? '',
     password: expert.password ?? '',
-    phone: expert.phoneNumber ?? '',
+    phoneNumber: expert.phoneNumber ?? '',
     gender: expert.gender ?? '',
-    ageGroup: expert.age ?? '',
-    experience: expert.career ?? '',
-    background: expert.academic ?? '',
-    field: expert.expertise ?? '',
+    age: expert.age ?? '',
+    career: expert.career ?? '',
+    academic: expert.academic ?? '',
+    expertise: expert.expertise ?? '',
     company: expert.company ?? '',
+    note: expert.note ?? '',
   });
 
   const keyword = useSearchStore((s) => s.keyword);
@@ -91,7 +91,7 @@ const ProfileGridTable = () => {
     /* 초기 데이터 세팅 */
   } // 카테고리 단위 데이터는 “무조건 배열”로 고정
 
-  const localData = useMemo<ExpertProfile[]>(() => {
+  const localData = useMemo<ExpertMember[]>(() => {
     // 검색어 있을 때
     if (keyword.length && searchData?.result) {
       return searchData.result.map(mapExpertToProfile);
@@ -117,12 +117,12 @@ const ProfileGridTable = () => {
 
     editForm.reset({
       name: selectedExpertData.name ?? '',
-      phoneNumber: selectedExpertData.phone ?? '',
+      phoneNumber: selectedExpertData.phoneNumber ?? '',
       gender: selectedExpertData.gender ?? '',
-      age: selectedExpertData.ageGroup ?? '',
-      career: selectedExpertData.experience ?? '',
-      academic: selectedExpertData.background ?? '',
-      expertise: selectedExpertData.field ?? '',
+      age: selectedExpertData.age ?? '',
+      career: selectedExpertData.career ?? '',
+      academic: selectedExpertData.academic ?? '',
+      expertise: selectedExpertData.expertise ?? '',
       company: selectedExpertData.company ?? '',
     });
   }, [selectedExpertData, editForm.reset, editForm]);
@@ -166,13 +166,14 @@ const ProfileGridTable = () => {
 
     const requestData: UpdateExpertMember = {
       name: data.name ?? selectedExpertData?.name,
-      phoneNumber: data.phoneNumber ?? selectedExpertData?.phone,
+      phoneNumber: data.phoneNumber ?? selectedExpertData?.phoneNumber,
       gender: data.gender ?? selectedExpertData?.gender,
-      age: data.age ?? selectedExpertData?.ageGroup,
-      career: data.career ?? selectedExpertData?.experience,
-      academic: data.academic ?? selectedExpertData?.background,
-      expertise: data.expertise ?? selectedExpertData?.field,
+      age: data.age ?? selectedExpertData?.age,
+      career: data.career ?? selectedExpertData?.career,
+      academic: data.academic ?? selectedExpertData?.academic,
+      expertise: data.expertise ?? selectedExpertData?.expertise,
       company: data.company ?? selectedExpertData?.company,
+      note: data.note ?? selectedExpertData?.note,
     };
 
     //수정 요청 api
@@ -194,17 +195,51 @@ const ProfileGridTable = () => {
       company: '',
     },
   });
+  const {
+    formState: { errors },
+  } = createForm;
   const renderCreateField = (meta: CreateFieldMeta) => {
     const { label, field } = meta;
+    const errorMessage = errors[field]?.message; //  해당 필드 에러메세지
 
     return (
       <LinedField key={label} label={label} activeField={activeField!}>
-        <input
-          {...createForm.register(field)}
-          placeholder="입력해 주세요"
-          type={field === 'password' ? 'password' : 'text'}
-          className="h-11 w-full rounded border border-[#E9E9E7] px-3 py-3"
-        />
+        <div className="relative flex w-full flex-col gap-1">
+          <input
+            {...createForm.register(field, {
+              required:
+                field === 'email' || field === 'password'
+                  ? '필수 입력 값입니다.'
+                  : false,
+
+              ...(field === 'email'
+                ? {
+                    pattern: {
+                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                      message: '이메일 형식이 올바르지 않습니다.',
+                    },
+                  }
+                : {}),
+            })}
+            placeholder={'입력해 주세요'}
+            type={
+              field === 'password'
+                ? 'password'
+                : field === 'email'
+                  ? 'email'
+                  : 'text'
+            }
+            className={clsx(
+              'border-system-lineGray h-11 w-full rounded border px-3 py-3',
+              errorMessage ? 'border-system-red' : ''
+            )}
+          />
+          {errorMessage && (
+            <p className="text-system-red absolute top-12 text-xs">
+              {String(errorMessage)}
+            </p>
+          )}
+        </div>
       </LinedField>
     );
   };
@@ -252,7 +287,12 @@ const ProfileGridTable = () => {
       company: data.company ?? null,
     };
 
-    createExpert(payload);
+    createExpert(payload, {
+      onError: () => {
+        // 400 에러로 모달이 닫힐 시에도 폼 리셋
+        createForm.reset();
+      },
+    });
     setIsAdd(false);
   };
 
@@ -274,7 +314,7 @@ const ProfileGridTable = () => {
       <BaseGridTable>
         <thead className="text-neutral-gray sticky top-0 z-10 bg-white">
           <tr className="hover:bg-system-blueBg cursor-pointer">
-            <Th className="text-regular16 w-[51px] text-start">번호</Th>
+            <Th className="text-regular16 w-[51px] text-center">번호</Th>
             <Th className="text-regular16 w-[153px] text-start">평가자명</Th>
             <Th className="text-regular16 w-[151px] text-start">참여 차수</Th>
             <Th className="text-regular16 w-[240px] text-start">
@@ -288,23 +328,27 @@ const ProfileGridTable = () => {
             <Th className="text-regular16 w-[151px] text-start">학계/실무계</Th>
             <Th className="text-regular16 w-[151px] text-start">전문분야</Th>
             <Th className="text-regular16 w-[151px] text-start">회사</Th>
+            <Th className="text-regular16 w-[240px] text-start">비고</Th>
           </tr>
         </thead>
 
         <tbody>
           {localData?.map((row, index) => {
+            const roundText = row.rounds.join(', ');
             return (
               <tr
                 onDoubleClick={() => {
                   setIsEdit(true);
-                  setDataId(row.id!);
+                  setDataId(row.memberId!);
                   setSelectedIndex(String(index + 1));
                   setSelectedExpertData(row);
                 }}
-                key={row.id}
+                key={row.memberId}
                 className={clsx(
                   'h-21 text-neutral-regularBlack hover:bg-[#F4F7FF]',
-                  activeRowId === row.id ? 'bg-[#F4F7FF]' : 'bg-neutral-white'
+                  activeRowId === row.memberId
+                    ? 'bg-[#F4F7FF]'
+                    : 'bg-neutral-white'
                 )}
               >
                 <Td className="text-regular16 text-neutral-regularBlack px-4 py-1 text-center">
@@ -313,57 +357,78 @@ const ProfileGridTable = () => {
                 {/* 이메일 -> 21자 제한 , 나머지 -> 11자 제한 */}
                 <Td className="text-regular16 text-neutral-regularBlack px-4 py-1">
                   {highlightText(truncateText(row.name, 11), keyword, {
-                    active: row.id === activeRowIdFromSearch,
+                    active: row.memberId === activeRowIdFromSearch,
                   })}{' '}
                 </Td>
                 <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
-                  {highlightText(truncateText(row.participation, 11), keyword, {
-                    active: row.id === activeRowIdFromSearch,
+                  {highlightText(truncateText(roundText, 11), keyword, {
+                    active: row.memberId === activeRowIdFromSearch,
                   })}
                 </Td>
                 <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
-                  {highlightText(truncateText(row.email, 21), keyword, {
-                    active: row.id === activeRowIdFromSearch,
+                  {highlightText(truncateText(row.email ?? '', 21), keyword, {
+                    active: row.memberId === activeRowIdFromSearch,
                   })}
                 </Td>
                 <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
-                  {highlightText(truncateText(row.phone, 11), keyword, {
-                    active: row.id === activeRowIdFromSearch,
+                  {highlightText(
+                    truncateText(row.phoneNumber ?? '', 11),
+                    keyword,
+                    {
+                      active: row.memberId === activeRowIdFromSearch,
+                    }
+                  )}
+                </Td>
+                <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
+                  {highlightText(
+                    truncateText(row.password ?? '', 11),
+                    keyword,
+                    {
+                      active: row.memberId === activeRowIdFromSearch,
+                    }
+                  )}
+                </Td>
+                <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
+                  {highlightText(truncateText(row.gender ?? '', 11), keyword, {
+                    active: row.memberId === activeRowIdFromSearch,
                   })}
                 </Td>
                 <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
-                  {highlightText(truncateText(row.password, 11), keyword, {
-                    active: row.id === activeRowIdFromSearch,
+                  {highlightText(truncateText(row.age ?? '', 11), keyword, {
+                    active: row.memberId === activeRowIdFromSearch,
                   })}
                 </Td>
                 <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
-                  {highlightText(truncateText(row.gender, 11), keyword, {
-                    active: row.id === activeRowIdFromSearch,
+                  {highlightText(truncateText(row.career ?? '', 11), keyword, {
+                    active: row.memberId === activeRowIdFromSearch,
                   })}
                 </Td>
                 <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
-                  {highlightText(truncateText(row.ageGroup, 11), keyword, {
-                    active: row.id === activeRowIdFromSearch,
+                  {highlightText(
+                    truncateText(row.academic ?? '', 11),
+                    keyword,
+                    {
+                      active: row.memberId === activeRowIdFromSearch,
+                    }
+                  )}
+                </Td>
+                <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
+                  {highlightText(
+                    truncateText(row.expertise ?? '', 11),
+                    keyword,
+                    {
+                      active: row.memberId === activeRowIdFromSearch,
+                    }
+                  )}
+                </Td>
+                <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
+                  {highlightText(truncateText(row.company ?? '', 11), keyword, {
+                    active: row.memberId === activeRowIdFromSearch,
                   })}
                 </Td>
                 <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
-                  {highlightText(truncateText(row.experience, 11), keyword, {
-                    active: row.id === activeRowIdFromSearch,
-                  })}
-                </Td>
-                <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
-                  {highlightText(truncateText(row.background, 11), keyword, {
-                    active: row.id === activeRowIdFromSearch,
-                  })}
-                </Td>
-                <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
-                  {highlightText(truncateText(row.field, 11), keyword, {
-                    active: row.id === activeRowIdFromSearch,
-                  })}
-                </Td>
-                <Td className="text-neutral-regularBlack text-regular16 px-4 py-1 text-start">
-                  {highlightText(truncateText(row.company, 11), keyword, {
-                    active: row.id === activeRowIdFromSearch,
+                  {highlightText(truncateText(row.note ?? '', 11), keyword, {
+                    active: row.memberId === activeRowIdFromSearch,
                   })}
                 </Td>
               </tr>
@@ -383,6 +448,7 @@ const ProfileGridTable = () => {
           </tr>
         </tbody>
       </BaseGridTable>
+
       {isEdit && (
         <ModalComponent
           title={selectedIndex ?? ''}
@@ -403,6 +469,7 @@ const ProfileGridTable = () => {
           </div>
         </ModalComponent>
       )}
+
       {isAdd && (
         <ModalComponent
           title={selectedIndex ?? String(lastIndex)}

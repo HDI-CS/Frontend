@@ -1,12 +1,21 @@
 import { useState } from 'react';
 import { FieldActionMenuItem } from '../components/FieldActionMenu';
-import { ExpertProfile } from '../constants/expert';
 import { UserType } from '../schemas/auth';
 import { SurveyData } from '../schemas/evaluation';
-import { dataIdsSet } from '../schemas/expert';
+import { dataIdsSet, ExpertMember } from '../schemas/expert';
 import { VisualDataItem } from '../types/data/visual-data';
 import { useDeleteDataset } from './data/useDeleteDataset';
 import { useDuplicateDataset } from './data/useDuplicateDataset';
+
+export type SortType =
+  | 'ID'
+  | 'COMPANY'
+  | 'MODEL'
+  | 'PRODUCT'
+  | 'NAME'
+  | 'SECTOR'
+  | 'MAINPRODUCT'
+  | 'MAINCATEGORY';
 
 export const useFolderManager = (type: UserType) => {
   // dataId. : 선택 ID
@@ -40,11 +49,12 @@ export const useFolderManager = (type: UserType) => {
   } | null>(null);
 
   const [selectedExpertData, setSelectedExpertData] =
-    useState<ExpertProfile | null>();
+    useState<ExpertMember | null>();
 
   // const [questions, setQuestions] = useState<Question[]>();
 
-  const [orderBy, setOrderBy] = useState<'first' | 'last'>('first');
+  const [orderBy, setOrderBy] = useState<'ASC' | 'DESC'>('ASC');
+  const [sortType, setSortType] = useState<SortType>('ID');
 
   // UI : 클릭된 row 하이라이트
   const [activeRowId, setActiveRowId] = useState<number | null>(null);
@@ -139,6 +149,7 @@ export const useFolderManager = (type: UserType) => {
     isEdit,
     isAdd,
     orderBy,
+    sortType,
     selectedRow,
     showQuestion,
     selectedExpertRow,
@@ -157,6 +168,7 @@ export const useFolderManager = (type: UserType) => {
     setIsEdit,
     setIsAdd,
     setOrderBy,
+    setSortType,
     setSelectedRow,
     setShowQuestion,
     setSelectedExpertRow,

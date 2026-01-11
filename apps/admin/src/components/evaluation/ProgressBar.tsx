@@ -8,6 +8,7 @@ const ProgressBar = ({ current, total }: ProgressBarProps) => {
 
   const isComplete = current >= total;
   const isEmpty = current === 0;
+  const isDummy = current === 0 && total === 0;
 
   const statusText = isComplete ? '완료!' : '진행중...';
 
@@ -20,20 +21,22 @@ const ProgressBar = ({ current, total }: ProgressBarProps) => {
   const textColor = isComplete ? 'text-system-green' : 'text-neutral-gray';
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex w-full flex-col gap-2">
       {/* 텍스트 */}
       <div className="flex items-center gap-2">
         <span className="text-bold18 text-neutral-regularBlack">
           {current}/{total}
         </span>
-        <span className={`text-regular10 ${textColor}`}>{statusText}</span>
+        {!isDummy && (
+          <span className={`text-regular10 ${textColor}`}>{statusText}</span>
+        )}
       </div>
 
       {/* 진행 바 */}
       <div className="bg-neutral-gray10 h-[8px] w-full rounded-full">
         <div
           className={`h-full rounded-full transition-all ${barColor}`}
-          style={{ width: `${percent}%` }}
+          style={{ width: `${isDummy ? 0 : percent}%` }}
         />
       </div>
     </div>

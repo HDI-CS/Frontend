@@ -7,7 +7,6 @@ import GalleryView from '@/src/components/data/GallerlyView';
 import GridTable from '@/src/components/data/GridTable';
 import SortModal from '@/src/components/data/SortModal';
 import ViewToggle from '@/src/components/data/ViewToggle';
-import { useCreateDataset } from '@/src/hooks/data/useCreateVisualDataset';
 import { useSearchDatasets } from '@/src/hooks/data/useSearchDatasets';
 import {
   IndustrialDataItem,
@@ -28,6 +27,8 @@ import {
 
 import { DataPageProps } from '@/src/app/[type]/data/[year]/page';
 import DataDetailModal from '@/src/components/data/DataDetailModal';
+import useGridManager from '@/src/hooks/useGridManager';
+import { sortByString } from '@/src/utils/sortByType';
 import clsx from 'clsx';
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
@@ -59,10 +60,9 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
       'HAIR_DRYER',
     ] as CategoryByType[T][];
   }, [type]);
-
+  const { orderBy, setOrderBy, sortType, setSortType } = useGridManager(type!);
   const [activeTab, setActiveTab] = useState<'grid' | 'gallery'>('grid');
   const [sortBtn, setSortBtn] = useState(false);
-  const [sort, setSort] = useState<'first' | 'last'>('first');
   const [activeCategory, setActiveCategory] = useState<
     CategoryByType[T] | null
   >(null);
@@ -116,64 +116,10 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
     return init;
   }, [keyword, activeCategory, categories, data]);
 
-  const { mutate: createDataset } = useCreateDataset();
-
-  // 생성
+  // 생성 핸들 함수 -> (변경) 디테일 조회 모달 창이랑 동일하게 사용해서 생성
   const handleAddRow = () => {
     if (!activeCategory) return;
     setIsAdd(true);
-
-    if (type === 'VISUAL') {
-      const visualCategory = activeCategory as VisualCategory;
-
-      createDataset({
-        type: 'VISUAL',
-        yearId,
-        categoryName: activeCategory,
-        requestData: {
-          code: '',
-          name: '',
-          sectorCategory: '',
-          mainProductCategory: '',
-          mainProduct: '',
-          target: '',
-          referenceUrl: '',
-          originalLogoImage: null,
-          visualDataCategory: visualCategory,
-        },
-      });
-      return;
-    }
-
-    if (type === 'INDUSTRY') {
-      const industryDataCategory = activeCategory as IndustryCategory;
-
-      createDataset({
-        type: 'INDUSTRY',
-        yearId,
-        categoryName: activeCategory,
-        requestData: {
-          code: '',
-          productName: '',
-          companyName: '',
-          modelName: '',
-          price: '',
-          material: '',
-          size: '',
-          weight: '',
-          referenceUrl: '',
-          registeredAt: '',
-          productPath: '',
-          productTypeName: '',
-          // 이미지들은 초기엔 없음
-          originalDetailImagePath: null,
-          originalFrontImagePath: null,
-          originalSideImagePath: null,
-          industryDataCategory: industryDataCategory,
-        },
-      });
-      return;
-    }
   };
 
   // 테이블 정리 함수
@@ -181,22 +127,63 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
     if (!activeCategory) return [];
 
     const activeData = localData[activeCategory] ?? [];
-
     const sorted = [...activeData].sort((a, b) => {
-      if (!a.code && b.code) return 1;
-      if (a.code && !b.code) return -1;
+      if (sortType === 'ID') {
+        return sortByString(a.code, b.code, orderBy);
+      }
 
-      return sort === 'first'
-        ? a.code.localeCompare(b.code)
-        : b.code.localeCompare(a.code);
+      if (type === 'INDUSTRY') {
+        switch (sortType) {
+          case 'COMPANY':
+            return sortByString(a.companyName, b.companyName, orderBy);
+          case 'MODEL':
+            return sortByString(a.modelName, b.modelName, orderBy);
+          case 'PRODUCT':
+            return sortByString(a.productName, b.productName, orderBy);
+          default:
+            return 0;
+        }
+      }
+      if (type === 'VISUAL') {
+        switch (sortType) {
+          case 'NAME':
+            return sortByString(a.name, b.name, orderBy);
+          case 'SECTOR':
+            return sortByString(a.sectorCategory, b.sectorCategory, orderBy);
+          case 'MAINPRODUCT':
+            return sortByString(a.mainProduct, b.mainProduct, orderBy);
+          case 'MAINCATEGORY':
+            return sortByString(
+              a.mainProductCategory,
+              b.mainProductCategory,
+              orderBy
+            );
+          default:
+            return 0;
+        }
+      }
+
+      return 0;
     });
-
     return sorted.map((item, idx) =>
       type === 'VISUAL'
-        ? mapVisualToUIItem(item as ItemByType['VISUAL'], idx)
-        : mapIndustryToUIItem(item as ItemByType['INDUSTRY'], idx)
+        ? mapVisualToUIItem(
+            item as ItemByType['VISUAL'],
+            idx,
+            item.name ?? '',
+            item.sectorCategory ?? '',
+            item.mainProduct ?? '',
+            item.mainProductCategory ?? ''
+          )
+        : mapIndustryToUIItem(
+            item as ItemByType['INDUSTRY'],
+            idx,
+            item.productName ?? '',
+            item.modelName ?? '',
+            item.companyName ?? ''
+          )
     );
-  }, [localData, activeCategory, sort, type]);
+  }, [localData, activeCategory, orderBy, type, sortType]);
 
   useEffect(() => {
     // 검색어가 있을 때만 검색 결과 카운트 반영
@@ -208,7 +195,7 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
   }, [keyword, displayRows, setResultFromData, clear]);
 
   // 화살표 disabled 관리
-  const lastIndex = displayRows.length - 1;
+  const lastIndex = displayRows?.length ?? 2 - 1;
 
   {
     /* 엑셀 다운로드 */
@@ -278,7 +265,7 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
                 alt="sort"
                 className="hover:opacity-50"
               />
-              {sortBtn && <SortModal sort={sort} setSort={setSort} />}
+              {sortBtn && <SortModal sort={orderBy} setSort={setOrderBy} />}
             </button>
 
             {/* Excel */}
@@ -299,8 +286,9 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
               rows={displayRows as WithIndex<VisualRow>[]}
               columns={rowMeta.VISUAL.columns}
               onAddRow={handleAddRow}
-              orderBy={sort}
-              setOrderBy={setSort}
+              orderBy={orderBy}
+              setOrderBy={setOrderBy}
+              setSortType={setSortType}
               lastIndex={lastIndex}
               activeCategory={activeCategory as VisualCategory}
             />
@@ -310,8 +298,9 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
               rows={displayRows as WithIndex<IndustrialRow>[]}
               columns={rowMeta.INDUSTRY.columns}
               onAddRow={handleAddRow}
-              orderBy={sort}
-              setOrderBy={setSort}
+              orderBy={orderBy}
+              setOrderBy={setOrderBy}
+              setSortType={setSortType}
               lastIndex={lastIndex}
               activeCategory={activeCategory as IndustryCategory}
             />
@@ -324,8 +313,8 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
                 rows={displayRows as WithIndex<VisualRow>[]}
                 galleryFields={rowMeta.VISUAL.galleryFields}
                 onAdd={handleAddRow}
-                orderBy={sort}
-                setOrderBy={setSort}
+                orderBy={orderBy}
+                setOrderBy={setOrderBy}
                 lastIndex={lastIndex}
                 activeCategory={activeCategory!}
               />
@@ -334,8 +323,8 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
                 type={'INDUSTRY'}
                 rows={displayRows as WithIndex<IndustrialRow>[]}
                 galleryFields={rowMeta.INDUSTRY.galleryFields}
-                orderBy={sort}
-                setOrderBy={setSort}
+                orderBy={orderBy}
+                setOrderBy={setOrderBy}
                 onAdd={handleAddRow}
                 lastIndex={lastIndex}
                 activeCategory={activeCategory!}
@@ -355,7 +344,7 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
               onClose={() => {
                 setIsAdd(false);
               }}
-              totalLength={displayRows.length}
+              totalLength={displayRows?.length ?? 1}
             />
           ) : (
             <DataDetailModal
@@ -366,7 +355,7 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
               onClose={() => {
                 setIsAdd(false);
               }}
-              totalLength={displayRows.length}
+              totalLength={displayRows?.length ?? 1}
             />
           ))}
       </div>

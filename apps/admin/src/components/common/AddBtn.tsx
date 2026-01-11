@@ -32,11 +32,7 @@ const AddBtn = ({ setAdd, isEvaluation = false, onClick }: AddBtnProps) => {
         >
           +
         </p>
-        {isEvaluation && (
-          <p className="text-regular16" onClick={onClick}>
-            평가 추가하기
-          </p>
-        )}
+        {isEvaluation && <p className="text-regular16">평가 추가하기</p>}
       </div>
     </div>
   );

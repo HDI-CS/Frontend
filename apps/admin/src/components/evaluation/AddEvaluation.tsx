@@ -23,6 +23,7 @@ type Question = {
   id?: number; // 서버 id
   tempId?: string; // 프론트 전용 key
   text: string;
+  surveyCode: string;
 };
 
 const AddEvaluation = ({
@@ -46,10 +47,12 @@ const AddEvaluation = ({
   const [subjective, setSubjective] = useState(
     subjectiveData?.text ? subjectiveData.text : ''
   );
+  const [subjectiveCode, setSubjectiveCode] = useState<string>('');
+
   // sampleText : 샘플 텍스트
   const [sampleText, setSampleText] = useState<string>('');
 
-  const { data } = useEvaluationQuestion(type, yearId!);
+  const { data } = useEvaluationQuestion(type, yearId!); // surveyCode도 받아서 그대로 넘겨주기
   useEffect(() => {
     if (!data?.result) return;
 
@@ -64,6 +67,7 @@ const AddEvaluation = ({
           id: q.id,
           tempId: String(q.id),
           text: q.surveyContent,
+          surveyCode: q.surveyCode,
         }))
       );
     } else {
@@ -75,8 +79,10 @@ const AddEvaluation = ({
 
     if (textGroup?.questions[0]) {
       setSubjective(textGroup.questions[0].surveyContent);
+      setSubjectiveCode(textGroup.questions[0].surveyCode ?? '');
     } else {
       setSubjective('');
+      setSubjectiveCode('');
     }
 
     /** 3. 샘플(SAMPLE) */
@@ -93,7 +99,10 @@ const AddEvaluation = ({
   }, [data]);
 
   const addQuestion = () => {
-    setQuestions((prev) => [...prev, { id: Date.now(), text: '' }]);
+    setQuestions((prev) => [
+      ...prev,
+      { id: Date.now(), text: '', surveyCode: '' },
+    ]);
   };
 
   const updateQuestion = (id: number, text: string) => {
@@ -112,7 +121,7 @@ const AddEvaluation = ({
     subjective,
   }: {
     // folderName: string;
-    questions: { text: string }[];
+    questions: { text: string; surveyCode: string }[];
     subjective: string;
   }): SurveyQuestionByTypeWithSampleTextArray => {
     const result: SurveyQuestionByTypeWithSampleText[] = [];
@@ -124,7 +133,7 @@ const AddEvaluation = ({
       result.push({
         type: 'NUMBER',
         surveyNumber: index + 1,
-        surveyCode: 'PR_FRM_QT',
+        surveyCode: q.surveyCode,
         surveyContent: q.text,
         sampleText: null,
       });
@@ -135,7 +144,7 @@ const AddEvaluation = ({
       result.push({
         type: 'TEXT',
         surveyNumber: questions.length + 1,
-        surveyCode: 'PR_FRM_QT',
+        surveyCode: subjectiveCode,
         surveyContent: subjective,
         sampleText: sampleText,
       });

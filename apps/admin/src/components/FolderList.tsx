@@ -1,6 +1,5 @@
 import Folder from '@/src/components/Folder';
 import { AdminEvaluationPhase, AdminYear } from '../constants/adminSection';
-import { IdMappingFolder } from '../constants/expert';
 import { GetFieldMenuItems } from '../hooks/useFolderManager';
 import { EvaluationYearFolder } from '../types/evaluation';
 
@@ -24,18 +23,6 @@ interface FolderListProps<T extends BaseFolderItem> {
   getFieldMenuItems: GetFieldMenuItems;
 }
 
-// interface FolderListProps {
-//   isPhase: boolean;
-//   items: EvaluationYearFolder[];
-//   pressedKey: string | null;
-//   openMenuKey: string | null;
-//   isManage?: boolean;
-//   onSelect: (item: EvaluationYearFolder) => void;
-//   onToggleMenu: (key: string) => void;
-//   onCloseMenu: () => void;
-//   getFieldMenuItems: GetFieldMenuItems;
-// }
-
 const FolderList = <T extends BaseFolderItem>({
   isPhase = false,
   items,
@@ -51,10 +38,9 @@ const FolderList = <T extends BaseFolderItem>({
     item:
       | AdminYear
       | AdminEvaluationPhase
-      | IdMappingFolder
       | EvaluationYearFolder
       | BaseFolderItem
-  ): item is AdminEvaluationPhase | IdMappingFolder => {
+  ): item is AdminEvaluationPhase => {
     return 'startDate' in item && 'endDate' in item;
   };
 

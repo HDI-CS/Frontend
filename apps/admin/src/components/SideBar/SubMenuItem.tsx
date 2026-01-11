@@ -1,3 +1,4 @@
+import { truncateText } from '@/src/utils/truncateText';
 import clsx from 'clsx';
 
 const SubMenuItem = ({
@@ -19,7 +20,7 @@ const SubMenuItem = ({
           : 'text-neutral-regularBlack hover:bg-[#F4F7FF]'
       )}
     >
-      {label}
+      {truncateText(label, 8)}
     </div>
   );
 };

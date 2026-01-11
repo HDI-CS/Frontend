@@ -6,7 +6,7 @@ import clsx from 'clsx';
 import Image from 'next/image';
 
 interface ViewToggle {
-  activeTab: string;
+  activeTab?: string;
   setActiveTab: (tab: 'grid' | 'gallery') => void;
 }
 

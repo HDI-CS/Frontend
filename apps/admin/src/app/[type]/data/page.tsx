@@ -1,6 +1,8 @@
 'use client';
 import AddBtn from '@/src/components/common/AddBtn';
 import AddEvaluation from '@/src/components/evaluation/AddEvaluation';
+import Folder from '@/src/components/Folder';
+
 import FolderList from '@/src/components/FolderList';
 import FolderModals from '@/src/components/FolderModals';
 import FolderWrapper from '@/src/components/layout/FolderWrapper';
@@ -38,7 +40,7 @@ const IndexPage = () => {
 
   // 년도 조회 api
   // const { data } = useEvaluationYears(type);
-  const { data: yearData } = useDataYears(type);
+  const { data: yearData, isLoading: yearDagaLoading } = useDataYears(type);
 
   // 년도 폴더 이름 수정
   const { mutateAsync: createFolder } = useCreateEvaluationYear(type);
@@ -98,13 +100,35 @@ const IndexPage = () => {
     /* data가 아직 없을 때 mapper가 먼저 실행되지 않게 하고, data가 들어오면 그때 자동으로 다시 계산되게*/
   }
 
+  if (yearDagaLoading) {
+    const skeletonFactors = Array(7).fill(null);
+
+    return (
+      <FolderWrapper>
+        <div className="flex flex-col gap-5">
+          <div className="flex text-[#4676FB]">
+            <p className="ml-21 w-70">Folder</p>
+            <span className="ml-25 w-25">Last Modified</span>
+            <span className="ml-21 w-25">Created</span>
+          </div>
+          {/* Folder List */}
+          {skeletonFactors.map((_, index) => (
+            <Folder key={index} name={''} isSkeleton isPhase={false} />
+          ))}
+          {/* ADD BTN */}
+          <AddBtn isEvaluation={false} setAdd={setAdd} />
+        </div>
+      </FolderWrapper>
+    );
+  }
+
   return (
     <FolderWrapper>
       <div className="flex flex-col gap-5">
         <div className="flex text-[#4676FB]">
-          <p className="ml-21 w-25">Folder</p>
+          <p className="ml-21 w-70">Folder</p>
           <span className="ml-25 w-25">Last Modified</span>
-          <span className="ml-31 w-25">Created</span>
+          <span className="ml-21 w-25">Created</span>
         </div>
         {/* Folder List */}
         <FolderList<EvaluationYearFolder>

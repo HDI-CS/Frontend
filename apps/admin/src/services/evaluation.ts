@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { apiClient } from '../lib/axios';
 import { UserType } from '../schemas/auth';
 import { UpdateOriginalSurvey } from '../schemas/evaluation';
@@ -158,12 +159,26 @@ export const downloadEvaluationExcel = async ({
   type: UserType;
   assessmentRoundId: number;
 }) => {
-  return apiClient.get(
-    `/api/v1/admin/${type.toLowerCase()}/evaluations/assessment/${assessmentRoundId}/datasets/export`,
-    {
-      responseType: 'blob', // 이건 JSON이 아니라 binary라서 파싱 대상 아님
+  try {
+    const res = apiClient.get(
+      `/api/v1/admin/${type}/evaluations/assessment/${assessmentRoundId}/datasets/export`,
+
+      {
+        responseType: 'blob', // 이건 JSON이 아니라 binary라서 파싱 대상 아님
+      }
+    );
+    return res;
+  } catch (err: unknown) {
+    if (axios.isAxiosError(err)) {
+      console.log('download error', {
+        status: err.response?.status,
+        headers: err.response?.headers,
+        data: err.response?.data,
+      });
+    } else {
+      console.log('download unknown error', err);
     }
-  );
+  }
 };
 
 // 년도 평가 설문 문항 수정 ( original )
