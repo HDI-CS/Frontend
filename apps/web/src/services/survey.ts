@@ -12,9 +12,9 @@ import {
 } from '@/schemas/survey';
 import {
   WeightedScoreApiResponseSchema,
-  WeightedScoreRequestArraySchema,
+  WeightedScoreRequest,
+  WeightedScoreRequestSchema,
   type WeightedScoreApiResponse,
-  type WeightedScoreRequestArray,
 } from '@/schemas/weight-evaluation';
 import { analyzeDataStructure, safeZodParse } from '@/utils/zod';
 
@@ -28,7 +28,9 @@ export const surveyService = {
   }: {
     type: UserType;
   }): Promise<SurveyProductApiResponse> {
-    const response = await apiClient.get(`/survey/${type.toLowerCase()}`);
+    const response = await apiClient.get(
+      `/api/v1/user/${type.toLowerCase()}/survey`
+    );
 
     console.log('Survey List Response:', response.data);
 
@@ -37,7 +39,7 @@ export const surveyService = {
       operation: 'SurveyProductApiResponse validation',
       additionalInfo: {
         type,
-        url: `/survey/${type.toLowerCase()}`,
+        url: `/api/v1/user/${type.toLowerCase()}/survey`,
       },
     });
   },
@@ -52,7 +54,7 @@ export const surveyService = {
     productResponseId: number;
   }): Promise<ProductSurveyDetailResponse | BrandSurveyDetailResponse> {
     const response = await apiClient.get(
-      `/survey/${type.toLowerCase()}/${productResponseId}`
+      `/api/v1/user/${type.toLowerCase()}/survey/${productResponseId}`
     );
 
     console.log(`${type} SurveyDetail Response:`, response.data);
@@ -61,30 +63,30 @@ export const surveyService = {
     const normalizedType = type.toUpperCase();
 
     // type에 따라 동적으로 스키마 선택
-    if (normalizedType === 'PRODUCT') {
+    if (normalizedType === 'INDUSTRY') {
       console.log('Validating with ProductSurveyDataSchema...');
       console.log('Raw response.data:', response.data);
-      console.log('response.data.data:', response.data.data);
+      console.log('response.data.data:', response.data.result);
 
       // data 부분만 검증
       const validatedData = safeZodParse(
         ProductSurveyDataSchema,
-        response.data.data, // data 부분만 검증
+        response.data.result, // data 부분만 검증
         {
           operation: 'ProductSurveyData validation',
           additionalInfo: {
             type,
             normalizedType,
-            dataKeys: response.data?.data
-              ? Object.keys(response.data.data)
+            dataKeys: response.data?.result
+              ? Object.keys(response.data.result)
               : 'no data',
-            dataStructure: analyzeDataStructure(response.data?.data),
+            dataStructure: analyzeDataStructure(response.data?.result),
           },
         }
       );
 
       // productDataSetResponse는 화면 렌더링의 핵심 데이터이므로 여기서 필수 보장
-      if (!validatedData.productDataSetResponse) {
+      if (!validatedData.industryDataSetResponse) {
         throw new Error(
           'Missing productDataSetResponse in survey detail response'
         );
@@ -92,51 +94,52 @@ export const surveyService = {
 
       // 전체 응답 구조로 반환
       return {
-        status: response.data.status,
+        code: response.data.code,
         message: response.data.message,
-        data: validatedData,
+        result: validatedData,
       };
-    } else if (normalizedType === 'BRAND') {
+    } else if (normalizedType === 'VISUAL') {
       console.log('Validating with BrandSurveyDataSchema...');
       console.log('Raw response.data:', response.data);
-      console.log('response.data.data:', response.data.data);
+      console.log('response.data.data:', response.data.result);
       console.log(
         'response.data.data keys:',
-        response.data?.data ? Object.keys(response.data.data) : 'no data'
+        response.data?.result ? Object.keys(response.data.result) : 'no data'
       );
       console.log(
         'response.data.data.brandDatasetResponse:',
-        response.data?.data?.brandDatasetResponse
+        response.data?.result?.visualDatasetResponse
       );
       console.log(
         'response.data.data.brandSurveyResponse:',
-        response.data?.data?.brandSurveyResponse
+        response.data?.result?.visualDatasetResponse
       );
 
       // data 부분만 검증
       const validatedData = safeZodParse(
         BrandSurveyDataSchema,
-        response.data.data, // data 부분만 검증
+        response.data.result, // data 부분만 검증
         {
           operation: 'BrandSurveyData validation',
           additionalInfo: {
             type,
             normalizedType,
-            dataKeys: response.data?.data
-              ? Object.keys(response.data.data)
+            dataKeys: response.data?.result
+              ? Object.keys(response.data.result)
               : 'no data',
-            dataStructure: analyzeDataStructure(response.data?.data),
+            dataStructure: analyzeDataStructure(response.data?.result),
             brandDatasetResponseExists:
-              !!response.data?.data?.brandDatasetResponse,
-            brandDatasetResponseKeys: response.data?.data?.brandDatasetResponse
-              ? Object.keys(response.data.data.brandDatasetResponse)
+              !!response.data?.result?.visualDatasetResponse,
+            brandDatasetResponseKeys: response.data?.result
+              ?.visualDatasetResponse
+              ? Object.keys(response.data.result.visualDatasetResponse)
               : 'no brandDatasetResponse',
           },
         }
       );
 
       // brandDatasetResponse는 화면 렌더링의 핵심 데이터이므로 여기서 필수 보장
-      if (!validatedData.brandDatasetResponse) {
+      if (!validatedData.visualDatasetResponse) {
         throw new Error(
           'Missing brandDatasetResponse in survey detail response'
         );
@@ -144,9 +147,9 @@ export const surveyService = {
 
       // 전체 응답 구조로 반환
       return {
-        status: response.data.status,
+        code: response.data.code,
         message: response.data.message,
-        data: validatedData,
+        result: validatedData,
       };
     } else {
       throw new Error(
@@ -181,7 +184,7 @@ export const surveyService = {
     );
 
     const response = await apiClient.post(
-      `/survey/${type.toLowerCase()}/${productResponseId}`,
+      `/api/v1/user/${type.toLowerCase()}/survey/${productResponseId}`,
       validatedData
     );
 
@@ -206,7 +209,7 @@ export const surveyService = {
     responseId: number;
   }): Promise<void> {
     const response = await apiClient.post(
-      `/survey/${type.toLowerCase()}/${responseId}/submit`
+      `/api/v1/user/${type.toLowerCase()}/survey/${responseId}/submit`
     );
 
     console.log('Survey Submit:', {
@@ -221,8 +224,10 @@ export const surveyService = {
   /**
    * 가중치 평가 점수 조회
    */
-  async getWeightedScores(): Promise<WeightedScoreApiResponse> {
-    const response = await apiClient.get('/survey/scores/weighted');
+  async getWeightedScores(type: UserType): Promise<WeightedScoreApiResponse> {
+    const response = await apiClient.get(
+      `/api/v1/user/${type.toLowerCase()}/survey/weighted-score`
+    );
 
     console.log('Weighted Scores Response:', response.data);
 
@@ -230,7 +235,7 @@ export const surveyService = {
     return safeZodParse(WeightedScoreApiResponseSchema, response.data, {
       operation: 'WeightedScoreApiResponse validation',
       additionalInfo: {
-        url: '/survey/scores/weighted',
+        url: `/api/v1/user/${type.toLowerCase()}/survey/weighted-score`,
       },
     });
   },
@@ -239,19 +244,20 @@ export const surveyService = {
    * 가중치 평가 점수 제출 (수정/등록)
    */
   async submitWeightedScores(
-    requestData: WeightedScoreRequestArray
+    requestData: WeightedScoreRequest,
+    type: UserType
   ): Promise<void> {
     // 요청 데이터 검증
     const validatedData = safeZodParse(
-      WeightedScoreRequestArraySchema,
+      WeightedScoreRequestSchema,
       requestData,
       {
         operation: 'WeightedScoreRequestArray validation',
       }
     );
 
-    const response = await apiClient.patch(
-      '/survey/scores/weighted',
+    const response = await apiClient.post(
+      `/api/v1/user/${type.toLowerCase()}/survey/weighted-score`,
       validatedData
     );
 

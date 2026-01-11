@@ -2,7 +2,13 @@ import { z } from 'zod';
 
 // 사용자 역할 스키마
 export const UserRoleSchema = z.enum(['USER', 'ADMIN']);
-export const UserTypeSchema = z.enum(['PRODUCT', 'BRAND']);
+export const UserTypeSchema = z.enum([
+  'PRODUCT',
+  'BRAND',
+  'VISUAL',
+  'INDUSTRY',
+]);
+export const UserTypeLowerSchema = z.enum(['visual', 'industry']);
 
 // 사용자 정보 스키마
 export const UserSchema = z.object({
@@ -22,28 +28,29 @@ export const LoginRequestSchema = z.object({
 
 // 로그인 응답 스키마
 export const LoginResponseSchema = z.object({
-  status: z.number(),
+  code: z.number(),
   message: z.string(),
-  data: UserSchema,
+  result: UserSchema,
 });
 
 // 로그아웃 응답 스키마
 export const LogoutResponseSchema = z.object({
-  status: z.number(),
+  code: z.number(),
   message: z.string(),
 });
 
 // 내 정보 조회 응답 스키마
 export const MeResponseSchema = z.object({
-  status: z.number(),
+  code: z.number(),
   message: z.string(),
-  data: UserSchema,
+  result: UserSchema,
 });
 
 // 타입 추출
 export type UserRole = z.infer<typeof UserRoleSchema>;
 export type User = z.infer<typeof UserSchema>;
 export type UserType = z.infer<typeof UserTypeSchema>;
+export type UserTypeLower = z.infer<typeof UserTypeLowerSchema>;
 export type LoginRequest = z.infer<typeof LoginRequestSchema>;
 export type LoginResponse = z.infer<typeof LoginResponseSchema>;
 export type LogoutResponse = z.infer<typeof LogoutResponseSchema>;
