@@ -31,6 +31,8 @@ export const apiClient = axios.create({
 // 요청 인터셉터
 apiClient.interceptors.request.use(
   (config) => {
+    const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? ''; // '' or '/admin' // axios getBaseURL 수정
+
     // 쿠키는 자동으로 전송되므로 별도 처리 불필요
     // 필요시 추가 헤더 설정 가능
     console.log(`🌐 API 요청: ${config.method?.toUpperCase()} ${config.url}`);
@@ -41,11 +43,13 @@ apiClient.interceptors.request.use(
     console.log('🌐 전체 URL:', `${config.baseURL}${config.url}`);
     console.log(
       '🌐 프록시 사용:',
-      config.baseURL === '/api' ? '✅ 클라이언트 프록시' : '🔗 서버 직접 호출'
+      config.baseURL === `${basePath}/api`
+        ? '✅ 클라이언트 프록시'
+        : '🔗 서버 직접 호출'
     );
 
     // 프록시 실패 감지
-    if (config.baseURL !== '/api' && typeof window !== 'undefined') {
+    if (config.baseURL !== `${basePath}/api` && typeof window !== 'undefined') {
       console.error('❌ 프록시 실패! 클라이언트에서 직접 API 호출 중');
       console.error('❌ 이는 CORS 문제를 일으킬 수 있습니다!');
     }

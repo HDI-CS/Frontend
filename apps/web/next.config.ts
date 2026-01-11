@@ -1,6 +1,8 @@
 import type { NextConfig } from 'next';
 const ADMIN_APP_URL = process.env.ADMIN_APP_URL;
 
+console.log('ADMIN_APP_URL=', process.env.ADMIN_APP_URL);
+
 const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
@@ -28,6 +30,11 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/api/:path*',
+        destination: 'https://api.hdi.ai.kr/:path*',
+      },
+      // admin API proxy
+      {
+        source: '/admin/api/:path*',
         destination: 'https://api.hdi.ai.kr/:path*',
       },
       {
