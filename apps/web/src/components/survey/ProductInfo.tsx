@@ -6,7 +6,7 @@ import { clsx } from 'clsx';
 import InfoItem from './InfoItem';
 
 interface ProductInfoProps {
-  type: 'brand' | 'product';
+  type: 'visual' | 'industry';
   data: ProductDataSetResponse | BrandDataSetResponse;
   className?: string;
 }
@@ -20,13 +20,13 @@ export default function ProductInfo({
   const isProductData = (
     data: ProductDataSetResponse | BrandDataSetResponse
   ): data is ProductDataSetResponse => {
-    return type === 'product';
+    return type === 'industry';
   };
 
   const isBrandData = (
     data: ProductDataSetResponse | BrandDataSetResponse
   ): data is BrandDataSetResponse => {
-    return type === 'brand';
+    return type === 'visual';
   };
 
   // 공통 필드

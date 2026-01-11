@@ -10,7 +10,7 @@ interface ProgressStep {
 }
 
 export const PROGRESS_GUIDELINES = {
-  brand: {
+  visual: {
     TITLE: '진행 가이드라인',
     STEPS: [
       {
@@ -48,7 +48,7 @@ export const PROGRESS_GUIDELINES = {
       },
     ] as ProgressStep[],
   },
-  product: {
+  industry: {
     TITLE: '진행 가이드라인',
     STEPS: [
       {
@@ -103,7 +103,7 @@ interface ContentItem {
 }
 
 export const SURVEY_INTRODUCTION = {
-  brand: {
+  visual: {
     TITLE: '로고 디자인 해석·평가 AI 개발을 위한 설문지',
     CONTENT: [
       {
@@ -144,7 +144,7 @@ export const SURVEY_INTRODUCTION = {
       CONTACT_EMAIL: '문의 메일: hdilab01@gmail.com',
     },
   },
-  product: {
+  industry: {
     TITLE: '제품 디자인 해석·평가 AI 개발을 위한 설문지',
     CONTENT: [
       {
@@ -189,12 +189,12 @@ export const SURVEY_INTRODUCTION = {
 
 // 비상 연락망 상수
 export const EMERGENCY_CONTACT = {
-  brand: {
+  visual: {
     TITLE: '비상 연락망',
     EMAIL: 'hdilab01@gmail.com',
     EMAIL_LABEL: '비상연락망:',
   },
-  product: {
+  industry: {
     TITLE: '비상 연락망',
     EMAIL: 'hdilab01@gmail.com',
     EMAIL_LABEL: '비상연락망:',
