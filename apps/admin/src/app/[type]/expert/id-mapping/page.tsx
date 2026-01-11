@@ -1,10 +1,10 @@
 'use client';
 import AddBtn from '@/src/components/common/AddBtn';
-import AddEvaluation from '@/src/components/evaluation/AddEvaluation';
 import Folder from '@/src/components/Folder';
 import FolderList from '@/src/components/FolderList';
 import FolderModals from '@/src/components/FolderModals';
 import FolderWrapper from '@/src/components/layout/FolderWrapper';
+import ModalComponent from '@/src/components/ModalComponent';
 import { mapEvaluationYearsToFolders } from '@/src/features/data/rowMeta';
 import { useCreateEvaluationYear } from '@/src/hooks/evaluation/useCreateEvaluationYear';
 import { useEvaluationYears } from '@/src/hooks/evaluation/useEvaluationYears';
@@ -22,14 +22,14 @@ const IndexPage = () => {
     openMenuKey,
     add,
     editName,
-    editSurvey,
+    createdYearId,
     editFolderName,
     setPressedKey,
     setOpenMenuKey,
     setAdd,
     setEditName,
-    setEditSurvey,
     setEditFolderName,
+    setCreatedYearId,
     getFieldMenuItems,
   } = useFolderManager();
   const { data, isLoading: yearDataLoading } = useEvaluationYears(type);
@@ -41,6 +41,21 @@ const IndexPage = () => {
     : [];
   const { mutateAsync: createFolder } = useCreateEvaluationYear(type);
   const { mutateAsync: updateFolderName } = useUpdateSurvey(type);
+  // 년도 폴더 이름 수정
+
+  const hanleEditName = () => {
+    const body = {
+      folderName: editFolderName,
+      yearId: createdYearId ?? 0,
+    };
+    updateFolderName(body, {
+      onSuccess: () => {
+        setEditName(false);
+        setEditFolderName('');
+        setCreatedYearId(null);
+      },
+    });
+  };
 
   const handleSubmit = async () => {
     try {
@@ -122,12 +137,20 @@ const IndexPage = () => {
           onSubmit={handleSubmit}
         />
 
-        {editSurvey && (
-          <AddEvaluation
-            type={type}
-            onClose={() => setEditSurvey(false)}
-            isEdit={true}
-          />
+        {editName && (
+          <ModalComponent
+            title="폴더 이름"
+            button="저장"
+            editBasicInfo={true}
+            onClose={() => setEditName(false)}
+            onSubmit={hanleEditName}
+          >
+            <input
+              value={editFolderName}
+              onChange={(e) => setEditFolderName(e.target.value)}
+              className="border-1 focus:outline-primary-blue w-full rounded border-[#E9E9E7] p-3 text-lg text-[#3A3A49]"
+            />
+          </ModalComponent>
         )}
       </div>
     </FolderWrapper>
