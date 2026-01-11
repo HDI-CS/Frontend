@@ -16,7 +16,15 @@ export const getVisualDatasetsByYear = async (yearId: number) => {
   const res = await apiClient.get(
     `/api/v1/admin/visual/data/years/${yearId}/datasets`
   );
-  return GetVisualDataByCategoryResponseSchema.parse(res.data);
+  const parsed = GetVisualDataByCategoryResponseSchema.safeParse(res.data);
+
+  if (!parsed.success) {
+    console.log('❌ Zod validation failed');
+    console.log('issues:', parsed.error.issues);
+    console.log('format:', parsed.error.format());
+  }
+
+  return res.data;
 };
 
 export const getVisualDatasetDetail = async (datasetId: number) => {
