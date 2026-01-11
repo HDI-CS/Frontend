@@ -15,7 +15,15 @@ export const getIndustrialDatasetsByYear = async (yearId: number) => {
   const res = await apiClient.get(
     `/api/v1/admin/industry/data/years/${yearId}/datasets`
   );
-  return GetIndustrialDataByCategoryResponseSchema.parse(res.data);
+
+  const parsed = GetIndustrialDataByCategoryResponseSchema.safeParse(res.data);
+
+  if (!parsed.success) {
+    console.log('❌ Zod validation failed');
+    console.log('issues:', parsed.error.issues);
+    console.log('format:', parsed.error.format());
+  }
+  return res.data;
 };
 
 export const getIndustrialDatasetDetail = async (datasetId: number) => {

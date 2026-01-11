@@ -116,8 +116,8 @@ apiClient.interceptors.response.use(
       }
     }
 
-      // user 접근 제한
-     // 403 에러 시 로그인 페이지로 리다이렉트 
+    // user 접근 제한
+    // 403 에러 시 로그인 페이지로 리다이렉트
     // 단, 로그인 직후 일부 API에서는 새로고침하지 않음
     if (error.response?.status === 403) {
       const isLoginEndpoint = error.config?.url?.includes('/auth/login');
