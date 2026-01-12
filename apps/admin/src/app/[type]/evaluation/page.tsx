@@ -6,7 +6,6 @@ import FolderList from '@/src/components/FolderList';
 import FolderWrapper from '@/src/components/layout/FolderWrapper';
 import ModalComponent from '@/src/components/ModalComponent';
 import { mapEvaluationYearsToFolders } from '@/src/features/data/rowMeta';
-import { useCreateEvaluationYear } from '@/src/hooks/evaluation/useCreateEvaluationYear';
 import { useEvaluationYears } from '@/src/hooks/evaluation/useEvaluationYears';
 import { useUpdateSurvey } from '@/src/hooks/evaluation/useUpdateSurvey';
 import { useFolderManager } from '@/src/hooks/useFolderManager';
@@ -20,6 +19,7 @@ const IndexPage = () => {
     pressedKey,
     openMenuKey,
     add,
+    addStep,
     editSurvey,
     editFolderName,
     editName,
@@ -28,6 +28,7 @@ const IndexPage = () => {
     setPressedKey,
     setOpenMenuKey,
     setAdd,
+    setAddStep,
     setEditSurvey,
     setEditFolderName,
     setEditName,
@@ -37,12 +38,9 @@ const IndexPage = () => {
   } = useFolderManager();
 
   const type = pathname.startsWith('/industry') ? 'INDUSTRY' : 'VISUAL';
-
+  // 바꿀 로직
+  // 폴더 이름 모달 -> 평가설문 모달 -> 폴더 생성 (+ 폴더 이름 수정 + 설문 문항 생성)
   // 년도 평가 등록
-  const { mutate } = useCreateEvaluationYear(type, (yearId) => {
-    setCreatedYearId(yearId);
-    setAdd(true);
-  });
 
   const { data, isLoading: yearDataLoading } = useEvaluationYears(type);
   const yearFolders = data?.result
@@ -53,7 +51,7 @@ const IndexPage = () => {
     : [];
 
   // 년도 폴더 이름 수정
-  const { mutate: updateName } = useUpdateSurvey(type);
+  const { mutateAsync: updateName } = useUpdateSurvey(type);
 
   const hanleEditName = () => {
     const body = {
@@ -118,26 +116,39 @@ const IndexPage = () => {
           getFieldMenuItems={getFieldEvaluationMenuItems}
         />
         {/* ADD BTN */}
-        <AddBtn isEvaluation={true} setAdd={setAdd} onClick={() => mutate()} />
+        <AddBtn
+          isEvaluation={true}
+          setAdd={() => {
+            // setEditName(true);
+            setAddStep(1);
+          }}
+          // onClick={() => createFolder()}
+        />
 
         {/*  Modals */}
-
-        {/* 등록 Modal */}
-        {add && createdYearId && (
+        {/* 평가 설문 문항 등록 Modal */}
+        {addStep === 2 && (
           <AddEvaluation
             type={type}
             yearId={createdYearId!}
+            editFolderName={editFolderName}
+            addStep={addStep}
+            createdYearId={createdYearId ?? 1}
+            setCreatedYearId={setCreatedYearId}
             onClose={() => {
-              setAdd(false);
+              setAddStep(0);
               setCreatedYearId(null);
+              setEditFolderName('');
             }}
           />
         )}
-        {/* 수정 Modal */}
-        {editSurvey && createdYearId && (
+
+        {/* 평가 설문 문항 수정 Modal */}
+        {editSurvey && (
           <AddEvaluation
             type={type}
             yearId={createdYearId!} // 클릭한 년도 아이디로 변경
+            setCreatedYearId={setCreatedYearId}
             onClose={() => setEditSurvey(false)}
             isEdit={true}
           />
@@ -146,10 +157,26 @@ const IndexPage = () => {
         {editName && (
           <ModalComponent
             title="폴더 이름"
-            button="저장"
+            button={add ? '생성' : ' 저장'}
             editBasicInfo={true}
             onClose={() => setEditName(false)}
             onSubmit={hanleEditName}
+          >
+            <input
+              value={editFolderName}
+              onChange={(e) => setEditFolderName(e.target.value)}
+              className="border-1 focus:outline-primary-blue w-full rounded border-[#E9E9E7] p-3 text-lg text-[#3A3A49]"
+            />
+          </ModalComponent>
+        )}
+
+        {addStep === 1 && (
+          <ModalComponent
+            title="폴더 이름"
+            button={'생성'}
+            editBasicInfo={true}
+            onClose={() => setAddStep(0)}
+            onSubmit={() => setAddStep(2)}
           >
             <input
               value={editFolderName}

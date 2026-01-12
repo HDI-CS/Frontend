@@ -1,5 +1,7 @@
+import { useCreateEvaluationYear } from '@/src/hooks/evaluation/useCreateEvaluationYear';
 import { useCreateQuestion } from '@/src/hooks/evaluation/useCreateQuestion';
 import { useEvaluationQuestion } from '@/src/hooks/evaluation/useEvaluationQuestion';
+import { useUpdateSurvey } from '@/src/hooks/evaluation/useUpdateSurvey';
 import { UserType } from '@/src/schemas/auth';
 import {
   SurveyQuestionByTypeWithSampleText,
@@ -14,7 +16,11 @@ interface AddEvaluationProps {
   onClose: () => void;
   type: UserType;
   yearId?: number;
+  addStep?: number;
   isEdit?: boolean;
+  createdYearId?: number;
+  setCreatedYearId?: (n: number) => void;
+  editFolderName?: string;
   qusetionsData?: Question[];
   subjectiveData?: Question;
 }
@@ -30,10 +36,27 @@ const AddEvaluation = ({
   onClose,
   type,
   yearId,
+  setCreatedYearId,
+  addStep,
   isEdit,
+  editFolderName,
   // qusetionsData,
   subjectiveData,
 }: AddEvaluationProps) => {
+  // 바꿀 로직
+  // 폴더 이름 모달 -> 평가설문 모달 -> 폴더 생성 (+ 폴더 이름 수정 + 설문 문항 생성)
+  // 년도 평가 등록
+
+  // 년도 폴더 이름 수정
+  const { mutateAsync: createFolder } = useCreateEvaluationYear(
+    type,
+    (yearId) => {
+      if(setCreatedYearId){
+      setCreatedYearId(yearId);}
+    }
+  );
+  const { mutateAsync: updateFolderName } = useUpdateSurvey(type);
+
   // 수정일 시에만 기존 데이터 가져옴
   // 수정이지만 동일 아이디로 새롭게 등록
   const [folderName, setFolderName] = useState('');
@@ -164,7 +187,38 @@ const AddEvaluation = ({
     // folderName,
   };
 
-  const { mutate: createQuestion } = useCreateQuestion(type, yearId!);
+  const { mutateAsync: createQuestion } = useCreateQuestion(type);
+
+  const handlAddeSubmit = async () => {
+    const body = buildEvaluationRequestBody({
+      questions,
+      subjective,
+    });
+
+    try {
+      // 1 폴더 생성
+      const createRes = await createFolder();
+      const newYearId = createRes.result.yearId;
+
+      // 2 생성 직후 → 바로 이름 수정
+      await updateFolderName({
+        yearId: newYearId,
+        folderName: editFolderName ?? '',
+      });
+
+      // 3  설문문항 등록
+      await createQuestion(
+        { body, yearId: newYearId },
+        {
+          onSuccess: () => {
+            onClose();
+          },
+        }
+      );
+    } catch (e) {
+      console.error('폴더 생성 실패', e);
+    }
+  };
 
   const handleSubmit = () => {
     const body = buildEvaluationRequestBody({
@@ -172,11 +226,19 @@ const AddEvaluation = ({
       subjective,
     });
 
-    createQuestion(body, {
-      onSuccess: () => {
-        onClose();
-      },
-    });
+    try {
+      // 3  설문문항 등록
+      createQuestion(
+        { body, yearId: yearId ?? 1 },
+        {
+          onSuccess: () => {
+            onClose();
+          },
+        }
+      );
+    } catch (e) {
+      console.error('폴더 생성 실패', e);
+    }
   };
 
   return (
@@ -185,13 +247,15 @@ const AddEvaluation = ({
       subtitle="평가문항"
       button={isEdit ? '저장' : '평가 생성'}
       onClose={onClose}
-      onSubmit={handleSubmit}
+      onSubmit={addStep === 2 ? handlAddeSubmit : handleSubmit}
     >
       <div onClick={() => setActiveId(null)} className="flex flex-col gap-5">
         <div className="mb-0 flex h-full w-full text-[#2D2E2E]">
           <div className="flex gap-2.5">
             <div className="bg-neutral-gray30 h-full w-1 rounded"></div>
-            <p className="text-bold16 py-1">평가 문항 수정</p>
+            <p className="text-bold16 py-1">
+              평가 문항 {addStep === 2 ? '생성' : '수정'}
+            </p>
           </div>
         </div>
 
