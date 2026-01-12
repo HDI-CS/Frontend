@@ -119,29 +119,29 @@ apiClient.interceptors.response.use(
     // user 접근 제한
     // 403 에러 시 로그인 페이지로 리다이렉트
     // 단, 로그인 직후 일부 API에서는 새로고침하지 않음
-    if (error.response?.status === 403) {
-      const isLoginEndpoint = error.config?.url?.includes('/auth/login');
+    // if (error.response?.status === 403) {
+    //   const isLoginEndpoint = error.config?.url?.includes('/auth/login');
 
-      console.log('🔒 403 에러 상세 분석:', {
-        isLoginEndpoint,
-        url: error.config?.url,
-        cookies: document.cookie,
-        responseHeaders: error.response?.headers,
-      });
+    //   console.log('🔒 403 에러 상세 분석:', {
+    //     isLoginEndpoint,
+    //     url: error.config?.url,
+    //     cookies: document.cookie,
+    //     responseHeaders: error.response?.headers,
+    //   });
 
-      if (!isLoginEndpoint) {
-        const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+    //   if (!isLoginEndpoint) {
+    //     const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 
-        // 로그인 API가 아닌 경우에만 쿠키 제거 및 리다이렉트
-        console.log('🔒 인증 실패 - 모든 인증 쿠키 삭제 및 리다이렉트');
-        clearAuthCookies(); // 모든 인증 관련 쿠키 삭제 (JSESSIONID 포함)
-        window.location.href = `${basePath}/auth`;
-      } else {
-        console.log(
-          '🔒 403 에러이지만 로그인 엔드포인트이므로 리다이렉트하지 않음'
-        );
-      }
-    }
+    //     // 로그인 API가 아닌 경우에만 쿠키 제거 및 리다이렉트
+    //     console.log('🔒 인증 실패 - 모든 인증 쿠키 삭제 및 리다이렉트');
+    //     clearAuthCookies(); // 모든 인증 관련 쿠키 삭제 (JSESSIONID 포함)
+    //     window.location.href = `${basePath}/auth`;
+    //   } else {
+    //     console.log(
+    //       '🔒 403 에러이지만 로그인 엔드포인트이므로 리다이렉트하지 않음'
+    //     );
+    //   }
+    // }
     return Promise.reject(error);
   }
 );

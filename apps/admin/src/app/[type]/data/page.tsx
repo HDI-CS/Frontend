@@ -165,6 +165,7 @@ const IndexPage = () => {
           <AddEvaluation
             type={type}
             onClose={() => setEditSurvey(false)}
+            setCreatedYearId={setCreatedYearId}
             isEdit={true}
           />
         )}

@@ -19,6 +19,8 @@ export const useFolderManager = () => {
 
   // 생성 / 수정 모달
   const [add, setAdd] = useState(false);
+  const [addStep, setAddStep] = useState(0);
+
   const [editName, setEditName] = useState(false);
   const [editSurvey, setEditSurvey] = useState(false);
   const [editFolderName, setEditFolderName] = useState('');
@@ -107,6 +109,7 @@ export const useFolderManager = () => {
     pressedKey,
     openMenuKey,
     add,
+    addStep,
     editName,
     editTarget,
     editFolderName,
@@ -119,6 +122,7 @@ export const useFolderManager = () => {
     setPressedKey,
     setOpenMenuKey,
     setAdd,
+    setAddStep,
     setEditName,
     setEditTarget,
     setEditFolderName,
