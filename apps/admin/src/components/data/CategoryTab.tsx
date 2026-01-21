@@ -35,7 +35,7 @@ const CategoryTab = <T extends UserType>({
           <button
             key={index}
             className={clsx(
-              'w-35 flex items-center gap-1 rounded-t-[4px] border border-b-0 border-[#E5E5E5] px-4 text-lg',
+              'w-35 flex items-center gap-1 rounded-t-[4px] border border-b-0 border-[#E5E5E5] px-4',
               'h-9 bg-[#F6F7F8] p-2 text-[#3A3A49] hover:bg-gray-200'
             )}
           >
@@ -56,10 +56,10 @@ const CategoryTab = <T extends UserType>({
               key={cat}
               onClick={() => onChange(cat)}
               className={clsx(
-                'flex cursor-pointer items-center gap-1 rounded-t-[4px] border border-b-0 border-[#E5E5E5] px-4 text-lg',
+                'flex cursor-pointer items-center gap-1 rounded-t-[4px] border border-b-0 border-[#E5E5E5] px-4 max-xl:w-[100px]',
                 isActive
-                  ? '-mb-px h-10 border-b-white bg-white p-2.5 font-bold text-[#4676FB]'
-                  : 'h-9 bg-[#F6F7F8] p-2 text-[#3A3A49] hover:bg-gray-200'
+                  ? 'text-bold18 -mb-px h-10 border-b-white bg-white p-2.5 text-[#4676FB] max-xl:text-[5px]'
+                  : 'text-regular18 h-9 bg-[#F6F7F8] p-2 text-[#3A3A49] hover:bg-gray-200 max-xl:text-[5px]'
               )}
             >
               {cat}

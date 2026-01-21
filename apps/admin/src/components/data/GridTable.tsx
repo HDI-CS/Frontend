@@ -94,7 +94,7 @@ const GridTable = <T extends { id: number }, TType extends UserType>({
     <>
       <div className="border border-t-0 border-[#E5E5E5] bg-white p-2">
         {/* 테이블 스크롤 영역 */}
-        <div className="max-h-[680px] overflow-auto">
+        <div className="max-h-[750px] overflow-auto">
           <table className="min-w-max border-separate border-spacing-0 whitespace-nowrap">
             {/* 헤더 */}
             <thead className="sticky top-0 z-10 bg-white">
