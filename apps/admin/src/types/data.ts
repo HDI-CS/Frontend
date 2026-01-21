@@ -1,5 +1,5 @@
+import { VisualDataItem } from '../schemas/visual-data';
 import { ApiResponse, BaseResponse } from './common';
-import { VisualDataItem } from './data/visual-data';
 
 // 시각 디자인 데이터셋 리스트 조회
 export type RequestGetDataDto = ApiResponse<VisualDataItem>;
@@ -16,4 +16,3 @@ export type RequestEditDataDto = {
 };
 
 export type ResponseEditDataDto = BaseResponse;
-

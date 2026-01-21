@@ -17,11 +17,11 @@ export const VisualDataItemSchema = z.object({
   id: z.number(),
   code: z.string(),
   name: z.string(),
-  sectorCategory: z.string(),
-  mainProductCategory: z.string(),
-  mainProduct: z.string(),
-  target: z.string(),
-  referenceUrl: z.string(),
+  sectorCategory: z.string().nullable(),
+  mainProductCategory: z.string().nullable(),
+  mainProduct: z.string().nullable(),
+  target: z.string().nullable(),
+  referenceUrl: z.string().nullable(),
   logoImage: z.string().nullable(),
 });
 

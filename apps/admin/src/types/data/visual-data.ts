@@ -15,19 +15,20 @@ import {
   GetVisualDataByKeywordyResponse,
   UpdateVisualDatasetRequest,
   VisualCategory,
+  VisualDataItem,
 } from '@/src/schemas/visual-data';
 
 export interface DatasetUIItem {
   id: number;
   code: string;
-  referenceUrl?: string;
+  referenceUrl?: string | null;
   _no?: number;
   // 정렬을 위한 필드 추가
   // visual
-  name?: string;
-  sectorCategory?: string;
-  mainProductCategory?: string;
-  mainProduct?: string;
+  name?: string | null;
+  sectorCategory?: string | null;
+  mainProductCategory?: string | null;
+  mainProduct?: string | null;
 
   // industry
   productName?: string;
@@ -65,18 +66,6 @@ export const mapIndustryToUIItem = (
   companyName,
   modelName,
 });
-
-export type VisualDataItem = {
-  id: number;
-  code: string;
-  name: string;
-  sectorCategory: string;
-  mainProductCategory: string;
-  mainProduct: string;
-  target: string;
-  referenceUrl: string;
-  logoImage: string | null;
-};
 
 export type VisualDataCategory = {
   categoryName: string;
