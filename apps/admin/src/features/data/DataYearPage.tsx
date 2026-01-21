@@ -179,8 +179,8 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
             item as ItemByType['INDUSTRY'],
             idx,
             item.productName ?? '',
-            item.modelName ?? '',
-            item.companyName ?? ''
+            item.companyName ?? '',
+            item.modelName ?? ''
           )
     );
   }, [localData, activeCategory, orderBy, type, sortType]);

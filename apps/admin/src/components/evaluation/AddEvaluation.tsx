@@ -51,8 +51,9 @@ const AddEvaluation = ({
   const { mutateAsync: createFolder } = useCreateEvaluationYear(
     type,
     (yearId) => {
-      if(setCreatedYearId){
-      setCreatedYearId(yearId);}
+      if (setCreatedYearId) {
+        setCreatedYearId(yearId);
+      }
     }
   );
   const { mutateAsync: updateFolderName } = useUpdateSurvey(type);

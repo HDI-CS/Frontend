@@ -11,10 +11,8 @@ export const useCreateQuestion = (type: UserType) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      body,
-      yearId} : createProps
-    ) => createEvaluationQuestion(type, yearId, body),
+    mutationFn: ({ body, yearId }: createProps) =>
+      createEvaluationQuestion(type, yearId, body),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: evaluationQueryKeys.lists(type!),
