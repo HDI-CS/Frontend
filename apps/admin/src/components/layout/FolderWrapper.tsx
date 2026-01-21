@@ -9,7 +9,9 @@ const FolderWrapper = ({ children, isManage = true }: FolderWrapperProps) => {
     <div
       className={clsx(
         'font-pretendard text-blue mb-10 mt-14 min-h-screen',
-        isManage ? 'mx-30' : 'mx-60'
+        isManage
+          ? 'mx-30 max-xl:mx-20 max-lg:mx-10'
+          : 'mx-60 max-xl:mx-20 max-lg:mx-10'
       )}
     >
       {children}

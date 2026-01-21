@@ -172,8 +172,8 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
             idx,
             item.name ?? '',
             item.sectorCategory ?? '',
-            item.mainProduct ?? '',
-            item.mainProductCategory ?? ''
+            item.mainProductCategory ?? '',
+            item.mainProduct ?? ''
           )
         : mapIndustryToUIItem(
             item as ItemByType['INDUSTRY'],
