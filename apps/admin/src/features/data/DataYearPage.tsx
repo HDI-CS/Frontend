@@ -172,15 +172,15 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
             idx,
             item.name ?? '',
             item.sectorCategory ?? '',
-            item.mainProduct ?? '',
-            item.mainProductCategory ?? ''
+            item.mainProductCategory ?? '',
+            item.mainProduct ?? ''
           )
         : mapIndustryToUIItem(
             item as ItemByType['INDUSTRY'],
             idx,
             item.productName ?? '',
-            item.modelName ?? '',
-            item.companyName ?? ''
+            item.companyName ?? '',
+            item.modelName ?? ''
           )
     );
   }, [localData, activeCategory, orderBy, type, sortType]);

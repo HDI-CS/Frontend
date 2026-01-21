@@ -35,7 +35,7 @@ const AllExpertGridTable = ({
   /* ---------- table ui ---------- */
 
   const MIN_QUALITATIVE_COL = 8;
-  const MIN_ROW = 6;
+  const MIN_ROW = 7;
 
   const qualitativeCount =
     rows.length > 0
