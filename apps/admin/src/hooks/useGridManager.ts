@@ -3,7 +3,7 @@ import { FieldActionMenuItem } from '../components/FieldActionMenu';
 import { UserType } from '../schemas/auth';
 import { SurveyData } from '../schemas/evaluation';
 import { dataIdsSet, ExpertMember } from '../schemas/expert';
-import { VisualDataItem } from '../types/data/visual-data';
+import { VisualDataItem } from '../schemas/visual-data';
 import { useDeleteDataset } from './data/useDeleteDataset';
 import { useDuplicateDataset } from './data/useDuplicateDataset';
 

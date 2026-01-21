@@ -233,7 +233,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
           className="mr-2 flex-1 rounded border border-[#E9E9E7] px-2 py-1.5 text-base font-normal outline-[#4676FB]"
         />
       ) : (
-        <span className="whitespace-pre-wrap break-all">
+        <span className="mr-2 whitespace-pre-wrap break-all">
           {item[field] as string}
         </span>
       )}
@@ -409,7 +409,12 @@ const DataDetailModal = <TRow, TType extends UserType>({
           )}
         </div>
 
-        <div className="h-200 scrollbar-hidden relative mt-4 space-y-6 overflow-y-auto pr-2">
+        <div
+          className={clsx(
+            'scrollbar-hidden relative mt-4 space-y-6 overflow-y-auto pr-2',
+            type === 'INDUSTRY' ? 'h-200' : 'h-100'
+          )}
+        >
           {/* ---------- VISUAL image ---------- */}
           {type === 'VISUAL' && (
             <LinedField
@@ -448,7 +453,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
                       shouldDirty: true,
                     });
                   }}
-                  className="w-40"
+                  className="flex w-40 items-center"
                 >
                   <label
                     htmlFor={isEdit ? 'logo-upload' : undefined}
