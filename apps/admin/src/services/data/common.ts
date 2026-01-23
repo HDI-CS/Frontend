@@ -3,6 +3,7 @@ import { UserType } from '@/src/schemas/auth';
 import {
   DeleteDatasetRequestSchema,
   DeleteDatasetResponseSchema,
+  DownloadImageRequest,
   DuplicateDatasetRequestSchema,
   DuplicateDatasetResponseSchema,
 } from '@/src/schemas/visual-data';
@@ -168,6 +169,21 @@ export const updateDataset = async (params: UpdateMutationInput) => {
 export const getCandidate = async (type: UserType, yearId: number) => {
   const response = await apiClient.get(
     `/api/v1/admin/${type.toLowerCase()}/data/years/${yearId}/datasets/id`
+  );
+  return response.data;
+};
+
+export const downloadImageZip = async (
+  type: UserType,
+  params: DownloadImageRequest
+) => {
+  const response = await apiClient.post(
+    `/api/v1/admin/${type.toLowerCase()}/data/datasets/image/export`,
+    params,
+    {
+      responseType: 'blob',
+      timeout: 300000, // ✅ 120초
+    }
   );
   return response.data;
 };
