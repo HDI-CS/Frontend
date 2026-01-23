@@ -198,9 +198,4 @@ export type DatasetCandidateArray = z.infer<typeof DatasetCandidateArraySchema>;
 export type GetDatasetCandidatesResponse = z.infer<
   typeof GetDatasetCandidatesResponseSchema
 >;
-export type DownloadImageRequest= z.infer<
-  typeof DownloadImageRequestSchema
->;
-
-
-
+export type DownloadImageRequest = z.infer<typeof DownloadImageRequestSchema>;
