@@ -147,11 +147,10 @@ export const GetDatasetCandidatesResponseSchema = z.object({
   message: z.string(),
   result: DatasetCandidateArraySchema,
 });
-// export const DownloadExcelResponseSchema = z.object({
-//   code: z.number(),
-//   message: z.string(),
 
-// });
+export const DownloadImageRequestSchema = z.object({
+  ids: z.array(z.number()),
+});
 
 // 타입 추출
 export type Year = z.infer<typeof YearSchema>;
@@ -199,3 +198,9 @@ export type DatasetCandidateArray = z.infer<typeof DatasetCandidateArraySchema>;
 export type GetDatasetCandidatesResponse = z.infer<
   typeof GetDatasetCandidatesResponseSchema
 >;
+export type DownloadImageRequest= z.infer<
+  typeof DownloadImageRequestSchema
+>;
+
+
+

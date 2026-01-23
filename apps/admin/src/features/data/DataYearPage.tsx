@@ -2,6 +2,7 @@
 
 import excelIcon from '@/public/data/Excel.svg';
 import sortIcon from '@/public/data/sortIcon.svg';
+import imgDown from '@/public/data/zip-icon.png';
 import CategoryTab from '@/src/components/data/CategoryTab';
 import GalleryView from '@/src/components/data/GallerlyView';
 import GridTable from '@/src/components/data/GridTable';
@@ -13,7 +14,7 @@ import {
   IndustryCategory,
 } from '@/src/schemas/industry-data';
 import { VisualCategory, VisualDataItem } from '@/src/schemas/visual-data';
-import { downloadExcel } from '@/src/services/data/common';
+import { downloadExcel, downloadImageZip } from '@/src/services/data/common';
 import { useSearchStore } from '@/src/store/searchStore';
 import {
   DatasetByCategory,
@@ -67,6 +68,7 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
     CategoryByType[T] | null
   >(null);
   const [isAdd, setIsAdd] = useState(false);
+  const [isDownload, setIsDownload] = useState(false);
 
   useEffect(() => {
     setActiveCategory((prev) => {
@@ -212,7 +214,7 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
     const filenameMatch = disposition?.match(/filename\*=UTF-8''(.+)/);
     const filename = filenameMatch
       ? decodeURIComponent(filenameMatch[1])
-      : 'visual_data.xlsx';
+      : `${type.toLowerCase()}_data.xlsx`;
 
     const url = window.URL.createObjectURL(blob);
 
@@ -224,6 +226,34 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
 
     a.remove();
     window.URL.revokeObjectURL(url);
+  };
+  {
+    /* 이미지 zip 다운로드 */
+  }
+  const rowIds = displayRows.map((r) => r.id);
+  const downloadBlob = (blob: Blob, filename: string) => {
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+
+    window.URL.revokeObjectURL(url);
+  };
+
+  const handleImageDownload = async () => {
+    try {
+      console.log('다운로드시작');
+      setIsDownload(true);
+      const blob = await downloadImageZip(type ?? 'VISUAL', { ids: rowIds });
+      downloadBlob(blob, 'images.zip');
+    } catch (e) {
+      console.error('이미지 zip 다운로드 실패:', e);
+      alert('다운로드 실패! (서버 응답 지연)');
+    } finally {
+      // setIsDownload(false);
+    }
   };
 
   return (
@@ -255,16 +285,25 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
             {/* 정렬 버튼 & 모달 */}
             <button
               className={clsx(
-                'relative flex h-[32px] w-[32px] items-center justify-center rounded border border-[#E5E5E5] bg-white',
-                activeTab === 'gallery' ? 'visible' : 'invisible'
+                'relative flex h-[32px] w-[32px] items-center justify-center rounded border border-[#E5E5E5] bg-white hover:opacity-50'
               )}
             >
-              <Image
-                onClick={() => setSortBtn((prev) => !prev)}
-                src={sortIcon}
-                alt="sort"
-                className="hover:opacity-50"
-              />
+              {activeTab === 'grid' ? (
+                <Image
+                  onClick={isDownload ? undefined : handleImageDownload}
+                  src={imgDown}
+                  alt="img-download"
+                  width={16}
+                  className="felx cursor-pointer items-center justify-center"
+                />
+              ) : (
+                <Image
+                  onClick={() => setSortBtn((prev) => !prev)}
+                  src={sortIcon}
+                  alt="sort"
+                  className="hover:opacity-50"
+                />
+              )}
               {sortBtn && <SortModal sort={orderBy} setSort={setOrderBy} />}
             </button>
 
