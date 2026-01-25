@@ -7,6 +7,7 @@ import { useSearchStore } from '@/src/store/searchStore';
 import { ColumnDef, VisualRow, WithIndex } from '@/src/types/data/visual-data';
 import clsx from 'clsx';
 import FieldActionMenu from '../FieldActionMenu';
+import CheckBox from './CheckBox';
 import DataDetailModal from './DataDetailModal';
 import IdSortMenu from './table/IdSortMenu';
 import Td from './table/Td';
@@ -15,10 +16,12 @@ import Th from './table/Th';
 interface GridTableProps<T extends { id: number }, TType extends UserType> {
   type: UserType;
   rows: WithIndex<T>[];
+  rowIds: number[];
   columns: ColumnDef<WithIndex<T>>[];
   lastIndex: number;
   orderBy: 'ASC' | 'DESC';
   activeCategory: CategoryByType[TType] | null;
+  setRowIds: React.Dispatch<React.SetStateAction<number[]>>;
   setSortType: (sortType: SortType) => void;
   setOrderBy: (sort: 'ASC' | 'DESC') => void;
   onAddRow: () => void;
@@ -45,11 +48,13 @@ const isSortableKey = (key: string): key is SortableKey => {
 const GridTable = <T extends { id: number }, TType extends UserType>({
   type,
   rows,
+  rowIds,
   columns,
   onAddRow,
   orderBy,
   setOrderBy,
   setSortType,
+  setRowIds,
   lastIndex,
   activeCategory,
 }: GridTableProps<T, TType>) => {
@@ -67,6 +72,26 @@ const GridTable = <T extends { id: number }, TType extends UserType>({
     setRowMenu,
     getFieldMenuItems,
   } = useGridManager(type!);
+
+  const handleCheckBox = (isAllCheck: boolean, id?: number) => {
+    // 전체 체크 토글
+    if (isAllCheck) {
+      setRowIds((prev) =>
+        prev.length === rows.length ? [] : rows.map((row) => row.id)
+      );
+      return;
+    }
+
+    // 개별 체크 토글
+    if (id == null) return;
+
+    setRowIds(
+      (prev) =>
+        prev.includes(id)
+          ? prev.filter((rowId) => rowId !== id) // 해제
+          : [...prev, id] // 추가
+    );
+  };
 
   const activeIndex = useSearchStore((s) => s.activeIndex);
 
@@ -99,6 +124,11 @@ const GridTable = <T extends { id: number }, TType extends UserType>({
             {/* 헤더 */}
             <thead className="sticky top-0 z-10 bg-white">
               <tr className="text-left text-sm font-light text-[#8D8D8D]">
+                {/* 체크박스 */}
+                <Th>
+                  <CheckBox isAll onClick={() => handleCheckBox(true)} />
+                </Th>
+
                 {columns.map((col) => (
                   <Th
                     key={col.key}
@@ -148,6 +178,12 @@ const GridTable = <T extends { id: number }, TType extends UserType>({
                       setDataId(row.id);
                     }}
                   >
+                    <Td>
+                      <CheckBox
+                        isCheck={rowIds.includes(row.id)}
+                        onClick={() => handleCheckBox(false, row.id)}
+                      />{' '}
+                    </Td>
                     {columns.map((col) => {
                       return (
                         <Td key={col.key} className={col.className}>
