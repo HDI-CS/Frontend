@@ -69,6 +69,7 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
   >(null);
   const [isAdd, setIsAdd] = useState(false);
   const [isDownload, setIsDownload] = useState(false);
+  const [rowIds, setRowIds] = useState<number[]>([]);
 
   useEffect(() => {
     setActiveCategory((prev) => {
@@ -230,7 +231,6 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
   {
     /* 이미지 zip 다운로드 */
   }
-  const rowIds = displayRows.map((r) => r.id);
   const downloadBlob = (blob: Blob, filename: string) => {
     const url = window.URL.createObjectURL(blob);
 
@@ -244,15 +244,18 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
 
   const handleImageDownload = async () => {
     try {
-      console.log('다운로드시작');
+      if (!rowIds) return;
       setIsDownload(true);
-      const blob = await downloadImageZip(type ?? 'VISUAL', { ids: rowIds });
+      const blob = await downloadImageZip(type ?? 'VISUAL', {
+        ids: rowIds,
+      });
       downloadBlob(blob, 'images.zip');
     } catch (e) {
       console.error('이미지 zip 다운로드 실패:', e);
       alert('다운로드 실패! (서버 응답 지연)');
     } finally {
-      // setIsDownload(false);
+      setIsDownload(false);
+      setRowIds([]);
     }
   };
 
@@ -266,7 +269,6 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
             categories={categorieItem}
             activeKey={activeCategory!}
             onChange={setActiveCategory}
-            onAdd={() => console.log('카테고리 추가')}
           />
 
           {/* Grid / Gallery */}
@@ -323,6 +325,7 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
             <GridTable<VisualRow, 'VISUAL'>
               type={'VISUAL'}
               rows={displayRows as WithIndex<VisualRow>[]}
+              rowIds={rowIds}
               columns={rowMeta.VISUAL.columns}
               onAddRow={handleAddRow}
               orderBy={orderBy}
@@ -330,11 +333,13 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
               setSortType={setSortType}
               lastIndex={lastIndex}
               activeCategory={activeCategory as VisualCategory}
+              setRowIds={setRowIds}
             />
           ) : (
             <GridTable<IndustrialRow, 'INDUSTRY'>
               type={'INDUSTRY'}
               rows={displayRows as WithIndex<IndustrialRow>[]}
+              rowIds={rowIds}
               columns={rowMeta.INDUSTRY.columns}
               onAddRow={handleAddRow}
               orderBy={orderBy}
@@ -342,6 +347,7 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
               setSortType={setSortType}
               lastIndex={lastIndex}
               activeCategory={activeCategory as IndustryCategory}
+              setRowIds={setRowIds}
             />
           )
         ) : (

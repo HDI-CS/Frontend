@@ -1,6 +1,8 @@
 'use client';
 import excelIcon from '@/public/data/Excel.svg';
 import sortIcon from '@/public/data/sortIcon.svg';
+import imgDown from '@/public/data/zip-icon.png';
+
 import CategoryTab from '@/src/components/data/CategoryTab';
 import Td from '@/src/components/data/table/Td';
 import Th from '@/src/components/data/table/Th';
@@ -87,6 +89,12 @@ const IndexPage = () => {
                 'invisible relative flex h-[32px] w-[32px] items-center justify-center rounded bg-white'
               )}
             >
+              <Image
+                src={imgDown}
+                alt="img-download"
+                width={16}
+                className="felx items-center justify-center"
+              />
               <Image src={sortIcon} alt="sort" className="hover:opacity-50" />
             </button>
 
