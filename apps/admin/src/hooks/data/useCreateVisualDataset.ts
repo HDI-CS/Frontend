@@ -77,7 +77,6 @@ export const useCreateDataset = () => {
           requestData: input.requestData,
         });
       }
-      console.log('');
       return createDataset({
         type: 'INDUSTRY',
         yearId: input.yearId,
@@ -149,7 +148,15 @@ export const useCreateDataset = () => {
 
     // 3. 성공 시 이미지 s에 put
     onSuccess: async (data, variables) => {
-      const { type, logoFile, detailFile, frontFile, sideFile } = variables;
+      const {
+        type,
+        logoFile,
+        detailFile,
+        frontFile,
+        sideFile,
+        side2File,
+        side3File,
+      } = variables;
       const uploadTasks: Promise<Response>[] = [];
       /** VISUAL */
       if (type === 'VISUAL' && 'uploadUrl' in data.result) {
@@ -167,8 +174,13 @@ export const useCreateDataset = () => {
 
       /** INDUSTRY */
       if (type === 'INDUSTRY' && 'detailUploadUrl' in data.result) {
-        const { detailUploadUrl, frontUploadUrl, sideUploadUrl } =
-          data.result ?? {};
+        const {
+          detailUploadUrl,
+          frontUploadUrl,
+          sideUploadUrl,
+          side2UploadUrl,
+          side3UploadUrl,
+        } = data.result ?? {};
 
         if (detailFile && detailUploadUrl) {
           uploadTasks.push(
@@ -183,8 +195,24 @@ export const useCreateDataset = () => {
         }
 
         if (sideFile && sideUploadUrl) {
+          console.log('sideFile', sideFile, sideUploadUrl);
           uploadTasks.push(
             fetch(sideUploadUrl, { method: 'PUT', body: sideFile })
+          );
+        }
+
+        if (side2File && side2UploadUrl) {
+          console.log('side2File', side2File, side2UploadUrl);
+          uploadTasks.push(
+            fetch(side2UploadUrl, { method: 'PUT', body: side2File })
+          );
+        }
+
+        if (side3File && side3UploadUrl) {
+          console.log('side3File', side3File, side3UploadUrl);
+
+          uploadTasks.push(
+            fetch(side3UploadUrl, { method: 'PUT', body: side3File })
           );
         }
       }

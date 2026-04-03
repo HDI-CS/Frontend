@@ -124,7 +124,6 @@ const GridTable = <T extends { id: number }, TType extends UserType>({
             <tbody>
               {rows.map((row, idx) => {
                 const isActiveRow = idx + 1 === activeIndex;
-                console.log(row);
 
                 return (
                   <tr

@@ -326,12 +326,42 @@ export const rowMeta: MetaByType = {
       },
       {
         key: 'sideImagePath',
-        header: <span className="block text-center">측면이미지</span>,
+        header: <span className="block text-center">서브이미지01</span>,
         thClassName: 'w-[120px]',
         className: 'w-[120px] text-center',
         cell: (row: IndustrialRow) => (
           <Image
             src={row.sideImagePath ? row.sideImagePath : empty}
+            alt={`${row.modelName} logo`}
+            className="mx-auto h-[44px] w-[44px] rounded object-cover"
+            width={44}
+            height={44}
+          />
+        ),
+      },
+      {
+        key: 'side2ImagePath',
+        header: <span className="block text-center">서브이미지02</span>,
+        thClassName: 'w-[120px]',
+        className: 'w-[120px] text-center',
+        cell: (row: IndustrialRow) => (
+          <Image
+            src={row.side2ImagePath ? row.side2ImagePath : empty}
+            alt={`${row.modelName} logo`}
+            className="mx-auto h-[44px] w-[44px] rounded object-cover"
+            width={44}
+            height={44}
+          />
+        ),
+      },
+      {
+        key: 'side3ImagePath',
+        header: <span className="block text-center">서브이미지03</span>,
+        thClassName: 'w-[120px]',
+        className: 'w-[120px] text-center',
+        cell: (row: IndustrialRow) => (
+          <Image
+            src={row.side3ImagePath ? row.side3ImagePath : empty}
             alt={`${row.modelName} logo`}
             className="mx-auto h-[44px] w-[44px] rounded object-cover"
             width={44}
@@ -435,6 +465,8 @@ export function getImageSrcByType(
     | 'originalDetailImagePath'
     | 'originalFrontImagePath'
     | 'originalSideImagePath'
+    | 'originalSide2ImagePath'
+    | 'originalSide3ImagePath'
 ): string | null {
   if (!detail) return null;
 
@@ -452,6 +484,10 @@ export function getImageSrcByType(
       return normalizeImageUrl(industry.frontImagePath);
     case 'originalSideImagePath':
       return normalizeImageUrl(industry.sideImagePath);
+    case 'originalSide2ImagePath':
+      return normalizeImageUrl(industry.side2ImagePath);
+    case 'originalSide3ImagePath':
+      return normalizeImageUrl(industry.side3ImagePath);
     default:
       return null;
   }

@@ -47,7 +47,6 @@ const IndexPage = () => {
   const {
     data: userInfo,
     isLoading: isMeLoading,
-    // isFetching: isMeFetching,
     error: meError,
   } = useMe();
 
