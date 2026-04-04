@@ -1,6 +1,6 @@
 import z from 'zod';
 
-export const VisualCategorySchema = z.enum(['COSMETIC', 'FB']);
+export const VisualCategorySchema = z.enum(['COSMETIC', 'FB', 'POSTER']);
 
 export type VisualCategory = z.infer<typeof VisualCategorySchema>;
 // 연도 스키마

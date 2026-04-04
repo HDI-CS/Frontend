@@ -4,6 +4,8 @@ export const IndustryCategorySchema = z.enum([
   'VACUUM_CLEANER',
   'AIR_PURIFIER',
   'HAIR_DRYER',
+  'HEADPHONE',
+  'EARPHONE',
 ]);
 
 export type IndustryCategory = z.infer<typeof IndustryCategorySchema>;
@@ -26,6 +28,8 @@ export const IndustrialDataItemSchema = z.object({
   detailImagePath: z.string().nullable(),
   frontImagePath: z.string().nullable(),
   sideImagePath: z.string().nullable(),
+  side2ImagePath: z.string().nullable(),
+  side3ImagePath: z.string().nullable(),
 });
 
 export const IndustrialDatasItemSchema = z.array(IndustrialDataItemSchema);
@@ -82,6 +86,9 @@ export const CreateIndustrialDatasetRequestSchema = z.object({
   originalDetailImagePath: z.string().nullable(),
   originalFrontImagePath: z.string().nullable(),
   originalSideImagePath: z.string().nullable(),
+  originalSide2ImagePath: z.string().nullable(),
+  originalSide3ImagePath: z.string().nullable(),
+
   industryDataCategory: IndustryCategorySchema,
 });
 
@@ -91,6 +98,9 @@ export const IndustrialUploadUrlSchema = z.object({
   detailUploadUrl: z.string(),
   frontUploadUrl: z.string(),
   sideUploadUrl: z.string(),
+
+  side2UploadUrl: z.string(),
+  side3UploadUrl: z.string(),
 });
 
 export const CreateIndustrialDatasetResponseSchema = z.object({
@@ -117,6 +127,9 @@ export const UpdateIndustrialDatasetRequestSchema = z
     originalDetailImagePath: z.string().nullable(), // 빈 값일 땐 널
     originalFrontImagePath: z.string().nullable(), // 빈 값일 땐 널
     originalSideImagePath: z.string().nullable(), // 빈 값일 땐 널 여러개 삭제되면 리스트로…!! (image=DETAIL & image=FRONT)
+    originalSide2ImagePath: z.string().nullable(), // 빈 값일 땐 널
+    originalSide3ImagePath: z.string().nullable(), // 빈 값일 땐 널
+
     industryDataCategory: IndustryCategorySchema,
   })
   .partial();

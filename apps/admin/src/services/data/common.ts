@@ -141,7 +141,16 @@ export const createDataset = async (params: CreateMutationInput) => {
 };
 
 export const updateDataset = async (params: UpdateMutationInput) => {
-  const { type, id, logoFile, detailFile, frontFile, sideFile } = params;
+  const {
+    type,
+    id,
+    logoFile,
+    detailFile,
+    frontFile,
+    sideFile,
+    side2File,
+    side3File,
+  } = params;
   switch (type) {
     case 'VISUAL':
       return updateVisualDataset({
@@ -157,6 +166,8 @@ export const updateDataset = async (params: UpdateMutationInput) => {
         detailFile,
         frontFile,
         sideFile,
+        side2File,
+        side3File,
       });
 
     default:
