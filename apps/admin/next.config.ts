@@ -27,6 +27,7 @@ const nextConfig: NextConfig = {
       {
         source: '/admin/api/:path*',
         destination: 'https://api.hdi.ai.kr/:path*',
+        // destination: 'http://localhost:8080/:path*',
       },
     ];
   },
