@@ -4,6 +4,8 @@ export const IndustryCategorySchema = z.enum([
   'VACUUM_CLEANER',
   'AIR_PURIFIER',
   'HAIR_DRYER',
+  'HEADPHONE',
+  'EARPHONE',
 ]);
 
 export type IndustryCategory = z.infer<typeof IndustryCategorySchema>;

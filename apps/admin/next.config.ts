@@ -25,7 +25,7 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
-        source: '/api/:path*',
+        source: '/admin/api/:path*',
         destination: 'https://api.hdi.ai.kr/:path*',
       },
     ];

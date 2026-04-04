@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 
 export const useDataYears = (type?: UserType) => {
   return useQuery({
-    queryKey: datasetQueryKeys.lists(type),
+    queryKey: datasetQueryKeys.all,
     queryFn: () => getYearList(type!),
     enabled: !!type,
   });

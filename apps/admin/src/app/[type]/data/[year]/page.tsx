@@ -9,6 +9,7 @@ import BaseGridTable from '@/src/components/evaluation/BaseGridTable';
 import DataPage from '@/src/features/data/DataYearPage';
 
 import { useDatasetsByYear } from '@/src/hooks/data/useDatasetsByYear';
+import { useDataYears } from '@/src/hooks/data/useDataYears';
 import { useMe } from '@/src/hooks/useMe';
 import {
   IndustrialDataCategoryGroups,
@@ -18,10 +19,10 @@ import {
   VisualDataCategoryGroups,
   VisualDataItem,
 } from '@/src/schemas/visual-data';
+import { Years } from '@/src/types/data/visual-data';
 import clsx from 'clsx';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import { type } from 'os';
 import { useEffect } from 'react';
 
 type CategoryGroup<T> = {
@@ -34,21 +35,18 @@ export type DataPageProps =
       type: 'VISUAL';
       yearId: number;
       categories: CategoryGroup<VisualDataItem>[];
+      yearName: Years;
     }
   | {
       type: 'INDUSTRY';
       yearId: number;
       categories: CategoryGroup<IndustrialDataItem>[];
+      yearName: Years;
     };
 
 const IndexPage = () => {
-  // const type = pathname.startsWith('/industry') ? 'INDUSTRY' : 'VISUAL';
 
-  const {
-    data: userInfo,
-    isLoading: isMeLoading,
-    error: meError,
-  } = useMe();
+  const { data: userInfo, isLoading: isMeLoading, error: meError } = useMe();
 
   useEffect(() => {
     console.log(userInfo?.result.userType);
@@ -65,6 +63,14 @@ const IndexPage = () => {
     type: userType ?? 'VISUAL',
     yearId: yearId,
   });
+
+  const { data: yearData } = useDataYears(
+    userType ?? 'VISUAL'
+  );
+
+  const yearName = yearData?.result.find(
+    (y: { yearId: number; folderName: Years }) => y.yearId === yearId
+  )?.folderName;
 
   if (isLoading) {
     const tableHeaders = Array.from({ length: 12 });
@@ -144,7 +150,10 @@ const IndexPage = () => {
     );
   }
 
-  if (!data) return null;
+  console.log('✅ 데이터 페이지 렌더링 - 사용자 유형:', userType);
+  console.log('📊 데이터 페이지 렌더링 - 연도 ID:', yearId);
+  console.log('📅 데이터 페이지 렌더링 - 연도 이름:', yearName);
+  if (!data || !yearName) return null;
 
   switch (userType) {
     case 'VISUAL':
@@ -153,6 +162,7 @@ const IndexPage = () => {
           type={userType}
           yearId={yearId}
           categories={data.result as VisualDataCategoryGroups}
+          yearName={yearName}
         />
       );
 
@@ -162,11 +172,12 @@ const IndexPage = () => {
           type={userType}
           yearId={yearId}
           categories={data.result as IndustrialDataCategoryGroups}
+          yearName={yearName}
         />
       );
 
     default:
-      throw new Error(`Unsupported dataset type: ${type}`);
+    // throw new Error(`Unsupported dataset type: ${type}`);
   }
 };
 export default IndexPage;

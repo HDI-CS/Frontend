@@ -320,3 +320,5 @@ export type DataDetailModalProps =
       row?: IndustryRowWithIndex;
       /* 공통 props */
     };
+
+export type Years = 2025 | 2026;

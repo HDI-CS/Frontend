@@ -23,6 +23,7 @@ import {
   mapVisualToUIItem,
   VisualRow,
   WithIndex,
+  Years,
 } from '@/src/types/data/visual-data';
 
 import { DataPageProps } from '@/src/app/[type]/data/[year]/page';
@@ -44,27 +45,45 @@ type ItemByType = {
   INDUSTRY: IndustrialDataItem;
 };
 
+const CATEGORY_MAP: Record<
+  Years,
+  {
+    VISUAL: readonly VisualCategory[];
+    INDUSTRY: readonly IndustryCategory[];
+  }
+> = {
+  2025: {
+    VISUAL: ['COSMETIC', 'FB'],
+    INDUSTRY: ['VACUUM_CLEANER', 'AIR_PURIFIER', 'HAIR_DRYER'],
+  },
+  2026: {
+    VISUAL: ['POSTER'],
+    INDUSTRY: ['HEADPHONE', 'EARPHONE'],
+  },
+} as const;
+
 const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
   type,
   yearId = 1,
   categories = [],
+  yearName,
 }: DataPageProps & { type: T }) => {
-  const categorieItem = useMemo<CategoryByType[T][]>(() => {
+  const categorieItem = useMemo(() => {
+    if (!yearName) return [];
+
     if (type === 'VISUAL') {
-      return ['COSMETIC', 'FB'] as CategoryByType[T][];
+      return [...CATEGORY_MAP[yearName as Years].VISUAL];
     }
 
-    return [
-      'VACUUM_CLEANER',
-      'AIR_PURIFIER',
-      'HAIR_DRYER',
-    ] as CategoryByType[T][];
-  }, [type]);
+    return [...CATEGORY_MAP[yearName as Years].INDUSTRY];
+  }, [yearName, type]);
+  console.log('yearName', yearName);
+  console.log('categorieItem', categorieItem);
   const { orderBy, setOrderBy, sortType, setSortType } = useGridManager(type!);
   const [activeTab, setActiveTab] = useState<'grid' | 'gallery'>('grid');
   const [sortBtn, setSortBtn] = useState(false);
   const [activeCategory, setActiveCategory] = useState<
-    CategoryByType[T] | null
+    VisualCategory | IndustryCategory | null
   >(null);
   const [isAdd, setIsAdd] = useState(false);
 
