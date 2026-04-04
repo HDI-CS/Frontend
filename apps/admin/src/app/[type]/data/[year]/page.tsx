@@ -45,7 +45,6 @@ export type DataPageProps =
     };
 
 const IndexPage = () => {
-
   const { data: userInfo, isLoading: isMeLoading, error: meError } = useMe();
 
   useEffect(() => {
@@ -64,9 +63,7 @@ const IndexPage = () => {
     yearId: yearId,
   });
 
-  const { data: yearData } = useDataYears(
-    userType ?? 'VISUAL'
-  );
+  const { data: yearData } = useDataYears(userType ?? 'VISUAL');
 
   const yearName = yearData?.result.find(
     (y: { yearId: number; folderName: Years }) => y.yearId === yearId
@@ -153,7 +150,11 @@ const IndexPage = () => {
   console.log('✅ 데이터 페이지 렌더링 - 사용자 유형:', userType);
   console.log('📊 데이터 페이지 렌더링 - 연도 ID:', yearId);
   console.log('📅 데이터 페이지 렌더링 - 연도 이름:', yearName);
-  if (!data || !yearName) return null;
+  if (!data) return null;
+
+  if (!yearName) {
+    return <div>연도 정보 로딩중...</div>;
+  }
 
   switch (userType) {
     case 'VISUAL':
