@@ -6,7 +6,7 @@ interface SidebarProps {
 
 const SideBar = ({ type }: SidebarProps) => {
   return (
-    <div className="w-60 min-w-max flex-shrink-0 border-r border-[#E9E9E7] p-4">
+    <div className="w-60 min-w-max flex-shrink-0 border-r border-[#E9E9E7] p-4 max-md:hidden">
       <SidebarSection type={type} />
     </div>
   );

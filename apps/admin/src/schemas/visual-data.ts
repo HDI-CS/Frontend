@@ -17,11 +17,11 @@ export const VisualDataItemSchema = z.object({
   id: z.number(),
   code: z.string(),
   name: z.string(),
-  sectorCategory: z.string(),
-  mainProductCategory: z.string(),
-  mainProduct: z.string(),
-  target: z.string(),
-  referenceUrl: z.string(),
+  sectorCategory: z.string().nullable(),
+  mainProductCategory: z.string().nullable(),
+  mainProduct: z.string().nullable(),
+  target: z.string().nullable(),
+  referenceUrl: z.string().nullable(),
   logoImage: z.string().nullable(),
 });
 
@@ -147,11 +147,10 @@ export const GetDatasetCandidatesResponseSchema = z.object({
   message: z.string(),
   result: DatasetCandidateArraySchema,
 });
-// export const DownloadExcelResponseSchema = z.object({
-//   code: z.number(),
-//   message: z.string(),
 
-// });
+export const DownloadImageRequestSchema = z.object({
+  ids: z.array(z.number()),
+});
 
 // 타입 추출
 export type Year = z.infer<typeof YearSchema>;
@@ -199,3 +198,4 @@ export type DatasetCandidateArray = z.infer<typeof DatasetCandidateArraySchema>;
 export type GetDatasetCandidatesResponse = z.infer<
   typeof GetDatasetCandidatesResponseSchema
 >;
+export type DownloadImageRequest = z.infer<typeof DownloadImageRequestSchema>;

@@ -71,7 +71,7 @@ export const getReadonlyValue = (
     case 'password':
       return row.password;
     case 'participation':
-      return row.rounds;
+      return row.rounds.join(', ');
 
     case 'phoneNumber':
       return row.phoneNumber;

@@ -52,7 +52,7 @@ const PhasePage = () => {
   }
   if (searchDataLoading) {
     const tableHeaders = Array.from({ length: 10 });
-    const tableRows = Array.from({ length: 8 });
+    const tableRows = Array.from({ length: 10 });
     return (
       <div className="bg-system-blueBg p-1.5">
         <BaseGridTable>

@@ -188,17 +188,6 @@ export const rowMeta: MetaByType = {
           }),
       },
       {
-        key: 'companyName',
-        header: '회사',
-        thClassName: 'w-[150px]',
-        className: 'w-[150px]',
-        cell: (row, isActiveRow) =>
-          renderCellText(row.companyName, getKeyword(), {
-            active: isActiveRow,
-            maxLength: 8,
-          }),
-      },
-      {
         key: 'modelName',
         header: '모델',
         thClassName: 'w-[120px]',
@@ -207,6 +196,17 @@ export const rowMeta: MetaByType = {
           renderCellText(row.modelName, getKeyword(), {
             active: isActiveRow,
             maxLength: 6,
+          }),
+      },
+      {
+        key: 'companyName',
+        header: '회사',
+        thClassName: 'w-[150px]',
+        className: 'w-[150px]',
+        cell: (row, isActiveRow) =>
+          renderCellText(row.companyName, getKeyword(), {
+            active: isActiveRow,
+            maxLength: 8,
           }),
       },
       {

@@ -74,9 +74,11 @@ const GalleryView = <T extends BaseRow>({
         <div key={label} className="flex h-7 items-stretch gap-2">
           <span className="w-[3.18px] rounded-full bg-[#E5E5E5]" />
         </div>
-        <div className="flex flex-1 items-center justify-between gap-8">
-          <p className="text-neutral-gray w-25">{label}</p>
-          <p> {truncateText(value, 5)}</p>
+        <div className="flex min-w-0 flex-1 items-center justify-between">
+          <p className="text-neutral-gray max-xl:font-regular max-xl:text-[12px] max-xl:leading-none">
+            {label}
+          </p>
+          <p className="max-xl:text-[14px]"> {truncateText(value, 5)}</p>
         </div>
       </div>
     );

@@ -35,7 +35,7 @@ const AllExpertGridTable = ({
   /* ---------- table ui ---------- */
 
   const MIN_QUALITATIVE_COL = 8;
-  const MIN_ROW = 6;
+  const MIN_ROW = 7;
 
   const qualitativeCount =
     rows.length > 0
@@ -81,7 +81,7 @@ const AllExpertGridTable = ({
 
             return (
               <Th key={index} className="text-regular16 w-[125px] text-center">
-                {hasData ? `${index + 1}. 정성평가` : ''}
+                {hasData ? `${index + 1}. 평가` : ''}
               </Th>
             );
           })}

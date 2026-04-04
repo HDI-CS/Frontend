@@ -124,8 +124,10 @@ const ProfileGridTable = () => {
       academic: selectedExpertData.academic ?? '',
       expertise: selectedExpertData.expertise ?? '',
       company: selectedExpertData.company ?? '',
+      note: selectedExpertData.note ?? '',
     });
   }, [selectedExpertData, editForm.reset, editForm]);
+
   const renderField = (meta: ExpertlFieldMeta) => {
     if (!selectedExpertData) return null;
 

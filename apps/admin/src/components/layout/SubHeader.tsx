@@ -66,7 +66,7 @@ const SubHeader = () => {
   const breadcrumb = breadcrumbParts.join(' / ');
 
   return (
-    <div className="w-full bg-[#F4F7FF] px-8 py-4 text-xl font-bold text-[#001D6C]">
+    <div className="text-bold20 w-full cursor-pointer bg-[#F4F7FF] px-8 py-4 text-[#001D6C]">
       <span>Home: </span>
       <span className="">{breadcrumb}</span>
     </div>
