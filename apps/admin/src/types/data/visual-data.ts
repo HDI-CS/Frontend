@@ -152,6 +152,8 @@ export type CreateMutationInput =
       detailFile?: File | null;
       frontFile?: File | null;
       sideFile?: File | null;
+      side2File?: File | null;
+      side3File?: File | null;
     }
   | {
       type: 'INDUSTRY';
@@ -162,6 +164,8 @@ export type CreateMutationInput =
       detailFile?: File | null;
       frontFile?: File | null;
       sideFile?: File | null;
+      side2File?: File | null;
+      side3File?: File | null;
     };
 
 export type UpdateMutationInput =
@@ -173,6 +177,8 @@ export type UpdateMutationInput =
       detailFile?: File | null;
       frontFile?: File | null;
       sideFile?: File | null;
+      side2File?: File | null;
+      side3File?: File | null;
     }
   | {
       type: 'INDUSTRY';
@@ -182,6 +188,8 @@ export type UpdateMutationInput =
       detailFile?: File | null;
       frontFile?: File | null;
       sideFile?: File | null;
+      side2File?: File | null;
+      side3File?: File | null;
     };
 
 // UI 공통 타입으로 평탄화해서 분기 제거
@@ -233,6 +241,8 @@ export type IndustrialRow = BaseRow & {
   detailImagePath: string;
   frontImagePath: string;
   sideImagePath: string;
+  side2ImagePath: string;
+  side3ImagePath: string;
 };
 
 // UI용 (번호 붙여서 쓰는 경우)
@@ -299,3 +309,5 @@ export type DataDetailModalProps =
       row?: IndustryRowWithIndex;
       /* 공통 props */
     };
+
+export type Years = 2025 | 2026;

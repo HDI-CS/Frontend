@@ -25,11 +25,21 @@ export const useUpdateDataset = () => {
         detailFile: input.detailFile,
         frontFile: input.frontFile,
         sideFile: input.sideFile,
+        side2File: input.side2File,
+        side3File: input.side3File,
       });
     },
 
     onSuccess: async (data, variables) => {
-      const { type, logoFile, detailFile, frontFile, sideFile } = variables;
+      const {
+        type,
+        logoFile,
+        detailFile,
+        frontFile,
+        sideFile,
+        side2File,
+        side3File,
+      } = variables;
       const uploadTasks: Promise<Response>[] = [];
       /** VISUAL */
       if (type === 'VISUAL') {
@@ -47,8 +57,13 @@ export const useUpdateDataset = () => {
 
       /** INDUSTRY */
       if (type === 'INDUSTRY') {
-        const { detailUploadUrl, frontUploadUrl, sideUploadUrl } =
-          data.result ?? {};
+        const {
+          detailUploadUrl,
+          frontUploadUrl,
+          sideUploadUrl,
+          side2UploadUrl,
+          side3UploadUrl,
+        } = data.result ?? {};
 
         if (detailFile && detailUploadUrl) {
           uploadTasks.push(
@@ -65,6 +80,18 @@ export const useUpdateDataset = () => {
         if (sideFile && sideUploadUrl) {
           uploadTasks.push(
             fetch(sideUploadUrl, { method: 'PUT', body: sideFile })
+          );
+        }
+
+        if (side2File && side2UploadUrl) {
+          uploadTasks.push(
+            fetch(side2UploadUrl, { method: 'PUT', body: side2File })
+          );
+        }
+
+        if (side3File && side3UploadUrl) {
+          uploadTasks.push(
+            fetch(side3UploadUrl, { method: 'PUT', body: side3File })
           );
         }
       }

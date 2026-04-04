@@ -60,12 +60,16 @@ export const updateIndustrialDataset = async ({
   detailFile,
   frontFile,
   sideFile,
+  side2File,
+  side3File,
 }: {
   id: number;
   requestData: UpdateIndustrialDatasetRequest;
   detailFile?: File | null;
   frontFile?: File | null;
   sideFile?: File | null;
+  side2File?: File | null;
+  side3File?: File | null;
 }) => {
   const validated = safeZodParse(
     UpdateIndustrialDatasetRequestSchema,
@@ -83,6 +87,8 @@ export const updateIndustrialDataset = async ({
   if (detailFile === null) imagesToDelete.push('DETAIL');
   if (frontFile === null) imagesToDelete.push('FRONT');
   if (sideFile === null) imagesToDelete.push('SIDE');
+  if (side2File === null) imagesToDelete.push('SIDE2');
+  if (side3File === null) imagesToDelete.push('SIDE3');
 
   const res = await apiClient.patch(
     `/api/v1/admin/industry/data/datasets/${id}`,

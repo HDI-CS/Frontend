@@ -86,7 +86,7 @@ const EMPTY_INDUSTRY_DATASET: UpdateIndustrialDatasetRequest = {
 };
 
 /* =======================
-   Component
+  Component
 ======================= */
 
 const DataDetailModal = <TRow, TType extends UserType>({
@@ -136,6 +136,12 @@ const DataDetailModal = <TRow, TType extends UserType>({
     undefined
   );
   const [sideFile, setSideFile] = useState<File | null | undefined>(undefined);
+  const [side2File, setSide2File] = useState<File | null | undefined>(
+    undefined
+  );
+  const [side3File, setSide3File] = useState<File | null | undefined>(
+    undefined
+  );
 
   /* ---------- mutation ---------- */
   // 데이터 수정을 위한 훅
@@ -147,6 +153,8 @@ const DataDetailModal = <TRow, TType extends UserType>({
   const [detailPreview, setDetailPreview] = useState<string | null>(null);
   const [frontPreview, setFrontPreview] = useState<string | null>(null);
   const [sidePreview, setSidePreview] = useState<string | null>(null);
+  const [side2Preview, setSide2Preview] = useState<string | null>(null);
+  const [side3Preview, setSide3Preview] = useState<string | null>(null);
 
   const INDUSTRY_IMAGE_FIELDS = [
     {
@@ -166,12 +174,28 @@ const DataDetailModal = <TRow, TType extends UserType>({
       setPreview: setFrontPreview,
     },
     {
-      label: '측면 이미지',
+      label: '서브 이미지01',
       field: 'originalSideImagePath',
       setter: setSideFile,
       file: sideFile,
       preview: sidePreview,
       setPreview: setSidePreview,
+    },
+    {
+      label: '서브 이미지02',
+      field: 'originalSide2ImagePath',
+      setter: setSide2File,
+      file: side2File,
+      preview: side2Preview,
+      setPreview: setSide2Preview,
+    },
+    {
+      label: '서브 이미지03',
+      field: 'originalSide3ImagePath',
+      setter: setSide3File,
+      file: side3File,
+      preview: side3Preview,
+      setPreview: setSide3Preview,
     },
   ] as const;
 
@@ -296,6 +320,8 @@ const DataDetailModal = <TRow, TType extends UserType>({
         originalDetailImagePath: null,
         originalFrontImagePath: null,
         originalSideImagePath: null,
+        originalSide2ImagePath: null,
+        originalSide3ImagePath: null,
         industryDataCategory: activeCategory as IndustryCategory,
       };
 
@@ -319,6 +345,8 @@ const DataDetailModal = <TRow, TType extends UserType>({
           detailFile: detailFile === undefined ? undefined : detailFile,
           frontFile: frontFile === undefined ? undefined : frontFile,
           sideFile: sideFile === undefined ? undefined : sideFile,
+          side2File: side2File === undefined ? undefined : side2File,
+          side3File: side3File === undefined ? undefined : side3File,
         },
         {
           onSuccess: () => {
@@ -370,6 +398,8 @@ const DataDetailModal = <TRow, TType extends UserType>({
           detailFile: detailFile === undefined ? undefined : detailFile,
           frontFile: frontFile === undefined ? undefined : frontFile,
           sideFile: sideFile === undefined ? undefined : sideFile,
+          side2File: side2File === undefined ? undefined : side2File,
+          side3File: side3File === undefined ? undefined : side3File,
         },
         {
           onSuccess: () => {
@@ -573,7 +603,6 @@ const DataDetailModal = <TRow, TType extends UserType>({
                         setValue(field, null, {
                           shouldDirty: true,
                         });
-                        console.log();
                       }}
                       src={close}
                       alt="close"
@@ -596,8 +625,6 @@ const DataDetailModal = <TRow, TType extends UserType>({
             </button>
           </div>
         )}
-        {/* </ul>
-        </div> */}
       </div>
     </ModalComponent>
   );

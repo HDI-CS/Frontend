@@ -1,28 +1,30 @@
 import clsx from 'clsx';
 
-import { CategoryByType } from '@/src/features/data/DataYearPage';
 import { UserType } from '@/src/schemas/auth';
+import { IndustryCategory } from '@/src/schemas/industry-data';
+import { VisualCategory } from '@/src/schemas/visual-data';
 
 export interface CategoryTabItem {
   key: string;
   label: string;
 }
 
-interface CategoryTabProps<T extends UserType> {
+interface CategoryTabProps {
   type: UserType;
-  categories?: CategoryByType[T][];
+  categories?: (VisualCategory | IndustryCategory)[];
   activeKey?: string;
-  onChange?: (key: CategoryByType[T]) => void;
+  onChange?: (key: VisualCategory | IndustryCategory) => void;
   onAdd?: () => void;
   isLoading?: boolean;
 }
 
-const CategoryTab = <T extends UserType>({
+const CategoryTab = ({
   activeKey,
   categories,
   onChange,
   isLoading,
-}: CategoryTabProps<T>) => {
+}: CategoryTabProps) => {
+  // const [open, setOpen] = useState(false);
   if (isLoading) {
     const skeletonFactors = Array(2).fill(null);
     return (
