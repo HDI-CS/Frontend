@@ -17,6 +17,7 @@ import { VisualCategory, VisualDataItem } from '@/src/schemas/visual-data';
 import { downloadExcel, downloadImageZip } from '@/src/services/data/common';
 import { useSearchStore } from '@/src/store/searchStore';
 import {
+  ColumnDef,
   DatasetByCategory,
   DatasetItems,
   IndustrialRow,
@@ -34,7 +35,8 @@ import { sortByString } from '@/src/utils/sortByType';
 import clsx from 'clsx';
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
-import { rowMeta } from './rowMeta';
+import { getRowMeta } from './rowMeta';
+import { GalleryFieldDef } from './uiDef';
 
 export type CategoryByType = {
   VISUAL: VisualCategory;
@@ -59,7 +61,7 @@ const CATEGORY_MAP: Record<
   },
   2026: {
     VISUAL: ['POSTER'],
-    INDUSTRY: ['HEADPHONE', 'EARPHONE'],
+    INDUSTRY: ['HEADPHONE', 'EARPHONE', 'BLUETOOTH_SPEAKER'],
   },
 } as const;
 
@@ -78,8 +80,7 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
 
     return [...CATEGORY_MAP[yearName as Years].INDUSTRY];
   }, [yearName, type]);
-  console.log('yearName', yearName);
-  console.log('categorieItem', categorieItem);
+
   const { orderBy, setOrderBy, sortType, setSortType } = useGridManager(type!);
   const [activeTab, setActiveTab] = useState<'grid' | 'gallery'>('grid');
   const [sortBtn, setSortBtn] = useState(false);
@@ -345,7 +346,13 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
               type={'VISUAL'}
               rows={displayRows as WithIndex<VisualRow>[]}
               rowIds={rowIds}
-              columns={rowMeta.VISUAL.columns}
+              columns={
+                getRowMeta(
+                  'VISUAL',
+                  yearName as Years,
+                  displayRows as WithIndex<VisualRow>[]
+                ).columns as ColumnDef<WithIndex<VisualRow>>[]
+              }
               onAddRow={handleAddRow}
               orderBy={orderBy}
               setOrderBy={setOrderBy}
@@ -359,7 +366,13 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
               type={'INDUSTRY'}
               rows={displayRows as WithIndex<IndustrialRow>[]}
               rowIds={rowIds}
-              columns={rowMeta.INDUSTRY.columns}
+              columns={
+                getRowMeta(
+                  'INDUSTRY',
+                  (yearName ?? '2025') as Years,
+                  displayRows as WithIndex<IndustrialRow>[]
+                ).columns as ColumnDef<WithIndex<IndustrialRow>>[]
+              }
               onAddRow={handleAddRow}
               orderBy={orderBy}
               setOrderBy={setOrderBy}
@@ -375,7 +388,10 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
               <GalleryView<VisualRow>
                 type={'VISUAL'}
                 rows={displayRows as WithIndex<VisualRow>[]}
-                galleryFields={rowMeta.VISUAL.galleryFields}
+                galleryFields={
+                  getRowMeta('VISUAL', yearName as Years)
+                    .galleryFields as GalleryFieldDef<WithIndex<VisualRow>>[]
+                }
                 onAdd={handleAddRow}
                 orderBy={orderBy}
                 setOrderBy={setOrderBy}
@@ -386,7 +402,12 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
               <GalleryView<IndustrialRow>
                 type={'INDUSTRY'}
                 rows={displayRows as WithIndex<IndustrialRow>[]}
-                galleryFields={rowMeta.INDUSTRY.galleryFields}
+                galleryFields={
+                  getRowMeta('INDUSTRY', (yearName ?? '2025') as Years)
+                    .galleryFields as GalleryFieldDef<
+                    WithIndex<IndustrialRow>
+                  >[]
+                }
                 orderBy={orderBy}
                 setOrderBy={setOrderBy}
                 onAdd={handleAddRow}

@@ -79,6 +79,20 @@ const EMPTY_INDUSTRY_DATASET: UpdateIndustrialDatasetRequest = {
   registeredAt: '',
   productPath: '',
   productTypeName: '',
+
+  // 2026
+  noiseCancelling: null,
+  codec: null,
+  extraFeatures: null,
+  controlType: null,
+  waterproof: null,
+  maxPlayTime: null,
+  chargeTime: null,
+  usage: null,
+  shoppingUrl: null,
+  connectivity: null,
+  soundOutput: null,
+
   originalDetailImagePath: null,
   originalFrontImagePath: null,
   originalSideImagePath: null,
@@ -317,6 +331,20 @@ const DataDetailModal = <TRow, TType extends UserType>({
         registeredAt: '',
         productPath: '',
         productTypeName: '',
+
+        // 2026
+        noiseCancelling: null,
+        codec: null,
+        extraFeatures: null,
+        controlType: null,
+        waterproof: null,
+        maxPlayTime: null,
+        chargeTime: null,
+        usage: null,
+        shoppingUrl: null,
+        connectivity: null,
+        soundOutput: null,
+
         originalDetailImagePath: null,
         originalFrontImagePath: null,
         originalSideImagePath: null,
