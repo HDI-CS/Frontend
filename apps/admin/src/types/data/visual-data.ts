@@ -39,10 +39,10 @@ export interface DatasetUIItem {
 export const mapVisualToUIItem = (
   item: VisualDataItem,
   index: number,
-  name: string,
-  sectorCategory: string,
-  mainProductCategory: string,
-  mainProduct: string
+  name?: string | null,
+  sectorCategory?: string | null,
+  mainProductCategory?: string | null,
+  mainProduct?: string | null
 ): DatasetUIItem => ({
   ...item,
   _no: index + 1,
@@ -223,6 +223,16 @@ export type VisualRow = BaseRow & {
   mainProductCategory: string;
   mainProduct: string;
   target: string;
+
+  // 2026
+  title: string;
+  country: string;
+  client: string;
+  contentType: string;
+  visualType: string;
+  designDescription: string;
+  releaseYear: string;
+
   logoImage: string | null;
 };
 

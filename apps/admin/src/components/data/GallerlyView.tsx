@@ -133,11 +133,6 @@ const GalleryView = <T extends BaseRow>({
                 <InfoRow key={g.label} label={g.label} value={g.value(row)} />
               )
             )}
-
-            {/* 정보 */}
-            {/* <InfoRow label="ID" value={row.code} />
-            <InfoRow label="브랜드명" value={row.name} />
-            <InfoRow label="부문·카테고리" value={row.sectorCategory} /> */}
           </div>
         );
       })}

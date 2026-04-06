@@ -66,6 +66,16 @@ const EMPTY_VISUAL_DATASET: UpdateVisualDatasetRequest = {
   mainProduct: '',
   target: '',
   referenceUrl: '',
+
+  // 2026
+  title: null,
+  country: null,
+  clientName: null,
+  contentType: null,
+  visualType: null,
+  designDescription: null,
+  releaseYear: null,
+
   originalLogoImage: null,
   visualDataCategory: 'COSMETIC',
 };
@@ -142,7 +152,6 @@ const DataDetailModal = <TRow, TType extends UserType>({
     datasetId: Number(dataId),
   });
 
-  console.log('detail data', { data });
 
   /* ---------- file states ---------- */
 
@@ -270,8 +279,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
       | keyof UpdateIndustrialDatasetRequest
       | keyof UpdateVisualDatasetRequest
   ) => {
-    console.log({ label, field });
-    console.log('renderField', { item });
+    console.log('renderField', { label, field, item });
     const value =
       type === 'VISUAL'
         ? (item as UpdateVisualDatasetRequest)[
@@ -317,6 +325,15 @@ const DataDetailModal = <TRow, TType extends UserType>({
         target: '',
         referenceUrl: '',
         originalLogoImage: null,
+
+        // 2026
+        title: null,
+        country: null,
+        clientName: null,
+        contentType: null,
+        visualType: null,
+        designDescription: null,
+        releaseYear: null,
         visualDataCategory: activeCategory as VisualCategory,
       };
 

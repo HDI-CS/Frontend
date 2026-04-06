@@ -3,6 +3,7 @@ import { UserType } from '@/src/schemas/auth';
 import { EvaluationYears, RoundsSchema } from '@/src/schemas/survey';
 import {
   UpdateVisualDatasetRequest,
+  VisualCategory,
   YearFolderArray,
 } from '@/src/schemas/visual-data';
 import { useSearchStore } from '@/src/store/searchStore';
@@ -26,11 +27,6 @@ const toHttpUrl = (url?: string) => {
   return url.startsWith('http') ? url : `https://${url}`;
 };
 
-// type IndustryYearConfig = {
-//   tableFields: readonly IndustryDynamicFieldKey[];
-//   formFields: readonly IndustryDynamicFieldKey[];
-// };
-
 type IndustryDynamicFieldKey =
   | 'productTypeName'
   | 'size'
@@ -47,10 +43,20 @@ type IndustryDynamicFieldKey =
   | 'connectivity'
   | 'soundOutput';
 
-// type IndustryFieldDef = {
-//   label: string;
-//   field: IndustryDynamicFieldKey;
-// };
+type VisualDynamicFieldKey =
+  | 'sectorCategory'
+  | 'mainProductCategory'
+  | 'mainProduct'
+  | 'target'
+  | 'name'
+  | 'title'
+  | 'country'
+  | 'clientName'
+  | 'contentType'
+  | 'visualType'
+  | 'designDescription'
+  | 'releaseYear'
+  | 'referenceUrl';
 
 type IndustryColumnDef = {
   key: IndustryDynamicFieldKey;
@@ -60,36 +66,28 @@ type IndustryColumnDef = {
   maxLength: number;
 };
 
-// const INDUSTRY_YEAR_CONFIG: Record<string, IndustryYearConfig> = {
-//   '2025': {
-//     tableFields: ['material', 'size'],
-//     formFields: ['material'],
-//   },
-//   '2026': {
-//     tableFields: [
-//       'noiseCancelling',
-//       'codec',
-//       'extraFeatures',
-//       'controlType',
-//       'waterproof',
-//       'maxPlayTime',
-//       'chargeTime',
-//     ],
-//     formFields: [
-//       'noiseCancelling',
-//       'codec',
-//       'extraFeatures',
-//       'controlType',
-//       'waterproof',
-//       'maxPlayTime',
-//       'chargeTime',
-//     ],
-//   },
-// } as const;
+type VisualColumnDef = {
+  key: VisualDynamicFieldKey;
+  header: string;
+  thClassName: string;
+  className: string;
+  maxLength: number;
+};
 
-// const getIndustryYearConfig = (year: Years): IndustryYearConfig =>
-//   (INDUSTRY_YEAR_CONFIG[String(year)] ??
-//     INDUSTRY_YEAR_CONFIG['2025']) as IndustryYearConfig;
+const DISPLAY_META_BY_CATEGORY = {
+  FB: {
+    field: 'name',
+    label: '브랜드명',
+  },
+  COSMETIC: {
+    field: 'name',
+    label: '브랜드명',
+  },
+  POSTER: {
+    field: 'title',
+    label: '제목',
+  },
+} as const;
 
 const INDUSTRY_DYNAMIC_COLUMN_MAP: Record<
   IndustryDynamicFieldKey,
@@ -196,22 +194,104 @@ const INDUSTRY_DYNAMIC_COLUMN_MAP: Record<
   },
 };
 
-// const INDUSTRY_DYNAMIC_FIELD_LABEL_MAP: Record<
-//   IndustryDynamicFieldKey,
-//   IndustryFieldDef
-// > = {
-//   material: { label: '재질', field: 'material' },
-//   size: { label: '크기', field: 'size' },
-//   productTypeName: { label: '제품 유형', field: 'productTypeName' },
-//   // 2026
-//   noiseCancelling: { label: '노이즈캔슬링', field: 'noiseCancelling' },
-//   codec: { label: '코덱', field: 'codec' },
-//   extraFeatures: { label: '부가기능', field: 'extraFeatures' },
-//   controlType: { label: '컨트롤', field: 'controlType' },
-//   waterproof: { label: '방수기능', field: 'waterproof' },
-//   maxPlayTime: { label: '최대재생시간', field: 'maxPlayTime' },
-//   chargeTime: { label: '충전시간', field: 'chargeTime' },
-// };
+const VISUAL_DYNAMIC_COLUMN_MAP: Record<
+  VisualDynamicFieldKey,
+  VisualColumnDef
+> = {
+  name: {
+    key: 'name',
+    header: '브랜드명',
+    thClassName: 'w-[140px]',
+    className: 'w-[140px] px-3',
+    maxLength: 8,
+  },
+  sectorCategory: {
+    key: 'sectorCategory',
+    header: '부문·카테고리',
+    thClassName: 'w-[140px]',
+    className: 'w-[140px]',
+    maxLength: 9,
+  },
+  mainProductCategory: {
+    key: 'mainProductCategory',
+    header: '대표 제품 카테고리',
+    thClassName: 'w-[260px]',
+    className: 'min-w-[260px]',
+    maxLength: 20,
+  },
+  mainProduct: {
+    key: 'mainProduct',
+    header: '대표 제품',
+    thClassName: 'min-w-[240px]',
+    className: 'min-w-[240px]',
+    maxLength: 16,
+  },
+  target: {
+    key: 'target',
+    header: '타겟(성별/연령)',
+    thClassName: 'w-[160px]',
+    className: 'w-[160px]',
+    maxLength: 6,
+  },
+
+  releaseYear: {
+    key: 'releaseYear',
+    header: '년도',
+    thClassName: 'w-[120px]',
+    className: 'w-[120px]',
+    maxLength: 6,
+  },
+  title: {
+    key: 'title',
+    header: '제목',
+    thClassName: 'w-[200px]',
+    className: 'w-[200px]',
+    maxLength: 20,
+  },
+  country: {
+    key: 'country',
+    header: '국가',
+    thClassName: 'w-[120px]',
+    className: 'w-[120px]',
+    maxLength: 6,
+  },
+  clientName: {
+    key: 'clientName',
+    header: '클라이언트',
+    thClassName: 'w-[120px]',
+    className: 'w-[120px]',
+    maxLength: 8,
+  },
+  contentType: {
+    key: 'contentType',
+    header: '내용 유형',
+    thClassName: 'w-[140px]',
+    className: 'w-[140px]',
+    maxLength: 10,
+  },
+  visualType: {
+    key: 'visualType',
+    header: '시각 유형',
+    thClassName: 'w-[120px]',
+    className: 'w-[120px]',
+    maxLength: 10,
+  },
+  designDescription: {
+    key: 'designDescription',
+    header: '디자인 설명',
+    thClassName: 'w-[200px]',
+    className: 'w-[200px]',
+    maxLength: 20,
+  },
+
+  referenceUrl: {
+    key: 'referenceUrl',
+    header: '홈페이지',
+    thClassName: 'min-w-[180px]',
+    className: 'min-w-[180px]',
+    maxLength: 20,
+  },
+};
 
 const buildDynamicColumns = (rows: IndustrialRow[]) => {
   if (!rows.length) return [];
@@ -267,11 +347,52 @@ const buildDynamicColumns = (rows: IndustrialRow[]) => {
   });
 };
 
+const buildVisualDynamicColumns = (rows: VisualRow[]) => {
+  if (!rows.length) return [];
+  const EXCLUDE_KEYS = ['id', '_no', 'code', 'logoImage'];
+
+  const keySet = new Set<string>();
+  console.log('buildVisualDynamicColumns', { rows });
+  rows.forEach((row) => {
+    Object.entries(row).forEach(([key, value]) => {
+      if (!EXCLUDE_KEYS.includes(key) && value != null) {
+        keySet.add(key);
+      }
+    });
+  });
+
+  return Object.keys(VISUAL_DYNAMIC_COLUMN_MAP)
+    .filter((key) => keySet.has(key))
+    .map((key) => {
+      const meta = VISUAL_DYNAMIC_COLUMN_MAP[key as VisualDynamicFieldKey];
+
+      return {
+        key,
+        header: meta?.header || key,
+        thClassName: meta?.thClassName || 'w-[120px]',
+        className: meta?.className || 'w-[120px]',
+        cell: (row: WithIndex<VisualRow>, isActiveRow: boolean) =>
+          renderCellText(
+            String(row[key as keyof VisualRow] ?? ''),
+            getKeyword(),
+            {
+              active: isActiveRow,
+              maxLength: meta?.maxLength || 10,
+            }
+          ),
+      };
+    });
+};
+
 export const getRowMeta = (
   type: 'VISUAL' | 'INDUSTRY',
   year?: Years,
-  rows?: WithIndex<IndustrialRow | VisualRow>[]
+  rows?: WithIndex<IndustrialRow | VisualRow>[],
+  activeCategory?: VisualCategory
 ) => {
+  const displayMeta =
+    activeCategory && DISPLAY_META_BY_CATEGORY[activeCategory];
+
   if (type === 'VISUAL') {
     return {
       getImageSrc: (row: VisualRow) => row.logoImage,
@@ -299,84 +420,14 @@ export const getRowMeta = (
               maxLength: 6,
             }),
         },
-        {
-          key: 'name',
-          header: '브랜드명',
-          thClassName: 'w-[140px]',
-          className: 'w-[140px] px-3',
 
-          cell: (row: VisualRow, isActiveRow: boolean) =>
-            renderCellText(row.name, getKeyword(), {
-              active: isActiveRow,
-              maxLength: 8,
-            }),
-        },
-        {
-          key: 'sectorCategory',
-          header: '부문·카테고리',
-          thClassName: 'w-[140px]',
-          className: 'w-[140px]',
-          cell: (row: VisualRow, isActiveRow: boolean) =>
-            renderCellText(row.sectorCategory, getKeyword(), {
-              active: isActiveRow,
-              maxLength: 9,
-            }),
-        },
-        {
-          key: 'mainProductCategory',
-          header: '대표 제품 카테고리',
-          thClassName: 'w-[260px]',
-          className: 'min-w-[260px]',
-          cell: (row: VisualRow, isActiveRow: boolean) =>
-            renderCellText(row.mainProductCategory, getKeyword(), {
-              active: isActiveRow,
-              maxLength: 20,
-            }),
-        },
-        {
-          key: 'mainProduct',
-          header: '대표 제품',
-          thClassName: 'min-w-[240px]',
-          className: 'min-w-[240px]',
-          cell: (row: VisualRow, isActiveRow: boolean) =>
-            renderCellText(row.mainProduct, getKeyword(), {
-              active: isActiveRow,
-              maxLength: 16,
-            }),
-        },
-        {
-          key: 'target',
-          header: '타겟(성별/연령)',
-          thClassName: 'w-[160px]',
-          className: 'w-[160px]',
-          cell: (row: VisualRow, isActiveRow: boolean) =>
-            renderCellText(row.target, getKeyword(), {
-              active: isActiveRow,
-              maxLength: 6,
-            }),
-        },
-        {
-          key: 'referenceUrl',
-          header: '홈페이지',
-          thClassName: 'min-w-[180px]',
-          className: 'min-w-[180px]',
-          cell: (row: VisualRow) => {
-            const href = toHttpUrl(row.referenceUrl);
-            return (
-              <a
-                href={href}
-                target="_blank"
-                rel="noreferrer"
-                className="text-[#4B5563] underline-offset-2 hover:underline"
-              >
-                {truncateText(String(row.referenceUrl), 20)}
-              </a>
-            );
-          },
-        },
+        ...buildVisualDynamicColumns(
+          (rows as WithIndex<VisualRow>[]) ?? ([] as WithIndex<VisualRow>[])
+        ),
+
         {
           key: 'logoImage',
-          header: <span className="block text-center">로고이미지</span>,
+          header: <span className="block text-center">이미지</span>,
           thClassName: 'w-[120px]',
           className: 'w-[120px] text-center',
           cell: (row: VisualRow) => (
@@ -394,11 +445,15 @@ export const getRowMeta = (
       //  갤러리 카드에 보여줄 필드
       galleryFields: [
         {
-          label: '로고 이미지',
+          label: '이미지',
           value: (row: VisualRow) => row.logoImage ?? '',
         }, //
         { label: 'ID', value: (row: VisualRow) => row.code },
-        { label: '브랜드명', value: (row: VisualRow) => row.name },
+        {
+          label: displayMeta?.label ?? '대표값',
+          value: (row: VisualRow) =>
+            displayMeta?.field ? row[displayMeta.field as keyof VisualRow] : '',
+        },
         {
           label: '부문·카테고리',
           value: (row: VisualRow) => row.sectorCategory,
@@ -455,18 +510,6 @@ export const getRowMeta = (
             maxLength: 20,
           }),
       },
-
-      // {
-      //   key: 'modelName',
-      //   header: '모델',
-      //   thClassName: 'w-[120px]',
-      //   className: 'w-[120px]',
-      //   cell: (row: IndustrialRow, isActiveRow: boolean) =>
-      //     renderCellText(row.modelName, getKeyword(), {
-      //       active: isActiveRow,
-      //       maxLength: 6,
-      //     }),
-      // },
       {
         key: 'companyName',
         header: '회사',
@@ -581,36 +624,6 @@ export const getRowMeta = (
           />
         ),
       },
-      // {
-      //   key: 'side2ImagePath',
-      //   header: <span className="block text-center">서브이미지02</span>,
-      //   thClassName: 'w-[120px]',
-      //   className: 'w-[120px] text-center',
-      //   cell: (row: IndustrialRow) => (
-      //     <Image
-      //       src={row.side2ImagePath ? row.side2ImagePath : empty}
-      //       alt={`${row.modelName} logo`}
-      //       className="mx-auto h-[44px] w-[44px] rounded object-cover"
-      //       width={44}
-      //       height={44}
-      //     />
-      //   ),
-      // },
-      // {
-      //   key: 'side3ImagePath',
-      //   header: <span className="block text-center">서브이미지03</span>,
-      //   thClassName: 'w-[120px]',
-      //   className: 'w-[120px] text-center',
-      //   cell: (row: IndustrialRow) => (
-      //     <Image
-      //       src={row.side3ImagePath ? row.side3ImagePath : empty}
-      //       alt={`${row.modelName} logo`}
-      //       className="mx-auto h-[44px] w-[44px] rounded object-cover"
-      //       width={44}
-      //       height={44}
-      //     />
-      //   ),
-      // },
     ],
 
     galleryFields: [
@@ -638,6 +651,15 @@ export const VISUAL_FIELDS = [
   { label: '대표 제품', field: 'mainProduct' },
   { label: '타겟(성별/연령)', field: 'target' },
   { label: '홈페이지', field: 'referenceUrl' },
+
+  // 2026
+  { label: '제목', field: 'title' },
+  { label: '국가', field: 'country' },
+  { label: '클라이언트', field: 'clientName' },
+  { label: '내용 유형', field: 'contentType' },
+  { label: '시각 유형', field: 'visualType' },
+  { label: '디자인 설명', field: 'designDescription' },
+  { label: '년도', field: 'releaseYear' },
 ] as const satisfies readonly {
   label: string;
   field: keyof UpdateVisualDatasetRequest;
@@ -684,6 +706,15 @@ export const updateRequestMapper = {
     target: detail.target ?? '',
     referenceUrl: detail.referenceUrl ?? '',
     originalLogoImage: null,
+
+    title: detail.title ?? '',
+    country: detail.country ?? '',
+    clientName: detail.clientName ?? '',
+    contentType: detail.contentType ?? '',
+    visualType: detail.visualType ?? '',
+    designDescription: detail.designDescription ?? '',
+    releaseYear: detail.releaseYear ?? '',
+
     visualDataCategory: category,
   }),
 
@@ -813,6 +844,7 @@ export const buildFieldsFromColumns = (
 ) => {
   const EXCLUDE_KEYS = [
     '_no',
+    'logoImage',
     'detailImagePath',
     'frontImagePath',
     'sideImagePath',
