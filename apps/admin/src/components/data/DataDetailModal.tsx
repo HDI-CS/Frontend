@@ -4,9 +4,7 @@ import close from '@/public/data/close.svg';
 import { CategoryByType } from '@/src/features/data/DataYearPage';
 import {
   getImageSrcByType,
-  INDUSTRY_FIELDS,
   updateRequestMapper,
-  VISUAL_FIELDS,
 } from '@/src/features/data/rowMeta';
 import { useCreateDataset } from '@/src/hooks/data/useCreateVisualDataset';
 import { useDataByDatasetId } from '@/src/hooks/data/useDatasetsByYear';
@@ -36,6 +34,11 @@ import ImageDropZone from '../ImageDropZone';
 import ModalComponent from '../ModalComponent';
 import LinedField from './LinedField';
 
+export type FieldDef = {
+  label: string;
+  field: string;
+};
+
 interface DataDetailModalProps<TRow, TType extends UserType> {
   type: TType;
   row?: WithIndex<TRow>;
@@ -48,6 +51,7 @@ interface DataDetailModalProps<TRow, TType extends UserType> {
   isAdd?: boolean; // 데이터 생성일 경우만
   isFirst?: boolean;
   isLast?: boolean;
+  fields: FieldDef[];
 
   onClose: () => void;
   onPrev?: () => void;
@@ -79,6 +83,20 @@ const EMPTY_INDUSTRY_DATASET: UpdateIndustrialDatasetRequest = {
   registeredAt: '',
   productPath: '',
   productTypeName: '',
+
+  // 2026
+  noiseCancelling: null,
+  codec: null,
+  extraFeatures: null,
+  controlType: null,
+  waterproof: null,
+  maxPlayTime: null,
+  chargeTime: null,
+  usage: null,
+  shoppingUrl: null,
+  connectivity: null,
+  soundOutput: null,
+
   originalDetailImagePath: null,
   originalFrontImagePath: null,
   originalSideImagePath: null,
@@ -99,6 +117,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
   isFirst,
   isLast,
   totalLength,
+  fields,
 
   onClose,
   onPrev,
@@ -122,6 +141,8 @@ const DataDetailModal = <TRow, TType extends UserType>({
     type,
     datasetId: Number(dataId),
   });
+
+  console.log('detail data', { data });
 
   /* ---------- file states ---------- */
 
@@ -199,8 +220,6 @@ const DataDetailModal = <TRow, TType extends UserType>({
     },
   ] as const;
 
-  const fields = type === 'VISUAL' ? VISUAL_FIELDS : INDUSTRY_FIELDS;
-
   /* ---------- image src ---------- */
   const imageSrc = useMemo(() => {
     if (previewUrl) return previewUrl;
@@ -245,24 +264,42 @@ const DataDetailModal = <TRow, TType extends UserType>({
   if (isError) return;
 
   /*  텍스트 필드 렌더링 */
-  const renderField = (label: string, field: keyof UpdateForm) => (
-    <LinedField key={label} label={label} activeField={activeField}>
-      {isEdit ? (
-        <input
-          {...register(field)}
-          onClick={(e) => {
-            e.stopPropagation();
-            setActvieField(label);
-          }}
-          className="mr-2 flex-1 rounded border border-[#E9E9E7] px-2 py-1.5 text-base font-normal outline-[#4676FB]"
-        />
-      ) : (
-        <span className="mr-2 whitespace-pre-wrap break-all">
-          {item[field] as string}
-        </span>
-      )}
-    </LinedField>
-  );
+  const renderField = (
+    label: string,
+    field:
+      | keyof UpdateIndustrialDatasetRequest
+      | keyof UpdateVisualDatasetRequest
+  ) => {
+    console.log({ label, field });
+    console.log('renderField', { item });
+    const value =
+      type === 'VISUAL'
+        ? (item as UpdateVisualDatasetRequest)[
+            field as keyof UpdateVisualDatasetRequest
+          ]
+        : (item as UpdateIndustrialDatasetRequest)[
+            field as keyof UpdateIndustrialDatasetRequest
+          ];
+
+    return (
+      <LinedField key={label} label={label} activeField={activeField}>
+        {isEdit ? (
+          <input
+            {...register(field)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setActvieField(label);
+            }}
+            className="mr-2 flex-1 rounded border border-[#E9E9E7] px-2 py-1.5 text-base font-normal outline-[#4676FB]"
+          />
+        ) : (
+          <span className="mr-2 whitespace-pre-wrap break-all">
+            {value ?? '-'}
+          </span>
+        )}
+      </LinedField>
+    );
+  };
 
   {
     /* ---------- create 생성 ---------- */
@@ -317,6 +354,20 @@ const DataDetailModal = <TRow, TType extends UserType>({
         registeredAt: '',
         productPath: '',
         productTypeName: '',
+
+        // 2026
+        noiseCancelling: null,
+        codec: null,
+        extraFeatures: null,
+        controlType: null,
+        waterproof: null,
+        maxPlayTime: null,
+        chargeTime: null,
+        usage: null,
+        shoppingUrl: null,
+        connectivity: null,
+        soundOutput: null,
+
         originalDetailImagePath: null,
         originalFrontImagePath: null,
         originalSideImagePath: null,
@@ -377,7 +428,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
         {
           type: type,
           id: dataId,
-          requestData,
+          requestData: requestData as UpdateVisualDatasetRequest,
           logoFile: logoFile,
         },
         {
@@ -433,7 +484,6 @@ const DataDetailModal = <TRow, TType extends UserType>({
         className={clsx('min-w-150 bg-white')}
       >
         <div className="flex shrink-0 flex-col gap-4 space-y-4">
-          {/* 내용이 많아지면 여기만 스크롤 */}
           {fields.map(({ label, field }) =>
             renderField(label, field as keyof UpdateForm)
           )}
@@ -478,7 +528,6 @@ const DataDetailModal = <TRow, TType extends UserType>({
                   onFileDrop={(file) => {
                     setLogoFile(file);
                     setPreviewUrl(URL.createObjectURL(file));
-
                     setValue('originalLogoImage', file.name, {
                       shouldDirty: true,
                     });

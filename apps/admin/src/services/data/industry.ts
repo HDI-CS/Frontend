@@ -15,6 +15,7 @@ export const getIndustrialDatasetsByYear = async (yearId: number) => {
   const res = await apiClient.get(
     `/api/v1/admin/industry/data/years/${yearId}/datasets`
   );
+  console.log('✅ getIndustrialDatasetsByYear response:', res.data);
 
   const parsed = GetIndustrialDataByCategoryResponseSchema.safeParse(res.data);
 
@@ -23,6 +24,7 @@ export const getIndustrialDatasetsByYear = async (yearId: number) => {
     console.log('issues:', parsed.error.issues);
     console.log('format:', parsed.error.format());
   }
+
   return res.data;
 };
 

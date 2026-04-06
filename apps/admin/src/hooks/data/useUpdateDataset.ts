@@ -21,7 +21,7 @@ export const useUpdateDataset = () => {
       return updateDataset({
         type: 'INDUSTRY',
         id: input.id,
-        requestData: input.requestData,
+        requestData: input.requestData ?? '',
         detailFile: input.detailFile,
         frontFile: input.frontFile,
         sideFile: input.sideFile,

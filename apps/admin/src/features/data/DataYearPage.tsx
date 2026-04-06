@@ -17,6 +17,7 @@ import { VisualCategory, VisualDataItem } from '@/src/schemas/visual-data';
 import { downloadExcel, downloadImageZip } from '@/src/services/data/common';
 import { useSearchStore } from '@/src/store/searchStore';
 import {
+  ColumnDef,
   DatasetByCategory,
   DatasetItems,
   IndustrialRow,
@@ -34,7 +35,8 @@ import { sortByString } from '@/src/utils/sortByType';
 import clsx from 'clsx';
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
-import { rowMeta } from './rowMeta';
+import { buildFieldsFromColumns, getRowMeta } from './rowMeta';
+import { GalleryFieldDef } from './uiDef';
 
 export type CategoryByType = {
   VISUAL: VisualCategory;
@@ -59,7 +61,7 @@ const CATEGORY_MAP: Record<
   },
   2026: {
     VISUAL: ['POSTER'],
-    INDUSTRY: ['HEADPHONE', 'EARPHONE'],
+    INDUSTRY: ['HEADPHONE', 'EARPHONE', 'BLUETOOTH_SPEAKER'],
   },
 } as const;
 
@@ -78,8 +80,7 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
 
     return [...CATEGORY_MAP[yearName as Years].INDUSTRY];
   }, [yearName, type]);
-  console.log('yearName', yearName);
-  console.log('categorieItem', categorieItem);
+
   const { orderBy, setOrderBy, sortType, setSortType } = useGridManager(type!);
   const [activeTab, setActiveTab] = useState<'grid' | 'gallery'>('grid');
   const [sortBtn, setSortBtn] = useState(false);
@@ -337,94 +338,198 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
             </button>
           </div>
         </div>
-
         {/* content */}
-        {activeTab === 'grid' ? (
-          type === 'VISUAL' ? (
-            <GridTable<VisualRow, 'VISUAL'>
-              type={'VISUAL'}
-              rows={displayRows as WithIndex<VisualRow>[]}
-              rowIds={rowIds}
-              columns={rowMeta.VISUAL.columns}
-              onAddRow={handleAddRow}
-              orderBy={orderBy}
-              setOrderBy={setOrderBy}
-              setSortType={setSortType}
-              lastIndex={lastIndex}
-              activeCategory={activeCategory as VisualCategory}
-              setRowIds={setRowIds}
-            />
-          ) : (
-            <GridTable<IndustrialRow, 'INDUSTRY'>
-              type={'INDUSTRY'}
-              rows={displayRows as WithIndex<IndustrialRow>[]}
-              rowIds={rowIds}
-              columns={rowMeta.INDUSTRY.columns}
-              onAddRow={handleAddRow}
-              orderBy={orderBy}
-              setOrderBy={setOrderBy}
-              setSortType={setSortType}
-              lastIndex={lastIndex}
-              activeCategory={activeCategory as IndustryCategory}
-              setRowIds={setRowIds}
-            />
-          )
-        ) : (
-          <div className="border border-t-0 border-[#E9E9E7] bg-white p-3">
-            {type === 'VISUAL' ? (
-              <GalleryView<VisualRow>
-                type={'VISUAL'}
-                rows={displayRows as WithIndex<VisualRow>[]}
-                galleryFields={rowMeta.VISUAL.galleryFields}
-                onAdd={handleAddRow}
-                orderBy={orderBy}
-                setOrderBy={setOrderBy}
-                lastIndex={lastIndex}
-                activeCategory={activeCategory!}
-              />
-            ) : (
-              <GalleryView<IndustrialRow>
-                type={'INDUSTRY'}
-                rows={displayRows as WithIndex<IndustrialRow>[]}
-                galleryFields={rowMeta.INDUSTRY.galleryFields}
-                orderBy={orderBy}
-                setOrderBy={setOrderBy}
-                onAdd={handleAddRow}
-                lastIndex={lastIndex}
-                activeCategory={activeCategory!}
-              />
-            )}
-          </div>
-        )}
+        {activeTab === 'grid'
+          ? (() => {
+              if (type === 'VISUAL') {
+                const rowMeta = getRowMeta(
+                  'VISUAL',
+                  yearName as Years,
+                  displayRows as WithIndex<VisualRow>[]
+                );
+
+                const columns = rowMeta.columns as ColumnDef<
+                  WithIndex<VisualRow | IndustrialRow>
+                >[];
+
+                const fields = buildFieldsFromColumns(columns);
+
+                return (
+                  <GridTable<VisualRow, 'VISUAL'>
+                    type="VISUAL"
+                    rows={displayRows as WithIndex<VisualRow>[]}
+                    rowIds={rowIds}
+                    columns={columns}
+                    fields={fields}
+                    onAddRow={handleAddRow}
+                    orderBy={orderBy}
+                    setOrderBy={setOrderBy}
+                    setSortType={setSortType}
+                    lastIndex={lastIndex}
+                    activeCategory={activeCategory as VisualCategory}
+                    setRowIds={setRowIds}
+                  />
+                );
+              }
+
+              const rowMeta = getRowMeta(
+                'INDUSTRY',
+                (yearName ?? '2025') as Years,
+                displayRows as WithIndex<IndustrialRow>[]
+              );
+
+              const columns = rowMeta.columns as ColumnDef<
+                WithIndex<IndustrialRow | VisualRow>
+              >[];
+
+              const fields = buildFieldsFromColumns(columns);
+
+              return (
+                <GridTable<IndustrialRow, 'INDUSTRY'>
+                  type="INDUSTRY"
+                  rows={displayRows as WithIndex<IndustrialRow>[]}
+                  rowIds={rowIds}
+                  columns={columns}
+                  fields={fields}
+                  onAddRow={handleAddRow}
+                  orderBy={orderBy}
+                  setOrderBy={setOrderBy}
+                  setSortType={setSortType}
+                  lastIndex={lastIndex}
+                  activeCategory={activeCategory as IndustryCategory}
+                  setRowIds={setRowIds}
+                />
+              );
+            })()
+          : (() => {
+              if (type === 'VISUAL') {
+                const rowMeta = getRowMeta(
+                  'VISUAL',
+                  yearName as Years,
+                  displayRows as WithIndex<VisualRow>[]
+                );
+
+                const fields = buildFieldsFromColumns(
+                  rowMeta.columns as ColumnDef<
+                    WithIndex<VisualRow | IndustrialRow>
+                  >[]
+                );
+
+                return (
+                  <div className="border border-t-0 border-[#E9E9E7] bg-white p-3">
+                    <GalleryView<VisualRow>
+                      type="VISUAL"
+                      rows={displayRows as WithIndex<VisualRow>[]}
+                      galleryFields={
+                        rowMeta.galleryFields as GalleryFieldDef<
+                          WithIndex<VisualRow>
+                        >[]
+                      }
+                      fields={fields}
+                      onAdd={handleAddRow}
+                      orderBy={orderBy}
+                      setOrderBy={setOrderBy}
+                      lastIndex={lastIndex}
+                      activeCategory={activeCategory!}
+                    />
+                  </div>
+                );
+              }
+
+              const rowMeta = getRowMeta(
+                'INDUSTRY',
+                (yearName ?? '2025') as Years,
+                displayRows as WithIndex<IndustrialRow>[]
+              );
+
+              const fields = buildFieldsFromColumns(
+                rowMeta.columns as ColumnDef<
+                  WithIndex<IndustrialRow | VisualRow>
+                >[]
+              );
+              console.log('rowMeta', rowMeta);
+              console.log('fields', fields);
+
+              return (
+                <div className="border border-t-0 border-[#E9E9E7] bg-white p-3">
+                  <GalleryView<IndustrialRow>
+                    type="INDUSTRY"
+                    rows={displayRows as WithIndex<IndustrialRow>[]}
+                    galleryFields={
+                      rowMeta.galleryFields as GalleryFieldDef<
+                        WithIndex<IndustrialRow>
+                      >[]
+                    }
+                    fields={fields}
+                    orderBy={orderBy}
+                    setOrderBy={setOrderBy}
+                    onAdd={handleAddRow}
+                    lastIndex={lastIndex}
+                    activeCategory={activeCategory!}
+                  />
+                </div>
+              );
+            })()}
 
         {isAdd &&
           activeCategory &&
-          (type === 'VISUAL' ? (
-            <DataDetailModal<VisualRow, 'VISUAL'>
-              type={'VISUAL'}
-              isEdit={true}
-              isAdd={isAdd}
-              activeCategory={activeCategory as VisualCategory}
-              onClose={() => {
-                setIsAdd(false);
-              }}
-              totalLength={displayRows?.length ?? 1}
-            />
-          ) : (
-            <DataDetailModal
-              type={'INDUSTRY'}
-              isEdit={true}
-              isAdd={isAdd}
-              activeCategory={activeCategory as IndustryCategory}
-              onClose={() => {
-                setIsAdd(false);
-              }}
-              totalLength={displayRows?.length ?? 1}
-            />
-          ))}
+          (() => {
+            if (type === 'VISUAL') {
+              const rowMeta = getRowMeta(
+                'VISUAL',
+                yearName as Years,
+                displayRows as WithIndex<VisualRow>[]
+              );
+
+              const fields = buildFieldsFromColumns(
+                rowMeta.columns as ColumnDef<
+                  WithIndex<VisualRow | IndustrialRow>
+                >[]
+              );
+
+              return (
+                <DataDetailModal<VisualRow, 'VISUAL'>
+                  type="VISUAL"
+                  isEdit={true}
+                  isAdd={isAdd}
+                  fields={fields}
+                  activeCategory={activeCategory as VisualCategory}
+                  onClose={() => {
+                    setIsAdd(false);
+                  }}
+                  totalLength={displayRows?.length ?? 1}
+                />
+              );
+            }
+
+            const rowMeta = getRowMeta(
+              'INDUSTRY',
+              (yearName ?? '2025') as Years,
+              displayRows as WithIndex<IndustrialRow>[]
+            );
+
+            const fields = buildFieldsFromColumns(
+              rowMeta.columns as ColumnDef<
+                WithIndex<IndustrialRow | VisualRow>
+              >[]
+            );
+
+            return (
+              <DataDetailModal<IndustrialRow, 'INDUSTRY'>
+                type="INDUSTRY"
+                isEdit={true}
+                isAdd={isAdd}
+                fields={fields}
+                activeCategory={activeCategory as IndustryCategory}
+                onClose={() => {
+                  setIsAdd(false);
+                }}
+                totalLength={displayRows?.length ?? 1}
+              />
+            );
+          })()}
       </div>
     </div>
   );
 };
-
 export default DataPage;

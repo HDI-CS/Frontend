@@ -1,22 +1,23 @@
 import z from 'zod';
+import { YearsSchema } from './survey';
 
 export const VisualCategorySchema = z.enum(['COSMETIC', 'FB', 'POSTER']);
 
 export type VisualCategory = z.infer<typeof VisualCategorySchema>;
 // 연도 스키마
-export const YearSchema = z.object({
+export const YearFolderSchema = z.object({
   yearId: z.number(),
   folderName: z.string().nullable,
   updatedAt: z.string(),
   createdAt: z.string(),
 });
-export const YearsSchema = z.array(YearSchema);
+export const YearFolderArraySchema = z.array(YearFolderSchema);
 
 // 시디 데이터 셋 기본 스키마
 export const VisualDataItemSchema = z.object({
   id: z.number(),
   code: z.string(),
-  name: z.string(),
+  name: z.string().nullable(),
   sectorCategory: z.string().nullable(),
   mainProductCategory: z.string().nullable(),
   mainProduct: z.string().nullable(),
@@ -72,14 +73,14 @@ export const UploadUrlSchema = z.object({
 // 데이터셋 생성 요청 스키마
 export const CreateVisualDatasetRequestSchema = z.object({
   code: z.string(),
-  name: z.string(),
-  sectorCategory: z.string(),
-  mainProductCategory: z.string(),
-  mainProduct: z.string(),
-  target: z.string(),
-  referenceUrl: z.string(),
+  name: z.string().nullable(),
+  sectorCategory: z.string().nullable(),
+  mainProductCategory: z.string().nullable(),
+  mainProduct: z.string().nullable(),
+  target: z.string().nullable(),
+  referenceUrl: z.string().nullable(),
   originalLogoImage: z.string().nullable(),
-  visualDataCategory: VisualCategorySchema,
+  visualDataCategory: VisualCategorySchema.nullable(),
 });
 
 // 데이터셋 생성 응답 스키마
@@ -98,14 +99,14 @@ export const DuplicateDatasetRequestSchema = z.object({
 export const UpdateVisualDatasetRequestSchema = z
   .object({
     code: z.string(),
-    name: z.string(),
-    sectorCategory: z.string(),
-    mainProductCategory: z.string(),
-    mainProduct: z.string(),
-    target: z.string(),
-    referenceUrl: z.string(),
+    name: z.string().nullable(),
+    sectorCategory: z.string().nullable(),
+    mainProductCategory: z.string().nullable(),
+    mainProduct: z.string().nullable(),
+    target: z.string().nullable(),
+    referenceUrl: z.string().nullable(),
     originalLogoImage: z.string().nullable(), // 빈 값일 땐 널
-    visualDataCategory: VisualCategorySchema,
+    visualDataCategory: VisualCategorySchema.nullable(),
   })
   .partial();
 
@@ -153,8 +154,8 @@ export const DownloadImageRequestSchema = z.object({
 });
 
 // 타입 추출
-export type Year = z.infer<typeof YearSchema>;
-export type Years = z.infer<typeof YearsSchema>;
+export type YearFolder = z.infer<typeof YearFolderSchema>;
+export type YearFolderArray = z.infer<typeof YearFolderArraySchema>;
 export type VisualDataItem = z.infer<typeof VisualDataItemSchema>;
 export type VisualDatasItem = z.infer<typeof VisualDatasItemSchema>;
 export type VisualDataCategoryGroup = z.infer<

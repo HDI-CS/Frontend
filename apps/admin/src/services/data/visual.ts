@@ -23,7 +23,7 @@ export const getVisualDatasetsByYear = async (yearId: number) => {
     console.log('issues:', parsed.error.issues);
     console.log('format:', parsed.error.format());
   }
-
+  // console.log('✅ getVisualDatasetsByYear response:', res.data);
   return res.data;
 };
 
