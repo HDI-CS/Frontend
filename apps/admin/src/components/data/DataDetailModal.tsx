@@ -151,8 +151,6 @@ const DataDetailModal = <TRow, TType extends UserType>({
     type,
     datasetId: Number(dataId),
   });
-
-
   /* ---------- file states ---------- */
 
   // VISUAL
