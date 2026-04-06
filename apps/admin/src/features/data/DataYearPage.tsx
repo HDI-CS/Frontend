@@ -193,10 +193,10 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
         ? mapVisualToUIItem(
             item as ItemByType['VISUAL'],
             idx,
-            item.name ?? '',
-            item.sectorCategory ?? '',
-            item.mainProductCategory ?? '',
-            item.mainProduct ?? ''
+            item.name ?? null,
+            item.sectorCategory ?? null,
+            item.mainProductCategory ?? null,
+            item.mainProduct ?? null
           )
         : mapIndustryToUIItem(
             item as ItemByType['INDUSTRY'],
@@ -338,6 +338,7 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
             </button>
           </div>
         </div>
+
         {/* content */}
         {activeTab === 'grid'
           ? (() => {
@@ -406,7 +407,8 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
                 const rowMeta = getRowMeta(
                   'VISUAL',
                   yearName as Years,
-                  displayRows as WithIndex<VisualRow>[]
+                  displayRows as WithIndex<VisualRow>[],
+                  activeCategory as VisualCategory
                 );
 
                 const fields = buildFieldsFromColumns(
@@ -447,8 +449,6 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
                   WithIndex<IndustrialRow | VisualRow>
                 >[]
               );
-              console.log('rowMeta', rowMeta);
-              console.log('fields', fields);
 
               return (
                 <div className="border border-t-0 border-[#E9E9E7] bg-white p-3">

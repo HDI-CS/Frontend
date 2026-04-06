@@ -24,6 +24,15 @@ export const VisualDataItemSchema = z.object({
   target: z.string().nullable(),
   referenceUrl: z.string().nullable(),
   logoImage: z.string().nullable(),
+
+  title: z.string().nullable(),
+  country: z.string().nullable(),
+  clientName: z.string().nullable(),
+  contentType: z.string().nullable(),
+  visualType: z.string().nullable(),
+  releaseYear: z.string().nullable(),
+
+  designDescription: z.string().nullable(),
 });
 
 export const VisualDatasItemSchema = z.array(VisualDataItemSchema);
@@ -80,6 +89,16 @@ export const CreateVisualDatasetRequestSchema = z.object({
   target: z.string().nullable(),
   referenceUrl: z.string().nullable(),
   originalLogoImage: z.string().nullable(),
+
+  // 2026
+  title: z.string().nullable(),
+  country: z.string().nullable(),
+  clientName: z.string().nullable(),
+  contentType: z.string().nullable(),
+  visualType: z.string().nullable(),
+  designDescription: z.string().nullable(),
+  releaseYear: z.string().nullable(),
+
   visualDataCategory: VisualCategorySchema.nullable(),
 });
 
@@ -105,6 +124,17 @@ export const UpdateVisualDatasetRequestSchema = z
     mainProduct: z.string().nullable(),
     target: z.string().nullable(),
     referenceUrl: z.string().nullable(),
+
+    // 2026
+
+    title: z.string().nullable(),
+    country: z.string().nullable(),
+    clientName: z.string().nullable(),
+    contentType: z.string().nullable(),
+    visualType: z.string().nullable(),
+    designDescription: z.string().nullable(),
+    releaseYear: z.string().nullable(),
+
     originalLogoImage: z.string().nullable(), // 빈 값일 땐 널
     visualDataCategory: VisualCategorySchema.nullable(),
   })
