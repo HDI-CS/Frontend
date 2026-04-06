@@ -7,6 +7,7 @@ import {
 } from '@/src/schemas/visual-data';
 import { useSearchStore } from '@/src/store/searchStore';
 import {
+  ColumnDef,
   GetDetailResponseByType,
   IndustrialRow,
   VisualRow,
@@ -655,6 +656,18 @@ export const INDUSTRY_FIELDS = [
   { label: '제품 카테고리', field: 'productPath' },
   { label: '제품 유형', field: 'productTypeName' },
   { label: '홈페이지', field: 'referenceUrl' },
+
+  // 2026
+  { label: '용도', field: 'usage' },
+  { label: '사운드 출력', field: 'soundOutput' },
+  { label: '노이즈캔슬링', field: 'noiseCancelling' },
+  { label: '코덱', field: 'codec' },
+  { label: '부가기능', field: 'extraFeatures' },
+  { label: '컨트롤', field: 'controlType' },
+  { label: '방수기능', field: 'waterproof' },
+  { label: '최대재생시간', field: 'maxPlayTime' },
+  { label: '충전시간', field: 'chargeTime' },
+  { label: '입출력', field: 'connectivity' },
 ] as const;
 
 // get detail API → UpdateForm 변환 mapper
@@ -687,6 +700,16 @@ export const updateRequestMapper = {
     registeredAt: detail.registeredAt ?? '',
     productPath: detail.productPath ?? '',
     productTypeName: detail.productTypeName ?? '',
+    noiseCancelling: detail.noiseCancelling ?? '',
+    codec: detail.codec ?? '',
+    extraFeatures: detail.extraFeatures ?? '',
+    controlType: detail.controlType ?? '',
+    waterproof: detail.waterproof ?? '',
+    maxPlayTime: detail.maxPlayTime ?? '',
+    chargeTime: detail.chargeTime ?? '',
+    usage: detail.usage ?? '',
+    connectivity: detail.connectivity ?? '',
+
     originalDetailImagePath: null,
     originalFrontImagePath: null,
     originalSideImagePath: null,
@@ -783,4 +806,23 @@ export const mapEvaluationYearsToFoldersForDataPage = (
     createdAt: year.createdAt ?? '',
     lastModifiedAt: year.updatedAt ?? '',
   }));
+};
+
+export const buildFieldsFromColumns = (
+  columns: ColumnDef<WithIndex<VisualRow | IndustrialRow>>[]
+) => {
+  const EXCLUDE_KEYS = [
+    '_no',
+    'detailImagePath',
+    'frontImagePath',
+    'sideImagePath',
+    'side2ImagePath',
+    'side3ImagePath',
+  ];
+  return columns
+    .filter((col) => !EXCLUDE_KEYS.includes(col.key))
+    .map((col) => ({
+      label: typeof col.header === 'string' ? col.header : col.key,
+      field: col.key as keyof GetDetailResponseByType['VISUAL' | 'INDUSTRY'],
+    }));
 };

@@ -17,7 +17,7 @@ export const YearFolderArraySchema = z.array(YearFolderSchema);
 export const VisualDataItemSchema = z.object({
   id: z.number(),
   code: z.string(),
-  name: z.string(),
+  name: z.string().nullable(),
   sectorCategory: z.string().nullable(),
   mainProductCategory: z.string().nullable(),
   mainProduct: z.string().nullable(),
@@ -73,14 +73,14 @@ export const UploadUrlSchema = z.object({
 // 데이터셋 생성 요청 스키마
 export const CreateVisualDatasetRequestSchema = z.object({
   code: z.string(),
-  name: z.string(),
-  sectorCategory: z.string(),
-  mainProductCategory: z.string(),
-  mainProduct: z.string(),
-  target: z.string(),
-  referenceUrl: z.string(),
+  name: z.string().nullable(),
+  sectorCategory: z.string().nullable(),
+  mainProductCategory: z.string().nullable(),
+  mainProduct: z.string().nullable(),
+  target: z.string().nullable(),
+  referenceUrl: z.string().nullable(),
   originalLogoImage: z.string().nullable(),
-  visualDataCategory: VisualCategorySchema,
+  visualDataCategory: VisualCategorySchema.nullable(),
 });
 
 // 데이터셋 생성 응답 스키마
@@ -99,14 +99,14 @@ export const DuplicateDatasetRequestSchema = z.object({
 export const UpdateVisualDatasetRequestSchema = z
   .object({
     code: z.string(),
-    name: z.string(),
-    sectorCategory: z.string(),
-    mainProductCategory: z.string(),
-    mainProduct: z.string(),
-    target: z.string(),
-    referenceUrl: z.string(),
+    name: z.string().nullable(),
+    sectorCategory: z.string().nullable(),
+    mainProductCategory: z.string().nullable(),
+    mainProduct: z.string().nullable(),
+    target: z.string().nullable(),
+    referenceUrl: z.string().nullable(),
     originalLogoImage: z.string().nullable(), // 빈 값일 땐 널
-    visualDataCategory: VisualCategorySchema,
+    visualDataCategory: VisualCategorySchema.nullable(),
   })
   .partial();
 
