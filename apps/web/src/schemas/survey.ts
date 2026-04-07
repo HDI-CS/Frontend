@@ -64,7 +64,7 @@ export const ProductDataSetResponseSchema = z.object({
   detailImagePath: z.string().nullable(),
   frontImagePath: z.string().nullable(),
   sideImagePath: z.string().nullable(),
-  industryCategory: z.string().nullable(),
+  industryDataCategory: z.string().nullable(),
 
   // 2026
   noiseCancelling: z.string().nullable(),
