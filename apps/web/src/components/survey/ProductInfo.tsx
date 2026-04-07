@@ -29,13 +29,14 @@ export default function ProductInfo({
   ): data is BrandDataSetResponse => {
     return type === 'visual';
   };
+  console.log('ProductInfo data:', data);
 
   // 공통 필드
   const id = data.id;
   const name = isProductData(data) ? data.productName : data.name;
   const path = isProductData(data) ? data.productPath : data.sectorCategory;
   const category = isProductData(data)
-    ? data.productTypeName
+    ? data.industryCategory
     : data.visualDataCategory;
   function getFields(type: 'visual' | 'industry', category: string | null) {
     if (!category) return [];
@@ -111,34 +112,21 @@ export default function ProductInfo({
         ) : (
           // Product specific information
           <>
-            <InfoItem label="출시/등록일" value={data.registeredAt || ''} />
-            <InfoItem
-              label="제품규격(사이즈/무게)"
-              value={`${data.size || ''}${data.weight ? `/${data.weight}` : ''}`}
-            />
-            <InfoItem label="소재" value={data.material || ''} />
-            <InfoItem
-              label="참고사이트"
-              value={
-                data.referenceUrl ? (
-                  <a
-                    href={data.referenceUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={clsx(
-                      'inline-block max-w-full truncate',
-                      'text-blue-600 underline',
-                      'hover:text-blue-800',
-                      'transition-colors duration-200'
-                    )}
-                  >
-                    {data.referenceUrl}
-                  </a>
-                ) : (
-                  ''
-                )
-              }
-            />
+            <div className="space-y-4">
+              <InfoItem label="ID" value={data.id} />
+
+              {fields.map((field) => {
+                const value = data[field.key as keyof ProductDataSetResponse];
+
+                return (
+                  <InfoItem
+                    key={field.key}
+                    label={field.label}
+                    value={value ?? ''}
+                  />
+                );
+              })}
+            </div>
           </>
         )}
       </div>

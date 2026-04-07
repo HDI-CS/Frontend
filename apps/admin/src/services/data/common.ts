@@ -85,13 +85,17 @@ export const deleteDataset = async ({
 export const downloadExcel = async ({
   type,
   yearId,
+  category,
 }: {
   type: UserType;
   yearId: number;
+  category?: string;
 }) => {
   return apiClient.get(
     `/api/v1/admin/${type.toLowerCase()}/data/years/${yearId}/datasets/export`,
+
     {
+      params: { category: category ?? 'DEFAULT' },
       responseType: 'blob', // 이건 JSON이 아니라 binary라서 파싱 대상 아님
     }
   );
