@@ -3,7 +3,6 @@ import { YearsSchema } from './survey';
 
 export const VisualCategorySchema = z.enum(['COSMETIC', 'FB', 'POSTER']);
 
-export type VisualCategory = z.infer<typeof VisualCategorySchema>;
 // 연도 스키마
 export const YearFolderSchema = z.object({
   yearId: z.number(),
@@ -194,6 +193,7 @@ export type VisualDataCategoryGroup = z.infer<
 export type VisualDataCategoryGroups = z.infer<
   typeof VisualDataCategoryGroupsSchema
 >;
+export type VisualCategory = z.infer<typeof VisualCategorySchema>;
 
 export type GetVisualDataByKeywordyResponse = z.infer<
   typeof GetVisualDataByKeywordyResponseSchema

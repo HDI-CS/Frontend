@@ -1,3 +1,4 @@
+import { PRODUCT_INFO_CONFIG } from '@/config/productInfoConfig';
 import type {
   BrandDataSetResponse,
   ProductDataSetResponse,
@@ -32,7 +33,28 @@ export default function ProductInfo({
   // 공통 필드
   const id = data.id;
   const name = isProductData(data) ? data.productName : data.name;
-  const category = isProductData(data) ? data.productPath : data.sectorCategory;
+  const path = isProductData(data) ? data.productPath : data.sectorCategory;
+  const category = isProductData(data)
+    ? data.productTypeName
+    : data.visualDataCategory;
+  function getFields(type: 'visual' | 'industry', category: string | null) {
+    if (!category) return [];
+
+    if (type === 'visual') {
+      return (
+        PRODUCT_INFO_CONFIG.visual[
+          category as keyof typeof PRODUCT_INFO_CONFIG.visual
+        ] ?? []
+      );
+    }
+
+    return (
+      PRODUCT_INFO_CONFIG.industry[
+        category as keyof typeof PRODUCT_INFO_CONFIG.industry
+      ] ?? []
+    );
+  }
+  const fields = getFields(type, category);
 
   return (
     <div className={clsx('space-y-6', className)}>
@@ -42,39 +64,49 @@ export default function ProductInfo({
 
       <div className="space-y-6 text-[15px]">
         <InfoItem label="ID" value={id} />
-        <InfoItem label="부문·카테고리" value={category || ''} />
+        <InfoItem label="부문·카테고리" value={path || ''} />
 
         {isBrandData(data) ? (
           // Brand specific information
           <>
-            <InfoItem
-              label="대표 제품 카테고리"
-              value={data.mainProductCategory || ''}
-            />
-            <InfoItem label="대표 제품" value={data.mainProduct || ''} />
-            <InfoItem label="타겟(성별/연령)" value={data.target || ''} />
-            <InfoItem
-              label="홈페이지"
-              value={
-                data.referenceUrl ? (
-                  <a
-                    href={data.referenceUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={clsx(
-                      'inline-block max-w-full truncate',
-                      'text-blue-600 underline',
-                      'hover:text-blue-800',
-                      'transition-colors duration-200'
-                    )}
-                  >
-                    {data.referenceUrl}
-                  </a>
-                ) : (
-                  ''
-                )
-              }
-            />
+            <div className="space-y-4">
+              <InfoItem label="ID" value={data.id} />
+
+              {fields.map((field) => {
+                const value = data[field.key as keyof BrandDataSetResponse];
+
+                // if (field.type === 'link') {
+                //   return (
+                //     <InfoItem
+                //       key={field.key}
+                //       label={field.label}
+                //       value={
+                //         value ? (
+                //           <a
+                //             href={value}
+                //             target="_blank"
+                //             className="text-blue-600 underline"
+                //             rel="noreferrer"
+                //           >
+                //             {value}
+                //           </a>
+                //         ) : (
+                //           ''
+                //         )
+                //       }
+                //     />
+                //   );
+                // }
+
+                return (
+                  <InfoItem
+                    key={field.key}
+                    label={field.label}
+                    value={value ?? ''}
+                  />
+                );
+              })}
+            </div>
           </>
         ) : (
           // Product specific information

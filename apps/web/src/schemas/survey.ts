@@ -115,11 +115,21 @@ export type ProductTextSurveyResponse = z.infer<
 export const BrandDataSetResponseSchema = z.object({
   name: z.string(),
   id: z.string(),
-  sectorCategory: z.string(),
-  mainProductCategory: z.string(),
-  mainProduct: z.string(),
-  target: z.string(),
+  sectorCategory: z.string().nullable(),
+  mainProductCategory: z.string().nullable(),
+  mainProduct: z.string().nullable(),
+  target: z.string().nullable(),
   referenceUrl: z.string().nullable(),
+
+  title: z.string().nullable(),
+  country: z.string().nullable(),
+  clientName: z.string().nullable(),
+  contentType: z.string().nullable(),
+  visualType: z.string().nullable(),
+  releaseYear: z.string().nullable(),
+  designDescription: z.string().nullable(),
+  visualDataCategory: z.string().nullable(),
+
   image: z.string().nullable(),
 });
 

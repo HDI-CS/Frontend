@@ -111,8 +111,8 @@ const getWeightEvaluationCategories = (
   > = {
     visual: [
       {
-        id: 'cosmetics',
-        name: '코스메틱',
+        id: 'poster',
+        name: '포스터',
         weights: {
           aesthetics: 0,
           formative: 0,
@@ -124,20 +124,20 @@ const getWeightEvaluationCategories = (
           purpose: 0,
         },
       },
-      {
-        id: 'fnb',
-        name: 'F&B',
-        weights: {
-          aesthetics: 0,
-          formative: 0,
-          originality: 0,
-          usability: 0,
-          functionality: 0,
-          ethics: 0,
-          economy: 0,
-          purpose: 0,
-        },
-      },
+      // {
+      //   id: 'fnb',
+      //   name: 'F&B',
+      //   weights: {
+      //     aesthetics: 0,
+      //     formative: 0,
+      //     originality: 0,
+      //     usability: 0,
+      //     functionality: 0,
+      //     ethics: 0,
+      //     economy: 0,
+      //     purpose: 0,
+      //   },
+      // },
     ],
     industry: [
       {
@@ -197,6 +197,7 @@ const mapCategoryToApiCategory = (categoryId: string): ApiCategory => {
     vacuum: 'VACUUM_CLEANER',
     airpurifier: 'AIR_PURIFIER',
     hairdryer: 'HAIR_DRYER',
+    poster: 'POSTER',
   };
 
   return categoryMap[categoryId] || 'COSMETIC';
@@ -210,6 +211,7 @@ const mapApiCategoryToCategoryId = (apiCategory: ApiCategory): string => {
     VACUUM_CLEANER: 'vacuum',
     AIR_PURIFIER: 'airpurifier',
     HAIR_DRYER: 'hairdryer',
+    POSTER: 'poster',
   };
 
   return categoryMap[apiCategory] || 'cosmetics';

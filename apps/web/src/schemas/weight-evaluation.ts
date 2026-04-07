@@ -11,7 +11,12 @@ export const WeightEvaluationCategorySchema = z.enum([
   'VACUUM_CLEANER',
   'AIR_PURIFIER',
   'HAIR_DRYER',
+
+  // 2026
+  'POSTER',
 ]);
+export const VisualCategorySchema = z.enum(['COSMETIC', 'FB', 'POSTER']);
+export type VisualCategory = z.infer<typeof VisualCategorySchema>;
 
 // 가중치 평가 요청 스키마
 export const WeightedScoreRequestSchema = z.object({
