@@ -78,7 +78,6 @@ export const ProductDataSetResponseSchema = z.object({
   shoppingUrl: z.string().nullable(),
   connectivity: z.string().nullable(),
   soundOutput: z.string().nullable(),
-
 });
 
 export const ProductSurveyQuestionSchema = z.object({
