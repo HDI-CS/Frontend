@@ -31,18 +31,18 @@ export interface DatasetUIItem {
   mainProduct?: string | null;
 
   // industry
-  productName?: string;
-  companyName?: string;
-  modelName?: string;
+  productName?: string | null;
+  companyName?: string | null;
+  modelName?: string | null;
 }
 
 export const mapVisualToUIItem = (
   item: VisualDataItem,
   index: number,
-  name: string,
-  sectorCategory: string,
-  mainProductCategory: string,
-  mainProduct: string
+  name?: string | null,
+  sectorCategory?: string | null,
+  mainProductCategory?: string | null,
+  mainProduct?: string | null
 ): DatasetUIItem => ({
   ...item,
   _no: index + 1,
@@ -111,7 +111,7 @@ export const mapIndustrialDatasetItem = (
 } => ({
   id: input.id,
   code: input.code ?? '',
-  referenceUrl: input.referenceUrl,
+  referenceUrl: input.referenceUrl ?? '',
 
   // UI에서 당장 필요한 필드만
   productName: input.productName ?? '',
@@ -223,6 +223,16 @@ export type VisualRow = BaseRow & {
   mainProductCategory: string;
   mainProduct: string;
   target: string;
+
+  // 2026
+  title: string;
+  country: string;
+  client: string;
+  contentType: string;
+  visualType: string;
+  designDescription: string;
+  releaseYear: string;
+
   logoImage: string | null;
 };
 
@@ -238,6 +248,20 @@ export type IndustrialRow = BaseRow & {
   registeredAt: string;
   productPath: string;
   productTypeName: string;
+
+  // 2026
+  noiseCancelling: string;
+  codec: string;
+  extraFeatures: string;
+  controlType: string;
+  waterproof: string;
+  maxPlayTime: string;
+  chargeTime: string;
+  usage: string;
+  shoppingUrl: string;
+  connectivity: string;
+  soundOutput: string;
+
   detailImagePath: string;
   frontImagePath: string;
   sideImagePath: string;
@@ -310,4 +334,4 @@ export type DataDetailModalProps =
       /* 공통 props */
     };
 
-export type Years = 2025 | 2026;
+export type Years = '2025' | '2026';

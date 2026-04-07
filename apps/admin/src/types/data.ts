@@ -13,6 +13,15 @@ export type RequestEditDataDto = {
   target: string;
   referenceUrl: string;
   logoImage: File | null;
+
+  // 2026
+  title: string;
+  country: string;
+  clientName: string;
+  contentType: string;
+  visualType: string;
+  designDescription: string;
+  releaseYear: string;
 };
 
 export type ResponseEditDataDto = BaseResponse;

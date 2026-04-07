@@ -111,8 +111,8 @@ const getWeightEvaluationCategories = (
   > = {
     visual: [
       {
-        id: 'cosmetics',
-        name: '코스메틱',
+        id: 'poster',
+        name: '포스터',
         weights: {
           aesthetics: 0,
           formative: 0,
@@ -124,25 +124,67 @@ const getWeightEvaluationCategories = (
           purpose: 0,
         },
       },
-      {
-        id: 'fnb',
-        name: 'F&B',
-        weights: {
-          aesthetics: 0,
-          formative: 0,
-          originality: 0,
-          usability: 0,
-          functionality: 0,
-          ethics: 0,
-          economy: 0,
-          purpose: 0,
-        },
-      },
+      // {
+      //   id: 'fnb',
+      //   name: 'F&B',
+      //   weights: {
+      //     aesthetics: 0,
+      //     formative: 0,
+      //     originality: 0,
+      //     usability: 0,
+      //     functionality: 0,
+      //     ethics: 0,
+      //     economy: 0,
+      //     purpose: 0,
+      //   },
+      // },
     ],
     industry: [
+      // {
+      //   id: 'vacuum',
+      //   name: '핸디스틱청소기',
+      //   weights: {
+      //     aesthetics: 0,
+      //     formative: 0,
+      //     originality: 0,
+      //     usability: 0,
+      //     functionality: 0,
+      //     ethics: 0,
+      //     economy: 0,
+      //     purpose: 0,
+      //   },
+      // },
+      // {
+      //   id: 'airpurifier',
+      //   name: '공기청정기/가습기',
+      //   weights: {
+      //     aesthetics: 0,
+      //     formative: 0,
+      //     originality: 0,
+      //     usability: 0,
+      //     functionality: 0,
+      //     ethics: 0,
+      //     economy: 0,
+      //     purpose: 0,
+      //   },
+      // },
+      // {
+      //   id: 'hairdryer',
+      //   name: '헤어드라이기',
+      //   weights: {
+      //     aesthetics: 0,
+      //     formative: 0,
+      //     originality: 0,
+      //     usability: 0,
+      //     functionality: 0,
+      //     ethics: 0,
+      //     economy: 0,
+      //     purpose: 0,
+      //   },
+      // },
       {
-        id: 'vacuum',
-        name: '핸디스틱청소기',
+        id: 'bluetooth_speaker',
+        name: '블루투스 스피커',
         weights: {
           aesthetics: 0,
           formative: 0,
@@ -155,8 +197,8 @@ const getWeightEvaluationCategories = (
         },
       },
       {
-        id: 'airpurifier',
-        name: '공기청정기/가습기',
+        id: 'headphone',
+        name: '헤드폰',
         weights: {
           aesthetics: 0,
           formative: 0,
@@ -169,8 +211,8 @@ const getWeightEvaluationCategories = (
         },
       },
       {
-        id: 'hairdryer',
-        name: '헤어드라이기',
+        id: 'earphone',
+        name: '이어폰',
         weights: {
           aesthetics: 0,
           formative: 0,
@@ -197,6 +239,10 @@ const mapCategoryToApiCategory = (categoryId: string): ApiCategory => {
     vacuum: 'VACUUM_CLEANER',
     airpurifier: 'AIR_PURIFIER',
     hairdryer: 'HAIR_DRYER',
+    poster: 'POSTER',
+    headphone: 'HEADPHONE',
+    earphone: 'EARPHONE',
+    bluetooth_speaker: 'BLUETOOTH_SPEAKER',
   };
 
   return categoryMap[categoryId] || 'COSMETIC';
@@ -210,6 +256,10 @@ const mapApiCategoryToCategoryId = (apiCategory: ApiCategory): string => {
     VACUUM_CLEANER: 'vacuum',
     AIR_PURIFIER: 'airpurifier',
     HAIR_DRYER: 'hairdryer',
+    POSTER: 'poster',
+    HEADPHONE: 'headphone',
+    EARPHONE: 'earphone',
+    BLUETOOTH_SPEAKER: 'bluetooth_speaker',
   };
 
   return categoryMap[apiCategory] || 'cosmetics';

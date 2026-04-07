@@ -155,10 +155,7 @@ const IndexPage = () => {
     );
   }
 
-  console.log('✅ 데이터 페이지 렌더링 - 사용자 유형:', userType);
-  console.log('📊 데이터 페이지 렌더링 - 연도 ID:', yearId);
-  console.log('📅 데이터 페이지 렌더링 - 연도 이름:', yearName);
-  if (!data) return null;
+  if (!data) return <>data is null</>;
 
   if (!yearName) {
     return <div>연도 정보 로딩중...</div>;

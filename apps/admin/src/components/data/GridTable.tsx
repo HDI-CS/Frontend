@@ -8,7 +8,7 @@ import { ColumnDef, VisualRow, WithIndex } from '@/src/types/data/visual-data';
 import clsx from 'clsx';
 import FieldActionMenu from '../FieldActionMenu';
 import CheckBox from './CheckBox';
-import DataDetailModal from './DataDetailModal';
+import DataDetailModal, { FieldDef } from './DataDetailModal';
 import IdSortMenu from './table/IdSortMenu';
 import Td from './table/Td';
 import Th from './table/Th';
@@ -21,6 +21,8 @@ interface GridTableProps<T extends { id: number }, TType extends UserType> {
   lastIndex: number;
   orderBy: 'ASC' | 'DESC';
   activeCategory: CategoryByType[TType] | null;
+  fields: FieldDef[];
+
   setRowIds: React.Dispatch<React.SetStateAction<number[]>>;
   setSortType: (sortType: SortType) => void;
   setOrderBy: (sort: 'ASC' | 'DESC') => void;
@@ -52,6 +54,7 @@ const GridTable = <T extends { id: number }, TType extends UserType>({
   columns,
   onAddRow,
   orderBy,
+  fields,
   setOrderBy,
   setSortType,
   setRowIds,
@@ -252,6 +255,7 @@ const GridTable = <T extends { id: number }, TType extends UserType>({
                     dataId={dataId}
                     activeCategory={activeCategory as VisualCategory}
                     isEdit={isEdit}
+                    fields={fields}
                     onClose={() => {
                       setIsEdit(false);
                       setDataId(null);
@@ -279,6 +283,7 @@ const GridTable = <T extends { id: number }, TType extends UserType>({
                     dataId={dataId}
                     activeCategory={activeCategory as IndustryCategory}
                     isEdit={isEdit}
+                    fields={fields}
                     onClose={() => {
                       setIsEdit(false);
                       setDataId(null);

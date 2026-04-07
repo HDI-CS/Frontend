@@ -10,7 +10,7 @@ import { truncateText } from '@/src/utils/truncateText';
 import clsx from 'clsx';
 import Image from 'next/image';
 import FieldActionMenu from '../FieldActionMenu';
-import DataDetailModal from './DataDetailModal';
+import DataDetailModal, { FieldDef } from './DataDetailModal';
 
 interface GalleryViewProps<T extends BaseRow> {
   type: UserType;
@@ -19,6 +19,7 @@ interface GalleryViewProps<T extends BaseRow> {
   lastIndex: number;
   orderBy: 'ASC' | 'DESC';
   activeCategory: string;
+  fields: FieldDef[];
 
   setOrderBy: (sort: 'ASC' | 'DESC') => void;
   onAdd: () => void;
@@ -29,10 +30,12 @@ const GalleryView = <T extends BaseRow>({
   rows,
   galleryFields,
   lastIndex,
+  fields,
   activeCategory,
   onAdd,
 }: GalleryViewProps<T>) => {
   // const meta = type === 'VISUAL' ? rowMeta.VISUAL : rowMeta.INDUSTRY;
+  console.log('GalleryView render', { type, rows, galleryFields, fields });
   const {
     dataId,
     activeRowId,
@@ -130,11 +133,6 @@ const GalleryView = <T extends BaseRow>({
                 <InfoRow key={g.label} label={g.label} value={g.value(row)} />
               )
             )}
-
-            {/* 정보 */}
-            {/* <InfoRow label="ID" value={row.code} />
-            <InfoRow label="브랜드명" value={row.name} />
-            <InfoRow label="부문·카테고리" value={row.sectorCategory} /> */}
           </div>
         );
       })}
@@ -173,6 +171,7 @@ const GalleryView = <T extends BaseRow>({
                   type={'VISUAL'}
                   row={visualRow}
                   dataId={dataId}
+                  fields={fields}
                   activeCategory={activeCategory as VisualCategory}
                   isEdit={isEdit}
                   onClose={() => {
@@ -200,6 +199,7 @@ const GalleryView = <T extends BaseRow>({
                   type={'INDUSTRY'}
                   row={industryRow}
                   dataId={dataId}
+                  fields={fields}
                   activeCategory={activeCategory as IndustryCategory}
                   isEdit={isEdit}
                   onClose={() => {
