@@ -9,6 +9,7 @@ import QualitativeEvaluation from '@/components/survey/QualitativeEvaluation';
 import SurveyHeader from '@/components/survey/SurveyHeader';
 import SurveyNavigationWithArrows from '@/components/survey/SurveyNavigationWithArrows';
 import SurveyQuestion from '@/components/survey/SurveyQuestion';
+import { SURVEY_INFO_CONFIG } from '@/config/productInfoConfig';
 import { useSurveyNavigation } from '@/hooks/useSurveyNavigation';
 import {
   useSaveSurveyResponse,
@@ -19,6 +20,7 @@ import {
   type BrandSurveyDetailResponse,
   type BrandSurveyQuestion,
 } from '@/schemas/survey';
+import { VisualCategory } from '@/schemas/weight-evaluation';
 import {
   clearSurveyProgress,
   loadSurveyProgress,
@@ -206,6 +208,11 @@ export default function BrandSurvey({ surveyId, detail }: BrandSurveyProps) {
     qualitativeAnswer;
   const isQualitativeValid = currentQualitativeValue.length >= 300;
 
+  const category = brand?.visualDataCategory;
+  const visualCategory = category as VisualCategory;
+
+  const surveyInfo = SURVEY_INFO_CONFIG.visual[visualCategory] ?? null;
+
   return (
     <div className="mx-auto h-full px-8 py-6">
       <div className="grid h-full grid-cols-1 gap-6 lg:grid-cols-2">
@@ -213,9 +220,11 @@ export default function BrandSurvey({ surveyId, detail }: BrandSurveyProps) {
         <div className="flex h-full flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg">
           <div className="flex-shrink-0 border-b border-gray-200 bg-blue-50 px-6 py-4">
             <h2 className="mb-1 text-lg font-semibold text-gray-800">
-              로고 정보
+              {surveyInfo?.title || '로고 정보'}
             </h2>
-            <p className="text-sm text-gray-600">로고 상세 정보</p>
+            <p className="text-sm text-gray-600">
+              {surveyInfo?.subTitle || '로고 상세 정보'}
+            </p>
           </div>
           <div className="scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 flex-1 space-y-6 overflow-y-auto p-6">
             <ProductInfo type="visual" data={brand!} />
@@ -233,10 +242,11 @@ export default function BrandSurvey({ surveyId, detail }: BrandSurveyProps) {
         <div className="flex h-full flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg">
           <div className="flex-shrink-0 border-b border-gray-200 bg-blue-50 px-6 py-4">
             <h2 className="text-lg font-semibold text-gray-800">
-              로고 평가 설문
+              {surveyInfo?.surveyTitle || '로고 평가 설문'}
             </h2>
             <p className="mt-1 text-sm text-gray-600">
-              로고 디자인에 대한 평가를 진행해주세요
+              {surveyInfo?.surveyDescription ||
+                '로고 디자인에 대한 평가를 진행해주세요'}
             </p>
           </div>
 
