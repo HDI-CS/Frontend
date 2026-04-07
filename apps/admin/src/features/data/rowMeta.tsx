@@ -624,7 +624,7 @@ export const getRowMeta = (
           />
         ),
       },
-         {
+      {
         key: 'side2ImagePath',
         header: <span className="block text-center">서브이미지02</span>,
         thClassName: 'w-[120px]',
@@ -639,7 +639,7 @@ export const getRowMeta = (
           />
         ),
       },
-         {
+      {
         key: 'side3ImagePath',
         header: <span className="block text-center">서브이미지03</span>,
         thClassName: 'w-[120px]',
