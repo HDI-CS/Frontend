@@ -624,6 +624,36 @@ export const getRowMeta = (
           />
         ),
       },
+         {
+        key: 'side2ImagePath',
+        header: <span className="block text-center">서브이미지02</span>,
+        thClassName: 'w-[120px]',
+        className: 'w-[120px] text-center',
+        cell: (row: IndustrialRow) => (
+          <Image
+            src={row.side2ImagePath ? row.side2ImagePath : empty}
+            alt={`${row.modelName} logo`}
+            className="mx-auto h-[44px] w-[44px] rounded object-cover"
+            width={44}
+            height={44}
+          />
+        ),
+      },
+         {
+        key: 'side3ImagePath',
+        header: <span className="block text-center">서브이미지03</span>,
+        thClassName: 'w-[120px]',
+        className: 'w-[120px] text-center',
+        cell: (row: IndustrialRow) => (
+          <Image
+            src={row.side3ImagePath ? row.side3ImagePath : empty}
+            alt={`${row.modelName} logo`}
+            className="mx-auto h-[44px] w-[44px] rounded object-cover"
+            width={44}
+            height={44}
+          />
+        ),
+      },
     ],
 
     galleryFields: [

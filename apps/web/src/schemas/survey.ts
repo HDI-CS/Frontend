@@ -50,13 +50,13 @@ export type SurveyProductApiResponse = z.infer<
 export const ProductDataSetResponseSchema = z.object({
   // 백엔드가 숫자 혹은 문자열을 반환할 수 있어 유연하게 수용 후 문자열로 정규화
   id: z.string(),
-  productName: z.string(),
-  companyName: z.string(),
-  modelName: z.string(),
-  price: z.string(),
-  material: z.string(),
-  size: z.string(),
-  weight: z.string(),
+  productName: z.string().nullable(),
+  companyName: z.string().nullable(),
+  modelName: z.string().nullable(),
+  price: z.string().nullable(),
+  material: z.string().nullable(),
+  size: z.string().nullable(),
+  weight: z.string().nullable(),
   referenceUrl: z.string().nullable(),
   registeredAt: z.string(),
   productPath: z.string().nullable(),
@@ -64,6 +64,21 @@ export const ProductDataSetResponseSchema = z.object({
   detailImagePath: z.string().nullable(),
   frontImagePath: z.string().nullable(),
   sideImagePath: z.string().nullable(),
+  industryCategory: z.string().nullable(),
+
+  // 2026
+  noiseCancelling: z.string().nullable(),
+  codec: z.string().nullable(),
+  extraFeatures: z.string().nullable(),
+  controlType: z.string().nullable(),
+  waterproof: z.string().nullable(),
+  maxPlayTime: z.string().nullable(),
+  chargeTime: z.string().nullable(),
+  usage: z.string().nullable(),
+  shoppingUrl: z.string().nullable(),
+  connectivity: z.string().nullable(),
+  soundOutput: z.string().nullable(),
+
 });
 
 export const ProductSurveyQuestionSchema = z.object({

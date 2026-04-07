@@ -224,7 +224,11 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
     /* 엑셀 다운로드 */
   }
   const handleDownload = async () => {
-    const res = await downloadExcel({ type: type ?? 'VISUAL', yearId });
+    const res = await downloadExcel({
+      type: type ?? 'VISUAL',
+      yearId,
+      category: activeCategory ?? undefined,
+    });
 
     const blob = new Blob([res.data], {
       type: res.headers['content-type'],
