@@ -9,6 +9,7 @@ import QualitativeEvaluation from '@/components/survey/QualitativeEvaluation';
 import SurveyHeader from '@/components/survey/SurveyHeader';
 import SurveyNavigationWithArrows from '@/components/survey/SurveyNavigationWithArrows';
 import SurveyQuestion from '@/components/survey/SurveyQuestion';
+import { INDUSTRY_QUESTION_TYPE_RANGES } from '@/config/surveyTypeMap';
 import { useSurveyNavigation } from '@/hooks/useSurveyNavigation';
 import {
   useSaveSurveyResponse,
@@ -24,6 +25,7 @@ import {
   loadSurveyProgress,
   saveSurveyProgress,
 } from '@/utils/survey';
+import SurveyTypeHeader from './SurveyTypeHeader';
 
 interface ProductSurveyProps {
   surveyId: string;
@@ -213,6 +215,12 @@ export default function ProductSurvey({
       imagePath !== null && imagePath !== undefined
   );
 
+  const getQuestionType = (questionNumber: number) => {
+    return INDUSTRY_QUESTION_TYPE_RANGES.find(
+      (range) => questionNumber >= range.start && questionNumber <= range.end
+    )?.type;
+  };
+
   return (
     <div className="mx-auto h-full px-8 py-6">
       <div className="grid h-full grid-cols-1 gap-6 lg:grid-cols-2">
@@ -269,18 +277,31 @@ export default function ProductSurvey({
                   question.response && question.response > 0
                     ? question.response
                     : answers[qId];
+                const currentType = getQuestionType(parseInt(qIndex));
+                const prevType = index > 0 ? getQuestionType(index) : null;
+                const showHeader = currentType !== prevType;
 
                 return (
-                  <SurveyQuestion
-                    key={qId}
-                    questionId={qId}
-                    questionNumber={qIndex}
-                    question={qText}
-                    value={currentValue}
-                    onChange={(value) => handleAnswerChange(qId, value)}
-                    onSave={handleQuantitativeSave}
-                    isSaving={savingQuestions.has(qId)}
-                  />
+                  <div key={question.surveyId} className="flex flex-col gap-8">
+                    {showHeader && currentType && (
+                      <div className="font-bold">
+                        <SurveyTypeHeader
+                          type={'industry'}
+                          category={currentType}
+                        />
+                      </div>
+                    )}
+                    <SurveyQuestion
+                      key={qId}
+                      questionId={qId}
+                      questionNumber={qIndex}
+                      question={qText}
+                      value={currentValue}
+                      onChange={(value) => handleAnswerChange(qId, value)}
+                      onSave={handleQuantitativeSave}
+                      isSaving={savingQuestions.has(qId)}
+                    />
+                  </div>
                 );
               })}
 
