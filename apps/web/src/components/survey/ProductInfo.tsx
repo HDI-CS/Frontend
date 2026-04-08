@@ -29,12 +29,11 @@ export default function ProductInfo({
   ): data is BrandDataSetResponse => {
     return type === 'visual';
   };
-  console.log('ProductInfo data:', data);
 
   // 공통 필드
-  const id = data.id;
+  // const id = data.id;
   const name = isProductData(data) ? data.productName : data.name;
-  const path = isProductData(data) ? data.productPath : data.sectorCategory;
+  // const path = isProductData(data) ? data.productPath : data.sectorCategory;
   const category = isProductData(data)
     ? data.industryDataCategory
     : data.visualDataCategory;
@@ -64,14 +63,14 @@ export default function ProductInfo({
       </h1>
 
       <div className="space-y-6 text-[15px]">
-        <InfoItem label="ID" value={id} />
-        <InfoItem label="부문·카테고리" value={path || ''} />
+        {/* <InfoItem label="ID" value={id} />
+        <InfoItem label="부문·카테고리" value={path || ''} /> */}
 
         {isBrandData(data) ? (
           // Brand specific information
           <>
             <div className="space-y-4">
-              <InfoItem label="ID" value={data.id} />
+              <InfoItem label="ID" value={data.id} name={data.id} />
 
               {fields.map((field) => {
                 const value = data[field.key as keyof BrandDataSetResponse];
@@ -102,6 +101,7 @@ export default function ProductInfo({
                 return (
                   <InfoItem
                     key={field.key}
+                    name={field.key}
                     label={field.label}
                     value={value ?? ''}
                   />
@@ -113,7 +113,7 @@ export default function ProductInfo({
           // Product specific information
           <>
             <div className="space-y-4">
-              <InfoItem label="ID" value={data.id} />
+              <InfoItem label="ID" value={data.id} name={data.id} />
 
               {fields.map((field) => {
                 const value = data[field.key as keyof ProductDataSetResponse];
@@ -121,6 +121,7 @@ export default function ProductInfo({
                 return (
                   <InfoItem
                     key={field.key}
+                    name={field.key}
                     label={field.label}
                     value={value ?? ''}
                   />
