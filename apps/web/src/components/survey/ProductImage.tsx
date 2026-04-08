@@ -15,12 +15,12 @@ export default function ProductImage({
   imageClassName,
 }: ProductImageProps) {
   return (
-    <div className={clsx('flex gap-4', className)}>
+    <div className={clsx('flex w-full gap-4', className)}>
       {/* Vertical Bar */}
       <div className="w-1 flex-shrink-0 self-stretch rounded-full bg-blue-50"></div>
 
       {/* Image Content */}
-      <div className="flex-1 space-y-3">
+      <div className="px-34 flex-1 space-y-3">
         {/* Product Image */}
         <div
           className={clsx('w-full overflow-hidden rounded-lg', imageClassName)}
