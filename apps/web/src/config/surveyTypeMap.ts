@@ -17,17 +17,17 @@ export const INDUSTRY_QUESTION_TYPE_RANGES = [
 
   { start: 10, end: 16, type: 'CREATIVITY' }, // 혁신성 (독창성)
 
-  { start: 17, end: 23, type: 'USABILITY' }, // 사용성
+  { start: 17, end: 21, type: 'USABILITY' }, // 사용성
 
-  { start: 24, end: 26, type: 'FUNCTIONALITY' }, // 기능성
+  { start: 22, end: 23, type: 'FUNCTIONALITY' }, // 기능성
 
-  { start: 27, end: 30, type: 'ETHICS' }, // 윤리성
+  { start: 24, end: 26, type: 'ETHICS' }, // 윤리성
 
-  { start: 31, end: 33, type: 'ECONOMY' }, // 경제성
+  { start: 27, end: 29, type: 'ECONOMY' }, // 경제성
 
-  { start: 34, end: 36, type: 'PURPOSE' }, // 목적성
+  { start: 30, end: 32, type: 'PURPOSE' }, // 목적성
 
-  { start: 37, end: 41, type: 'OVERALL' }, // 종합평가
+  { start: 33, end: 41, type: 'OVERALL' }, // 종합평가
 ] as const;
 
 export const QUESTION_TYPE_META = {
