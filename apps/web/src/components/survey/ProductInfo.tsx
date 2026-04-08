@@ -29,7 +29,6 @@ export default function ProductInfo({
   ): data is BrandDataSetResponse => {
     return type === 'visual';
   };
-  console.log('ProductInfo data:', data);
 
   // 공통 필드
   // const id = data.id;
@@ -71,7 +70,7 @@ export default function ProductInfo({
           // Brand specific information
           <>
             <div className="space-y-4">
-              <InfoItem label="ID" value={data.id} />
+              <InfoItem label="ID" value={data.id} name={data.id} />
 
               {fields.map((field) => {
                 const value = data[field.key as keyof BrandDataSetResponse];
@@ -102,6 +101,7 @@ export default function ProductInfo({
                 return (
                   <InfoItem
                     key={field.key}
+                    name={field.key}
                     label={field.label}
                     value={value ?? ''}
                   />
@@ -113,7 +113,7 @@ export default function ProductInfo({
           // Product specific information
           <>
             <div className="space-y-4">
-              <InfoItem label="ID" value={data.id} />
+              <InfoItem label="ID" value={data.id} name={data.id} />
 
               {fields.map((field) => {
                 const value = data[field.key as keyof ProductDataSetResponse];
@@ -121,6 +121,7 @@ export default function ProductInfo({
                 return (
                   <InfoItem
                     key={field.key}
+                    name={field.key}
                     label={field.label}
                     value={value ?? ''}
                   />

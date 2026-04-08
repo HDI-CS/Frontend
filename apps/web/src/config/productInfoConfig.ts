@@ -47,7 +47,7 @@ export const PRODUCT_INFO_CONFIG = {
       { label: '내용 유형', key: 'contentType' },
       { label: '시각 유형', key: 'visualType' },
       { label: '디자인 설명', key: 'designDescription' },
-      { label: '홈페이지', key: 'referenceUrl', type: 'link' },
+      { label: '웹사이트', key: 'referenceUrl', type: 'link' },
     ],
 
     LOGO: [
