@@ -10,6 +10,7 @@ import SurveyHeader from '@/components/survey/SurveyHeader';
 import SurveyNavigationWithArrows from '@/components/survey/SurveyNavigationWithArrows';
 import SurveyQuestion from '@/components/survey/SurveyQuestion';
 import { SURVEY_INFO_CONFIG } from '@/config/productInfoConfig';
+import { VIUSAL_QUESTION_TYPE_RANGES } from '@/config/surveyTypeMap';
 import { useSurveyNavigation } from '@/hooks/useSurveyNavigation';
 import {
   useSaveSurveyResponse,
@@ -26,6 +27,7 @@ import {
   loadSurveyProgress,
   saveSurveyProgress,
 } from '@/utils/survey';
+import SurveyTypeHeader from './SurveyTypeHeader';
 
 interface BrandSurveyProps {
   surveyId: string;
@@ -213,6 +215,25 @@ export default function BrandSurvey({ surveyId, detail }: BrandSurveyProps) {
 
   const surveyInfo = SURVEY_INFO_CONFIG.visual[visualCategory] ?? null;
 
+  const getQuestionType = (questionNumber: number) => {
+    return VIUSAL_QUESTION_TYPE_RANGES.find(
+      (range) => questionNumber >= range.start && questionNumber <= range.end
+    )?.type;
+  };
+
+  // 타입별로 질문 그룹핑
+  // const groupedQuestions: Record<QuestionType, QuestionWithNumber[]> = {
+  //   AESTHETIC: [],
+  //   FORM: [],
+  //   CREATIVITY: [],
+  //   USABILITY: [],
+  //   FUNCTIONALITY: [],
+  //   ETHICS: [],
+  //   ECONOMY: [],
+  //   PURPOSE: [],
+  //   OVERALL: [],
+  // };
+
   return (
     <div className="mx-auto h-full px-8 py-6">
       <div className="grid h-full grid-cols-1 gap-6 lg:grid-cols-2">
@@ -264,17 +285,31 @@ export default function BrandSurvey({ surveyId, detail }: BrandSurveyProps) {
                     ? question.response
                     : answers[qId];
 
+                const currentType = getQuestionType(parseInt(qIndex));
+                const prevType = index > 0 ? getQuestionType(index) : null;
+                const showHeader = currentType !== prevType;
+
                 return (
-                  <SurveyQuestion
-                    key={qId}
-                    questionId={qId}
-                    questionNumber={qIndex}
-                    question={qText}
-                    value={currentValue}
-                    onChange={(value) => handleAnswerChange(qId, value)}
-                    onSave={handleQuantitativeSave}
-                    isSaving={savingQuestions.has(qId)}
-                  />
+                  <div key={question.surveyId} className="flex flex-col gap-8">
+                    {showHeader && currentType && (
+                      <div className="font-bold">
+                        <SurveyTypeHeader
+                          type={'visual'}
+                          category={currentType}
+                        />
+                      </div>
+                    )}
+                    <SurveyQuestion
+                      key={qId}
+                      questionId={qId}
+                      questionNumber={qIndex}
+                      question={qText}
+                      value={currentValue}
+                      onChange={(value) => handleAnswerChange(qId, value)}
+                      onSave={handleQuantitativeSave}
+                      isSaving={savingQuestions.has(qId)}
+                    />
+                  </div>
                 );
               })}
 
