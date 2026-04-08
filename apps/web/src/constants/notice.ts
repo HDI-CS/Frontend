@@ -39,8 +39,7 @@ export const PROGRESS_GUIDELINES = {
       },
       {
         number: 5,
-        content:
-          "총 50개 평가가 완료되면 '가중치 평가 설문' 버튼을 클릭하여 가중치 평가를 진행해주세요.",
+        content: '총 50개 평가가 완료되면 ‘가중치 평가 설문’을 진행해 주세요.',
       },
       {
         number: 6,
@@ -77,8 +76,7 @@ export const PROGRESS_GUIDELINES = {
       },
       {
         number: 5,
-        content:
-          "총 50개 평가가 완료되면 '가중치 평가 설문' 버튼을 클릭하여 가중치 평가를 진행해주세요.",
+        content: '총 50개 평가가 완료되면 ‘가중치 평가 설문’을 진행해 주세요.',
       },
       {
         number: 6,
