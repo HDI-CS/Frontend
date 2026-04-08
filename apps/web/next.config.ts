@@ -30,8 +30,8 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'https://api.hdi.ai.kr/:path*',
-        // destination: 'http://localhost:8080/:path*',
+        // destination: 'https://api.hdi.ai.kr/:path*',
+        destination: 'http://localhost:8080/:path*',
       },
       // admin API proxy
       {
