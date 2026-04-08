@@ -1,13 +1,13 @@
 export const VIUSAL_QUESTION_TYPE_RANGES = [
   { start: 1, end: 3, type: 'AESTHETIC' },
   { start: 4, end: 7, type: 'FORM' },
-  { start: 8, end: 10, type: 'CREATIVITY' },
-  { start: 11, end: 13, type: 'USABILITY' },
-  { start: 14, end: 16, type: 'FUNCTIONALITY' },
-  { start: 17, end: 18, type: 'ETHICS' },
-  { start: 19, end: 20, type: 'ECONOMY' },
-  { start: 21, end: 25, type: 'PURPOSE' },
-  { start: 26, end: 26, type: 'OVERALL' },
+  { start: 8, end: 9, type: 'CREATIVITY' },
+  { start: 10, end: 11, type: 'USABILITY' },
+  { start: 12, end: 14, type: 'FUNCTIONALITY' },
+  { start: 15, end: 17, type: 'ETHICS' },
+  { start: 18, end: 19, type: 'ECONOMY' },
+  { start: 20, end: 21, type: 'PURPOSE' },
+  { start: 22, end: 26, type: 'OVERALL' },
 ] as const;
 
 export const INDUSTRY_QUESTION_TYPE_RANGES = [
