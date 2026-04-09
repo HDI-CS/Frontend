@@ -124,7 +124,7 @@ const AllExpertGridTable = ({
                 <div className="flex w-full gap-0.5">
                   <ProgressBar
                     current={row.evaluatedCount}
-                    total={row.totalCount - 1}
+                    total={row.totalCount}
                   />
                 </div>
               </Td>
