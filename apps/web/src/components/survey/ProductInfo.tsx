@@ -10,12 +10,14 @@ interface ProductInfoProps {
   type: 'visual' | 'industry';
   data: ProductDataSetResponse | BrandDataSetResponse;
   className?: string;
+  dataCode: string;
 }
 
 export default function ProductInfo({
   type,
   data,
   className,
+  dataCode,
 }: ProductInfoProps) {
   // 타입별 필드 추출 (타입 가드 활용)
   const isProductData = (
@@ -70,7 +72,7 @@ export default function ProductInfo({
           // Brand specific information
           <>
             <div className="space-y-4">
-              <InfoItem label="ID" value={data.id} name={data.id} />
+              <InfoItem label="Code" value={dataCode} name={data.id} />
 
               {fields.map((field) => {
                 const value = data[field.key as keyof BrandDataSetResponse];
@@ -113,7 +115,7 @@ export default function ProductInfo({
           // Product specific information
           <>
             <div className="space-y-4">
-              <InfoItem label="ID" value={data.id} name={data.id} />
+              <InfoItem label="ID" value={dataCode} name={data.id} />
 
               {fields.map((field) => {
                 const value = data[field.key as keyof ProductDataSetResponse];

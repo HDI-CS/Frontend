@@ -30,11 +30,13 @@ import SurveyTypeHeader from './SurveyTypeHeader';
 interface ProductSurveyProps {
   surveyId: string;
   detail: ProductSurveyDetailResponse;
+  dataCode: string;
 }
 
 export default function ProductSurvey({
   surveyId,
   detail,
+  dataCode,
 }: ProductSurveyProps) {
   const router = useRouter();
   const { type } = useParams();
@@ -233,7 +235,7 @@ export default function ProductSurvey({
             <p className="text-sm text-gray-600">브랜드 및 제품 상세 정보</p>
           </div>
           <div className="scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 flex-1 space-y-6 overflow-y-auto p-6">
-            <ProductInfo type="industry" data={product} />
+            <ProductInfo type="industry" data={product} dataCode={dataCode} />
 
             {/* 제품 이미지들 */}
             {productImages.length > 0 && (
