@@ -67,19 +67,26 @@ export default function SurveyPage() {
     normalizedType === 'INDUSTRY' &&
     'industryDataSetResponse' in detail.result
   ) {
+    const raw = detail.result.productSurveyResponse.dataCode;
+    const code = raw.match(/\d+/)?.[0];
     return (
       <ProductSurvey
         surveyId={surveyId}
         detail={detail as ProductSurveyDetailResponse}
+        dataCode={code ?? '0000'}
       />
     );
   }
 
   if (normalizedType === 'VISUAL' && 'visualDatasetResponse' in detail.result) {
+    const raw = detail.result.brandSurveyResponse.dataCode;
+    const code = raw.match(/\d+/)?.[0];
+
     return (
       <BrandSurvey
         surveyId={surveyId}
         detail={detail as BrandSurveyDetailResponse}
+        dataCode={code ?? '0000'}
       />
     );
   }

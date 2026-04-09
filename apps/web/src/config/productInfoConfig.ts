@@ -62,29 +62,29 @@ export const PRODUCT_INFO_CONFIG = {
   industry: {
     PRODUCT: [
       { label: '제품명', key: 'productName' },
-      { label: '회사명', key: 'companyName' },
+      // { label: '회사명', key: 'companyName' },
       { label: '모델명', key: 'modelName' },
       { label: '가격', key: 'price' },
       { label: '재질', key: 'material' },
       { label: '사이즈', key: 'size' },
-      { label: '홈페이지', key: 'referenceUrl', type: 'link' },
+      { label: '링크', key: 'referenceUrl', type: 'link' },
     ],
 
     HEADPHONE: [
       { label: '제품명', key: 'productName' },
-      { label: '회사명', key: 'companyName' },
+      // { label: '회사명', key: 'companyName' },
       { label: '노이즈 캔슬링', key: 'noiseCancelling' },
       { label: '코덱', key: 'codec' },
       { label: '부가기능', key: 'extraFeatures' },
       { label: '컨트롤 방식', key: 'controlType' },
       { label: '최대 재생시간', key: 'maxPlayTime' },
       { label: '충전 시간', key: 'chargeTime' },
-      { label: '홈페이지', key: 'referenceUrl', type: 'link' },
+      { label: '링크', key: 'referenceUrl', type: 'link' },
     ],
 
     EARPHONE: [
       { label: '제품명', key: 'productName' },
-      { label: '회사명', key: 'companyName' },
+      // { label: '회사명', key: 'companyName' },
       { label: '노이즈 캔슬링', key: 'noiseCancelling' },
       { label: '코덱', key: 'codec' },
       { label: '부가기능', key: 'extraFeatures' },
@@ -92,12 +92,33 @@ export const PRODUCT_INFO_CONFIG = {
       { label: '최대 재생시간', key: 'maxPlayTime' },
       { label: '충전 시간', key: 'chargeTime' },
 
-      { label: '방수 여부', key: 'waterproof' },
+      { label: '방수 기능', key: 'waterproof' },
       { label: '무게', key: 'weight' },
       { label: '가격', key: 'price' },
       { label: '등록일', key: 'registeredAt' },
-      { label: '홈페이지', key: 'referenceUrl', type: 'link' },
-      { label: '쇼핑 URL', key: 'shoppingUrl', type: 'link' },
+      { label: '링크', key: 'referenceUrl', type: 'link' },
+      { label: '쇼핑몰 URL', key: 'shoppingUrl', type: 'link' },
+    ],
+
+    BLUETOOTH_SPEAKER: [
+      { label: '제품명', key: 'productName' },
+      // { label: '회사명', key: 'companyName' },
+      // { label: '노이즈 캔슬링', key: 'noiseCancelling' },
+      { label: '사운드 출력', key: 'soundOupput' },
+
+      { label: '코덱', key: 'codec' },
+      { label: '부가기능', key: 'extraFeatures' },
+      { label: '컨트롤 방식', key: 'controlType' },
+      { label: '최대 재생시간', key: 'maxPlayTime' },
+      { label: '충전 시간', key: 'chargeTime' },
+      { label: '입출력', key: 'connectivity' },
+
+      // { label: '방수 여부', key: 'waterproof' },
+      { label: '무게', key: 'weight' },
+      { label: '가격', key: 'price' },
+      { label: '등록일', key: 'registeredAt' },
+      { label: '링크', key: 'referenceUrl', type: 'link' },
+      { label: '쇼핑몰 URL', key: 'shoppingUrl', type: 'link' },
     ],
   },
 } as const;

@@ -1,8 +1,10 @@
 import { useUpdateOirignalSurvey } from '@/src/hooks/evaluation/useUpdateSurvey';
+import { useEvaluationFolders } from '@/src/hooks/useEvaluationFolders';
 import { UserType } from '@/src/schemas/auth';
 import { Survey } from '@/src/schemas/evaluation';
+import { getFolderNames } from '@/src/utils/getFolderNames';
 import clsx from 'clsx';
-import { useParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import ModalComponent from '../ModalComponent';
@@ -31,7 +33,17 @@ const ShowQuestionModal = ({
   qusetionsData,
   setShowQuestion,
 }: ShowQuestionModalProps) => {
-  // isEdit : 더블 클릭 시 수정
+  const pathname = usePathname();
+  const segments = pathname.split('/').filter(Boolean);
+  const yearId = segments[2];
+  const roundId = segments[3];
+  const { data: folderData } = useEvaluationFolders(type);
+  const folders = folderData?.result
+    ? getFolderNames(folderData.result, Number(yearId), Number(roundId))
+    : null;
+
+  console.log(folders?.yearFolderName);
+  console.log(folders?.roundFolderName);
 
   // activeId : 포커스된 질문
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -165,13 +177,9 @@ const ShowQuestionModal = ({
     );
   };
 
-  // 경로로 '차평가'
-  const params = useParams();
-  const phase = params.phase;
-  const phaseNumber = Number(String(phase).replace('phase', ''));
   return (
     <ModalComponent
-      title={`${phaseNumber}차평가`} // 폴더 이름으로 수정 필요
+      title={`${folders?.yearFolderName}년도 ${folders?.roundFolderName}평가`} // 폴더 이름으로 수정 필요
       subtitle="설문 문항"
       onClose={() => setShowQuestion(false)}
       onSubmit={handleSubmit(onSubmit)}
