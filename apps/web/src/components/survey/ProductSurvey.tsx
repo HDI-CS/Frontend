@@ -36,7 +36,7 @@ interface ProductSurveyProps {
 export default function ProductSurvey({
   surveyId,
   detail,
-  dataCode
+  dataCode,
 }: ProductSurveyProps) {
   const router = useRouter();
   const { type } = useParams();
