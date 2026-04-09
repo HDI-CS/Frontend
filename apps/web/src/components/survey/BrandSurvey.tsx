@@ -32,9 +32,14 @@ import SurveyTypeHeader from './SurveyTypeHeader';
 interface BrandSurveyProps {
   surveyId: string;
   detail: BrandSurveyDetailResponse;
+  dataCode: string;
 }
 
-export default function BrandSurvey({ surveyId, detail }: BrandSurveyProps) {
+export default function BrandSurvey({
+  surveyId,
+  detail,
+  dataCode,
+}: BrandSurveyProps) {
   const router = useRouter();
   const { type } = useParams();
   const surveyType = (type as string).toUpperCase() as UserType;
@@ -248,7 +253,7 @@ export default function BrandSurvey({ surveyId, detail }: BrandSurveyProps) {
             </p>
           </div>
           <div className="scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 flex-1 space-y-6 overflow-y-auto p-6">
-            <ProductInfo type="visual" data={brand!} />
+            <ProductInfo type="visual" data={brand!} dataCode={dataCode} />
 
             {/* 브랜드 이미지 */}
             {brand?.image && (
