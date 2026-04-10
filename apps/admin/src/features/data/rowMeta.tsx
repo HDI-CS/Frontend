@@ -591,6 +591,7 @@ export const getRowMeta = (
             className="mx-auto h-[44px] w-[44px] rounded object-cover"
             width={44}
             height={44}
+            loading="lazy"
           />
         ),
       },
@@ -606,6 +607,7 @@ export const getRowMeta = (
             className="mx-auto h-[44px] w-[44px] rounded object-cover"
             width={44}
             height={44}
+            loading="lazy"
           />
         ),
       },
@@ -621,6 +623,7 @@ export const getRowMeta = (
             className="mx-auto h-[44px] w-[44px] rounded object-cover"
             width={44}
             height={44}
+            loading="lazy"
           />
         ),
       },
@@ -636,6 +639,7 @@ export const getRowMeta = (
             className="mx-auto h-[44px] w-[44px] rounded object-cover"
             width={44}
             height={44}
+            loading="lazy"
           />
         ),
       },
@@ -651,6 +655,7 @@ export const getRowMeta = (
             className="mx-auto h-[44px] w-[44px] rounded object-cover"
             width={44}
             height={44}
+            loading="lazy"
           />
         ),
       },
