@@ -31,7 +31,7 @@ export default function InfoItem({
               href={value}
               target="_blank"
               rel="noopener noreferrer"
-              className="break-all text-blue-600 underline"
+              className="break-all text-blue-400 underline"
             >
               {value}
             </a>
