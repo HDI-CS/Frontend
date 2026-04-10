@@ -176,7 +176,7 @@ const GridTable = <T extends { id: number }, TType extends UserType>({
                       });
                       setActiveRowId(row.id);
                     }}
-                    onDoubleClick={() => {
+                    onClick={() => {
                       setIsEdit(false); //  읽기 모드
                       setDataId(row.id);
                     }}

@@ -94,7 +94,7 @@ export const CreateIndustrialDatasetRequestSchema = z.object({
   material: z.string().nullable(),
   size: z.string().nullable(),
   weight: z.string().nullable(),
-  referenceUrl: z.string().nullable,
+  referenceUrl: z.string().nullable(),
   registeredAt: z.string().nullable(),
   productPath: z.string().nullable(),
   productTypeName: z.string().nullable(),

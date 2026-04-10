@@ -277,7 +277,6 @@ const DataDetailModal = <TRow, TType extends UserType>({
       | keyof UpdateIndustrialDatasetRequest
       | keyof UpdateVisualDatasetRequest
   ) => {
-    console.log('renderField', { label, field, item });
     const value =
       type === 'VISUAL'
         ? (item as UpdateVisualDatasetRequest)[
@@ -648,6 +647,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
                           style={{
                             objectFit: 'contain',
                           }}
+                          loading="lazy"
                         />
                       </div>
                     </label>
@@ -671,6 +671,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
                       src={close}
                       alt="close"
                       className="absolute left-60 top-0 cursor-pointer"
+                      loading="lazy"
                     />
                   )}
                 </LinedField>
