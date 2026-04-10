@@ -258,7 +258,7 @@ export default function BrandSurvey({
             {/* 브랜드 이미지 */}
             {brand?.image && (
               <div className="space-y-4">
-                <ProductImage imagePath={brand?.image} label="로고 이미지" />
+                <ProductImage imagePath={brand?.image} type='VISUAL' label="로고 이미지" />
               </div>
             )}
           </div>

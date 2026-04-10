@@ -208,10 +208,20 @@ export default function ProductSurvey({
   const isQualitativeValid = currentQualitativeValue.length >= 300;
 
   // 제품 이미지들을 배열로 모음 (정면, 측면, 상세 순서)
+  const imageMap = [
+    { key: 'frontImagePath', label: '정면 이미지' },
+    { key: 'sideImagePath', label: '측면 이미지' },
+    { key: 'side2ImagePath', label: '측면 이미지02' },
+    { key: 'side3ImagePath', label: '측면 이미지03' },
+    { key: 'detailImagePath', label: '상세 이미지' },
+  ];
+
   const productImages = [
     product.frontImagePath,
     product.sideImagePath,
     product.detailImagePath,
+    product.side2ImagePath,
+    product.side3ImagePath,
   ].filter(
     (imagePath): imagePath is string =>
       imagePath !== null && imagePath !== undefined
@@ -240,13 +250,15 @@ export default function ProductSurvey({
             {/* 제품 이미지들 */}
             {productImages.length > 0 && (
               <div className="space-y-4">
-                {productImages.map((imagePath, index) => {
-                  const labels = ['정면 이미지', '측면 이미지', '상세 이미지'];
+                {imageMap.map(({ key, label }) => {
+                  const imagePath = product[key as keyof typeof product];
+                  if (!imagePath) return null;
                   return (
                     <ProductImage
-                      key={`product-image-${index}`}
+                      key={key}
+                      type="INDUSTRY"
                       imagePath={imagePath}
-                      label={labels[index]}
+                      label={label}
                     />
                   );
                 })}
