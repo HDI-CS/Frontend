@@ -104,11 +104,9 @@ export const PRODUCT_INFO_CONFIG = {
       { label: '제품명', key: 'productName' },
       // { label: '회사명', key: 'companyName' },
       // { label: '노이즈 캔슬링', key: 'noiseCancelling' },
-      { label: '사운드 출력', key: 'soundOupput' },
-
+      { label: '사운드 출력', key: 'soundOutput' },
       { label: '코덱', key: 'codec' },
       { label: '부가기능', key: 'extraFeatures' },
-      { label: '컨트롤 방식', key: 'controlType' },
       { label: '최대 재생시간', key: 'maxPlayTime' },
       { label: '충전 시간', key: 'chargeTime' },
       { label: '입출력', key: 'connectivity' },
@@ -118,7 +116,6 @@ export const PRODUCT_INFO_CONFIG = {
       { label: '가격', key: 'price' },
       { label: '등록일', key: 'registeredAt' },
       { label: '링크', key: 'referenceUrl', type: 'link' },
-      { label: '쇼핑몰 URL', key: 'shoppingUrl', type: 'link' },
     ],
   },
 } as const;
