@@ -3,6 +3,7 @@ import type {
   BrandDataSetResponse,
   ProductDataSetResponse,
 } from '@/schemas/survey';
+import { formatValue } from '@/utils/formatValue';
 import { clsx } from 'clsx';
 import InfoItem from './InfoItem';
 
@@ -75,30 +76,10 @@ export default function ProductInfo({
               <InfoItem label="Code" value={dataCode} name={data.id} />
 
               {fields.map((field) => {
-                const value = data[field.key as keyof BrandDataSetResponse];
-
-                // if (field.type === 'link') {
-                //   return (
-                //     <InfoItem
-                //       key={field.key}
-                //       label={field.label}
-                //       value={
-                //         value ? (
-                //           <a
-                //             href={value}
-                //             target="_blank"
-                //             className="text-blue-600 underline"
-                //             rel="noreferrer"
-                //           >
-                //             {value}
-                //           </a>
-                //         ) : (
-                //           ''
-                //         )
-                //       }
-                //     />
-                //   );
-                // }
+                const value = formatValue(
+                  field.key,
+                  data[field.key as keyof BrandDataSetResponse]
+                );
 
                 return (
                   <InfoItem
@@ -118,7 +99,10 @@ export default function ProductInfo({
               <InfoItem label="ID" value={dataCode} name={data.id} />
 
               {fields.map((field) => {
-                const value = data[field.key as keyof ProductDataSetResponse];
+                const value = formatValue(
+                  field.key,
+                  data[field.key as keyof ProductDataSetResponse]
+                );
 
                 return (
                   <InfoItem

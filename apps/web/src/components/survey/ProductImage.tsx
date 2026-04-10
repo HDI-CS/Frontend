@@ -1,7 +1,9 @@
+import { UserType } from '@/schemas/auth';
 import { clsx } from 'clsx';
 import Image from 'next/image';
 
 interface ProductImageProps {
+  type: UserType;
   imagePath: string;
   label?: string;
   className?: string;
@@ -9,6 +11,7 @@ interface ProductImageProps {
 }
 
 export default function ProductImage({
+  type,
   imagePath,
   label,
   className,
@@ -20,7 +23,7 @@ export default function ProductImage({
       <div className="w-1 flex-shrink-0 self-stretch rounded-full bg-blue-50"></div>
 
       {/* Image Content */}
-      <div className="px-34 flex-1 space-y-3">
+      <div className={clsx('flex-1 space-y-3', type == 'VISUAL' && 'px-34')}>
         {/* Product Image */}
         <div
           className={clsx('w-full overflow-hidden rounded-lg', imageClassName)}

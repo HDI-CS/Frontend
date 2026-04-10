@@ -346,8 +346,8 @@ export default function QualitativeEvaluation({
             앞서 평가한 내용에 대한 전반적인 이유를 구체적으로 작성해 주세요.
           </p>
           <p className="text-xs text-gray-500">
-            (디자인 8대요소 - 심미성, 조형성, 독창성, 사용성, 기능성, 윤리성,
-            경제성, 목적성을 중심으로 300자 이상)
+            (디자인 8대요소 - 조형성, 독창성, 사용성, 기능성, 윤리성, 경제성,
+            목적성을 중심으로 300자 이상)
           </p>
         </section>
 
