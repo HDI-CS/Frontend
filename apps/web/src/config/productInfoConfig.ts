@@ -90,7 +90,7 @@ export const PRODUCT_INFO_CONFIG = {
       { label: '부가기능', key: 'extraFeatures' },
       { label: '컨트롤 방식', key: 'controlType' },
       { label: '최대 재생시간', key: 'maxPlayTime' },
-      // { label: '충전 시간', key: 'chargeTime' },
+      { label: '충전 시간', key: 'chargeTime' },
 
       { label: '방수 기능', key: 'waterproof' },
       { label: '무게', key: 'weight' },

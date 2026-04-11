@@ -145,6 +145,8 @@ const DataDetailModal = <TRow, TType extends UserType>({
   }, []);
   const { year } = useParams<{ year: string }>();
   const yearId = Number(year);
+  /* ---------- upload loading states ---------- */
+  // const [isUploading, setIsUploading] = useState(false);
 
   /* ---------- data ---------- */
   const { data, isError } = useDataByDatasetId({
@@ -447,7 +449,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
         },
         {
           onSuccess: () => {
-            onClose();
+            // onClose();
           },
         }
       );

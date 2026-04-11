@@ -197,7 +197,7 @@ export const downloadImageZip = async (
     params,
     {
       responseType: 'blob',
-      timeout: 300000, // ✅ 120초
+      timeout: 300000, //  120초
     }
   );
   return response.data;
