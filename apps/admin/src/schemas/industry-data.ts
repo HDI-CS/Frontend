@@ -9,6 +9,14 @@ export const IndustryCategorySchema = z.enum([
   'BLUETOOTH_SPEAKER',
 ]);
 
+export const IndustryImageTypeSchema = z.enum([
+  'originalDetailImagePath',
+  'originalFrontImagePath',
+  'originalSideImagePath',
+  'originalSide2ImagePath',
+  'originalSide3ImagePath',
+]);
+
 export type IndustryCategory = z.infer<typeof IndustryCategorySchema>;
 
 // 산디 데이터 셋 기본 스키마
@@ -178,7 +186,7 @@ export const UpdateIndustrialDatasetRequestSchema = z
   .partial();
 
 // 타입 추출
-
+export type IndustryImageType = z.infer<typeof IndustryImageTypeSchema>;
 export type IndustrialDataItem = z.infer<typeof IndustrialDataItemSchema>;
 export type IndustrialDataItems = z.infer<typeof IndustrialDatasItemSchema>;
 export type IndustrialDataCategoryGroup = z.infer<

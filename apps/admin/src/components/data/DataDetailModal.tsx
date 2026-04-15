@@ -13,6 +13,7 @@ import { UserType } from '@/src/schemas/auth';
 import {
   CreateIndustrialDatasetRequest,
   IndustryCategory,
+  IndustryImageType,
   UpdateIndustrialDatasetRequest,
 } from '@/src/schemas/industry-data';
 import {
@@ -156,21 +157,25 @@ const DataDetailModal = <TRow, TType extends UserType>({
   /* ---------- file states ---------- */
 
   // VISUAL
-  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoFile, setLogoFile] = useState<File | null>(
+    data?.result && 'originalLogoImage' in data.result ? null : empty
+  );
 
   // INDUSTRY
   const [detailFile, setDetailFile] = useState<File | null | undefined>(
-    undefined
+    data?.result && 'originalDetailImagePath' in data.result ? null : empty
   );
   const [frontFile, setFrontFile] = useState<File | null | undefined>(
-    undefined
+    data?.result && 'originalFrontImagePath' in data.result ? null : empty
   );
-  const [sideFile, setSideFile] = useState<File | null | undefined>(undefined);
+  const [sideFile, setSideFile] = useState<File | null | undefined>(
+    data?.result && 'originalSideImagePath' in data.result ? null : empty
+  );
   const [side2File, setSide2File] = useState<File | null | undefined>(
-    undefined
+    data?.result && 'originalSide2ImagePath' in data.result ? null : empty
   );
   const [side3File, setSide3File] = useState<File | null | undefined>(
-    undefined
+    data?.result && 'originalSide3ImagePath' in data.result ? null : empty
   );
 
   /* ---------- mutation ---------- */
@@ -230,12 +235,82 @@ const DataDetailModal = <TRow, TType extends UserType>({
   ] as const;
 
   /* ---------- image src ---------- */
-  const imageSrc = useMemo(() => {
-    if (previewUrl) return previewUrl;
+  // const imageSrc = (field: IndustryImageType) =>
+  //   useMemo(() => {
+  //     // 여기다가 field값을 넣을 수 있는 방안을 찾아야
+  //     // getImageSrcByType(type, data?.result, field) 이렇게 사용할 수 있음
+  //     if (previewUrl) return previewUrl; // 새로운 이미지의 preview
+  //     if (!logoFile && type === 'VISUAL') return empty; // 새로운 이미지도 없고, 기존 데이터의 이미지도 없을 때 빈 이미지
+  //     if (type === 'VISUAL' && logoFile) {
+  //       const src = getImageSrcByType(type, data?.result); // 기존 데이터의 이미지
+  //       return src ?? empty;
+  //     }
+  //     if (type === 'INDUSTRY') {
+  //       const src = getImageSrcByType(type, data?.result, field); // 기존 데이터의 이미지
+  //       return src ?? empty;
+  //     }
+  //   }, [
+  //     type,
+  //     data,
+  //     previewUrl,
+  //     logoFile,
+  //     field,
+  //     detailFile,
+  //     frontFile,
+  //     sideFile,
+  //     side2File,
+  //     side3File,
+  //   ]);
 
-    const src = getImageSrcByType(type, data?.result);
-    return src ?? empty;
-  }, [type, data, previewUrl]);
+  const getImageSrc = (field?: IndustryImageType) => {
+    // preview 우선
+    if (type === 'VISUAL') {
+      if (previewUrl) return previewUrl;
+      if (!logoFile) return empty;
+      return getImageSrcByType(type, data?.result) ?? empty;
+    }
+
+    // INDUSTRY
+    switch (field) {
+      case 'originalDetailImagePath':
+        if (detailPreview) return detailPreview;
+        if (!detailFile) return empty;
+        return (
+          detailPreview ?? getImageSrcByType(type, data?.result, field) ?? empty
+        );
+
+      case 'originalFrontImagePath':
+        if (frontPreview) return frontPreview;
+        if (!frontFile) return empty;
+        return (
+          frontPreview ?? getImageSrcByType(type, data?.result, field) ?? empty
+        );
+
+      case 'originalSideImagePath':
+        if (sidePreview) return sidePreview;
+        if (!sideFile) return empty;
+        return (
+          sidePreview ?? getImageSrcByType(type, data?.result, field) ?? empty
+        );
+
+      case 'originalSide2ImagePath':
+        if (side2Preview) return side2Preview;
+        if (!side2File) return empty;
+        return (
+          side2Preview ?? getImageSrcByType(type, data?.result, field) ?? empty
+        );
+
+      case 'originalSide3ImagePath':
+        if (side3Preview) return side3Preview;
+        if (!side3File) return empty;
+        return (
+          side3Preview ?? getImageSrcByType(type, data?.result, field) ?? empty
+        );
+
+      default:
+        return empty;
+    }
+  };
 
   const item = useMemo(() => {
     if (!data?.result) {
@@ -449,7 +524,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
         },
         {
           onSuccess: () => {
-            // onClose();
+            onClose();
           },
         }
       );
@@ -543,6 +618,10 @@ const DataDetailModal = <TRow, TType extends UserType>({
                   disabled={!isEdit}
                   onFileDrop={(file) => {
                     setLogoFile(file);
+                    console.log(
+                      'filefilefilefilefilefilefilefilefilefilefilefile',
+                      file
+                    );
                     setPreviewUrl(URL.createObjectURL(file));
                     setValue('originalLogoImage', file.name, {
                       shouldDirty: true,
@@ -559,7 +638,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
                   >
                     <div className="flex flex-col justify-center gap-10">
                       <Image
-                        src={imageSrc}
+                        src={getImageSrc()}
                         alt="logo"
                         width={160}
                         height={160}
@@ -581,10 +660,10 @@ const DataDetailModal = <TRow, TType extends UserType>({
                     setLogoFile(null);
 
                     setPreviewUrl(null);
-
                     // 2. 파일 state 제거
-
-                    console.log();
+                    setValue('originalLogoImage', null, {
+                      shouldDirty: true,
+                    });
                   }}
                   src={close}
                   alt="close"
@@ -597,7 +676,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
           {/* ---------- INDUSTRY images (3 li, no nesting) ---------- */}
           {type === 'INDUSTRY' &&
             INDUSTRY_IMAGE_FIELDS.map(
-              ({ label, field, file, setter, setPreview, preview }) => (
+              ({ label, field, setter, setPreview }) => (
                 <LinedField
                   key={field}
                   label={label}
@@ -637,11 +716,12 @@ const DataDetailModal = <TRow, TType extends UserType>({
                       <div className="w-100 h-120 relative flex items-start">
                         <Image
                           src={
-                            preview ??
-                            (isEdit && file === null
-                              ? empty
-                              : (getImageSrcByType(type, data?.result, field) ??
-                                empty))
+                            // preview ??
+                            // (isEdit && file === null
+                            //   ? empty
+                            //   : (getImageSrcByType(type, data?.result, field) ??
+                            //     empty))
+                            getImageSrc(field)
                           }
                           fill
                           alt={label}
@@ -665,6 +745,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
                         // 2. 파일 state 제거
                         setter(null);
 
+                        console.log('field', field);
                         // 3. form 값 null 처리 + dirty
                         setValue(field, null, {
                           shouldDirty: true,

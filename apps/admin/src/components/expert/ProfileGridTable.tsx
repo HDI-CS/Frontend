@@ -176,6 +176,7 @@ const ProfileGridTable = () => {
       expertise: data.expertise ?? selectedExpertData?.expertise,
       company: data.company ?? selectedExpertData?.company,
       note: data.note ?? selectedExpertData?.note,
+      password: data.password ?? selectedExpertData?.password,
     };
 
     //수정 요청 api

@@ -58,6 +58,7 @@ export const UpdateExpertMemberSchema = z.object({
   phoneNumber: z.string(),
   gender: z.string(),
   age: z.string(),
+  password: z.string(),
 
   career: z.string(), // 경력
   academic: z.string(), // 학계
