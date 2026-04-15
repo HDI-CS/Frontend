@@ -97,7 +97,6 @@ export const CATEGORY_FIELD_CONFIG = {
       { label: '최대 재생시간', key: 'maxPlayTime' },
       { label: '충전 시간', key: 'chargeTime' },
       { label: '입출력', key: 'connectivity' },
-
     ],
   },
 } as const;

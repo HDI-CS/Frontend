@@ -65,6 +65,7 @@ export default function BrandSurvey({
   const questions: BrandSurveyQuestion[] =
     detail.result.brandSurveyResponse?.response ?? [];
   const textSurveyId = detail.result.brandSurveyResponse.textResponse.surveyId;
+  const isSubmitted = detail.result.brandSurveyResponse.isSubmitted;
 
   // 서버에서 받아온 데이터를 클라이언트 상태에 반영
   useEffect(() => {
@@ -185,7 +186,7 @@ export default function BrandSurvey({
       // 설문 제출 API 호출
       await submitSurveyMutation.mutateAsync({
         type: surveyType,
-        responseId: Number(surveyId),
+        dataId: Number(surveyId),
       });
 
       // 설문 진행 상태 저장
@@ -338,6 +339,7 @@ export default function BrandSurvey({
             <SurveyNavigationWithArrows
               onComplete={handleComplete}
               canComplete={isAllAnswered && isQualitativeValid}
+              isSubmitted={isSubmitted}
               onPrevious={goToPrevious}
               onNext={goToNext}
               canGoPrevious={canGoPrevious}

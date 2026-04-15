@@ -39,7 +39,7 @@ export default function InboxPage() {
   const { data: weightedScoresData, isFetching: isWeightedScoresFetching } =
     useWeightedScores(userType ?? 'VISUAL');
 
-    // 정성 평가 로컬스토리지 응답 데이터 제거
+  // 정성 평가 로컬스토리지 응답 데이터 제거
   useEffect(() => {
     clearSurveyProgressStorage();
   }, []);
@@ -262,12 +262,14 @@ export default function InboxPage() {
     (survey) => survey.responseStatus === 'DONE'
   ).length;
   const totalSurveysCount = surveys.length;
+
+  // ****** 해당 평가마다 카테고리 수정 필요 ****** //
   const weightEvaluationCategoriesByType: Record<
     string,
     Array<WeightedScoreResponse['category']>
   > = {
-    INDUSTRY: ['VACUUM_CLEANER', 'AIR_PURIFIER', 'HAIR_DRYER'],
-    VISUAL: ['COSMETIC', 'FB'],
+    INDUSTRY: ['HEADPHONE', 'EARPHONE', 'BLUETOOTH_SPEAKER'],
+    VISUAL: ['POSTER'],
   };
   const normalizedUserType = userType?.toUpperCase() ?? '';
   const requiredWeightCategories =
@@ -316,7 +318,7 @@ export default function InboxPage() {
       categoryStatusMap[score.category] = 'IN_PROGRESS';
     }
   });
-
+  console.log(categoryStatusMap);
   const categoryStatuses = Object.values(categoryStatusMap);
   const hasAnyWeightInput = categoryStatuses.some(
     (status) => status !== 'NOT_STARTED'
@@ -324,6 +326,7 @@ export default function InboxPage() {
   const isWeightEvaluationCompleted =
     categoryStatuses.length > 0 &&
     categoryStatuses.every((status) => status === 'DONE');
+
   const weightEvaluationStatus: SurveyProductResponseStatus =
     isWeightEvaluationCompleted
       ? 'DONE'
@@ -336,7 +339,7 @@ export default function InboxPage() {
   const isStatusLoading =
     isMeFetching || isSurveyFetching || isWeightedScoresFetching;
   const headerStatus = (() => {
-    if (surveyDone && weightEvaluationStatus === 'DONE') {
+    if (weightEvaluationStatus === 'DONE') {
       return {
         wrapper: 'bg-green-50',
         dot: 'bg-green-500',
@@ -456,7 +459,7 @@ export default function InboxPage() {
                 가중치 평가 설문
               </span>
             ) : (
-              <span className="text-sm font-medium text-gray-500">
+              <span className="px-4 text-sm font-medium text-gray-500">
                 다른 설문을 모두 완료하면 진행할 수 있어요.
               </span>
             )}

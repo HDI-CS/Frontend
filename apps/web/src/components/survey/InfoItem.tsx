@@ -14,7 +14,6 @@ export default function InfoItem({
   className,
 }: InfoItemProps) {
   const isLink = name === 'referenceUrl' && typeof value === 'string';
-  console.log(label);
 
   return (
     <div className={clsx('flex min-w-0 gap-3', className)}>

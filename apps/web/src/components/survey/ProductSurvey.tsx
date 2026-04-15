@@ -64,6 +64,7 @@ export default function ProductSurvey({
     detail.result.productSurveyResponse?.response ?? [];
   const textSurveyId =
     detail.result.productSurveyResponse.textResponse?.surveyId;
+  const isSubmitted = detail.result.productSurveyResponse.isSubmitted;
 
   // 서버에서 받아온 데이터를 클라이언트 상태에 반영
   useEffect(() => {
@@ -171,13 +172,13 @@ export default function ProductSurvey({
   };
 
   const handleComplete = async () => {
-    console.log('제품 설문 평가완료:', { answers, qualitativeAnswer });
+    // console.log('제품 설문 평가완료:', { answers, qualitativeAnswer });
 
     try {
       // 설문 제출 API 호출
       await submitSurveyMutation.mutateAsync({
         type: surveyType,
-        responseId: Number(surveyId),
+        dataId: Number(surveyId),
       });
 
       // 설문 진행 상태 저장
@@ -335,6 +336,7 @@ export default function ProductSurvey({
             <SurveyNavigationWithArrows
               onComplete={handleComplete}
               canComplete={isAllAnswered && isQualitativeValid}
+              isSubmitted={isSubmitted}
               onPrevious={goToPrevious}
               onNext={goToNext}
               canGoPrevious={canGoPrevious}

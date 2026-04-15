@@ -40,7 +40,7 @@ export default function ProductInfo({
   const category = isProductData(data)
     ? data.industryDataCategory
     : data.visualDataCategory;
-    
+
   function getFields(type: 'visual' | 'industry', category: string | null) {
     if (!category) return [];
 

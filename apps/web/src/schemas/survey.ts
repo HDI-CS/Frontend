@@ -102,6 +102,7 @@ export const ProductSurveyDataSchema = z.object({
   industryDataSetResponse: ProductDataSetResponseSchema,
   productSurveyResponse: z.object({
     dataCode: z.string(),
+    isSubmitted: z.boolean(),
     response: z.array(ProductSurveyQuestionSchema),
     textResponse: ProductTextSurveyResponseSchema.nullable(),
   }),
@@ -168,6 +169,7 @@ export const BrandSurveyDataSchema = z.object({
   visualDatasetResponse: BrandDataSetResponseSchema.optional(), // API 응답과 일치하도록 필드명 수정
   brandSurveyResponse: z.object({
     dataCode: z.string(),
+    isSubmitted: z.boolean(),
     response: z.array(BrandSurveyQuestionSchema),
     textResponse: BrandTextSurveyResponseSchema,
   }),
