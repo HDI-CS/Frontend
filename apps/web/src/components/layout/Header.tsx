@@ -16,8 +16,8 @@ export default function Header() {
   const { data: meData, isLoading, error } = useMe(!logoutMutation.isPending);
 
   // React Query 캐시에서 사용자 정보 가져오기 (클라이언트 쿠키 의존성 제거)
-  const isLoggedIn = !isLoading && !error && !!meData?.data;
-  const user = meData?.data || null;
+  const isLoggedIn = !isLoading && !error && !!meData?.result;
+  const user = meData?.result || null;
 
   const handleLogout = () => {
     logoutMutation.mutate();

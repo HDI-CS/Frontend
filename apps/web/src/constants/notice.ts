@@ -10,7 +10,7 @@ interface ProgressStep {
 }
 
 export const PROGRESS_GUIDELINES = {
-  brand: {
+  visual: {
     TITLE: '진행 가이드라인',
     STEPS: [
       {
@@ -22,14 +22,14 @@ export const PROGRESS_GUIDELINES = {
         content:
           '왼쪽의 디자인 세트를 확인하고, 오른쪽의 디자인 평가 설문을 진행해주세요.',
         note: [
-          '*필수 사항: 평가 전 웹사이트 링크를 확인하여 브랜드의 분위기를 파악해주세요.',
+          '*필수 사항: 평가 전 웹사이트 링크를 확인하여 평가 대상의 분위기를 파악해주세요.',
           '*진행 중인 평가는 문항별로 자동 저장되며, 원하는 시점에 이어서 진행할 수 있습니다.',
         ],
       },
       {
         number: 3,
         content:
-          '누락된 평가 항목이 없는지 확인한 후 ‘전체 평가 제출’ 버튼을 클릭하여 제출해주세요.',
+          '누락된 평가 항목이 없는지 확인한 후 ‘가중치 평가 설문 버튼을 클릭하여 제출해주세요.',
       },
       {
         number: 4,
@@ -39,8 +39,7 @@ export const PROGRESS_GUIDELINES = {
       },
       {
         number: 5,
-        content:
-          "총 50개 평가가 완료되면 '전체 평가 제출' 버튼을 클릭하여 가중치 평가를 진행해주세요.",
+        content: '총 50개 평가가 완료되면 ‘가중치 평가 설문’을 진행해 주세요.',
       },
       {
         number: 6,
@@ -48,7 +47,7 @@ export const PROGRESS_GUIDELINES = {
       },
     ] as ProgressStep[],
   },
-  product: {
+  industry: {
     TITLE: '진행 가이드라인',
     STEPS: [
       {
@@ -77,8 +76,7 @@ export const PROGRESS_GUIDELINES = {
       },
       {
         number: 5,
-        content:
-          "총 50개 평가가 완료되면 '전체 평가 제출' 버튼을 클릭하여 가중치 평가를 진행해주세요.",
+        content: '총 50개 평가가 완료되면 ‘가중치 평가 설문’을 진행해 주세요.',
       },
       {
         number: 6,
@@ -103,8 +101,8 @@ interface ContentItem {
 }
 
 export const SURVEY_INTRODUCTION = {
-  brand: {
-    TITLE: '로고 디자인 해석·평가 AI 개발을 위한 설문지',
+  visual: {
+    TITLE: '포스터 디자인 해석·평가 AI 개발을 위한 설문지',
     CONTENT: [
       {
         type: 'rich',
@@ -121,7 +119,7 @@ export const SURVEY_INTRODUCTION = {
       {
         type: 'text',
         content:
-          '참여자는 제시된 로고 디자인을 평가하게 되며, 그 결과는 연구 데이터베이스에 축적되어 AI 모델이 디자인을 해석하고 분석하는 방식을 정교화하는 데 활용됩니다.',
+          '참여자는 제시된 포스터 디자인을 평가하게 되며, 그 결과는 연구 데이터베이스에 축적되어 AI 모델이 디자인을 해석하고 분석하는 방식을 정교화하는 데 활용됩니다.',
       },
       {
         type: 'text',
@@ -144,7 +142,7 @@ export const SURVEY_INTRODUCTION = {
       CONTACT_EMAIL: '문의 메일: hdilab01@gmail.com',
     },
   },
-  product: {
+  industry: {
     TITLE: '제품 디자인 해석·평가 AI 개발을 위한 설문지',
     CONTENT: [
       {
@@ -189,12 +187,12 @@ export const SURVEY_INTRODUCTION = {
 
 // 비상 연락망 상수
 export const EMERGENCY_CONTACT = {
-  brand: {
+  visual: {
     TITLE: '비상 연락망',
     EMAIL: 'hdilab01@gmail.com',
     EMAIL_LABEL: '비상연락망:',
   },
-  product: {
+  industry: {
     TITLE: '비상 연락망',
     EMAIL: 'hdilab01@gmail.com',
     EMAIL_LABEL: '비상연락망:',

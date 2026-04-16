@@ -1,4 +1,7 @@
 import type { NextConfig } from 'next';
+const ADMIN_APP_URL = process.env.ADMIN_APP_URL;
+
+console.log('ADMIN_APP_URL=', process.env.ADMIN_APP_URL);
 
 const nextConfig: NextConfig = {
   typescript: {
@@ -20,10 +23,28 @@ const nextConfig: NextConfig = {
   },
   // 개발 환경에서 API 프록시 설정 - 크로스 오리진 쿠키 문제 해결
   async rewrites() {
+    if (!ADMIN_APP_URL) {
+      console.warn('⚠️ ADMIN_APP_URL is not set');
+      return [];
+    }
     return [
       {
         source: '/api/:path*',
         destination: 'https://api.hdi.ai.kr/:path*',
+        // destination: 'http://localhost:8080/:path*',
+      },
+      // admin API proxy
+      {
+        source: '/admin/api/:path*',
+        destination: 'https://api.hdi.ai.kr/:path*',
+      },
+      {
+        source: '/admin',
+        destination: `${ADMIN_APP_URL}/admin`, // basePath 고려
+      },
+      {
+        source: '/admin/:path*',
+        destination: `${ADMIN_APP_URL}/admin/:path*`,
       },
     ];
   },
@@ -34,5 +55,4 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
 };
-
 export default nextConfig;

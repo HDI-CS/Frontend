@@ -2,25 +2,26 @@ import clsx from 'clsx';
 import Image from 'next/image';
 
 import { PROGRESS_GUIDELINES } from '@/constants/notice';
+import { UserTypeLower } from '@/schemas/auth';
 import { HDILabBrandOpenChatQR, HDILabProductOpenChatQR } from '@hdi/ui';
 
 interface ProgressGuidelinesProps {
   className?: string;
-  type?: 'brand' | 'product';
+  type?: UserTypeLower;
 }
 
 export default function ProgressGuidelines({
   className = '',
-  type = 'brand',
+  type = 'visual',
 }: ProgressGuidelinesProps) {
   const { TITLE, STEPS } = PROGRESS_GUIDELINES[type];
 
   // 타입별 QR 코드 이미지 설정
   const getQRCodeImage = () => {
     switch (type) {
-      case 'brand':
+      case 'visual':
         return HDILabBrandOpenChatQR;
-      case 'product':
+      case 'industry':
         return HDILabProductOpenChatQR;
       default:
         return HDILabBrandOpenChatQR;
@@ -40,7 +41,7 @@ export default function ProgressGuidelines({
           <div className="relative h-full w-full rounded-lg bg-white p-1 shadow-sm">
             <Image
               src={getQRCodeImage()}
-              alt={`${type === 'brand' ? '브랜드' : '제품'} 설문 카카오톡 오픈채팅 QR`}
+              alt={`${type === 'visual' ? '브랜드' : '제품'} 설문 카카오톡 오픈채팅 QR`}
               fill
               sizes="(max-width: 640px) 48px, (max-width: 1024px) 64px, 64px"
               priority

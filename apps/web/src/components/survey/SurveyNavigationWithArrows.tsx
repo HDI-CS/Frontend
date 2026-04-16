@@ -6,6 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 interface SurveyNavigationWithArrowsProps {
   onComplete?: () => void;
   canComplete?: boolean;
+  isSubmitted?: boolean;
   onPrevious?: () => void;
   onNext?: () => void;
   canGoPrevious?: boolean;
@@ -18,6 +19,7 @@ interface SurveyNavigationWithArrowsProps {
 export default function SurveyNavigationWithArrows({
   onComplete,
   canComplete = false,
+  isSubmitted = false,
   onPrevious,
   onNext,
   canGoPrevious = false,
@@ -92,8 +94,8 @@ export default function SurveyNavigationWithArrows({
             className={clsx(
               'w-full whitespace-nowrap rounded-xl px-4 py-3 text-sm font-medium shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:w-36 sm:px-4 lg:w-40 lg:px-5 xl:w-44 xl:px-6',
               {
-                'bg-blue-600 text-white hover:bg-blue-700': canComplete,
-                'cursor-not-allowed bg-gray-300 text-gray-500': !canComplete,
+                'bg-blue-600 text-white hover:bg-blue-700': !isSubmitted,
+                'cursor-not-allowed bg-gray-300 text-gray-500': isSubmitted,
               }
             )}
           >

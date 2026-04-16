@@ -1,38 +1,64 @@
+import { PRODUCT_INFO_CONFIG } from '@/config/productInfoConfig';
 import type {
   BrandDataSetResponse,
   ProductDataSetResponse,
 } from '@/schemas/survey';
+import { formatValue } from '@/utils/formatValue';
 import { clsx } from 'clsx';
 import InfoItem from './InfoItem';
 
 interface ProductInfoProps {
-  type: 'brand' | 'product';
+  type: 'visual' | 'industry';
   data: ProductDataSetResponse | BrandDataSetResponse;
   className?: string;
+  dataCode: string;
 }
 
 export default function ProductInfo({
   type,
   data,
   className,
+  dataCode,
 }: ProductInfoProps) {
   // 타입별 필드 추출 (타입 가드 활용)
   const isProductData = (
     data: ProductDataSetResponse | BrandDataSetResponse
   ): data is ProductDataSetResponse => {
-    return type === 'product';
+    return type === 'industry';
   };
 
   const isBrandData = (
     data: ProductDataSetResponse | BrandDataSetResponse
   ): data is BrandDataSetResponse => {
-    return type === 'brand';
+    return type === 'visual';
   };
 
   // 공통 필드
-  const id = data.id;
+  // const id = data.id;
   const name = isProductData(data) ? data.productName : data.name;
-  const category = isProductData(data) ? data.productPath : data.sectorCategory;
+  // const path = isProductData(data) ? data.productPath : data.sectorCategory;
+  const category = isProductData(data)
+    ? data.industryDataCategory
+    : data.visualDataCategory;
+
+  function getFields(type: 'visual' | 'industry', category: string | null) {
+    if (!category) return [];
+
+    if (type === 'visual') {
+      return (
+        PRODUCT_INFO_CONFIG.visual[
+          category as keyof typeof PRODUCT_INFO_CONFIG.visual
+        ] ?? []
+      );
+    }
+
+    return (
+      PRODUCT_INFO_CONFIG.industry[
+        category as keyof typeof PRODUCT_INFO_CONFIG.industry
+      ] ?? []
+    );
+  }
+  const fields = getFields(type, category);
 
   return (
     <div className={clsx('space-y-6', className)}>
@@ -41,72 +67,54 @@ export default function ProductInfo({
       </h1>
 
       <div className="space-y-6 text-[15px]">
-        <InfoItem label="ID" value={id} />
-        <InfoItem label="부문·카테고리" value={category || ''} />
+        {/* <InfoItem label="ID" value={id} />
+        <InfoItem label="부문·카테고리" value={path || ''} /> */}
 
         {isBrandData(data) ? (
           // Brand specific information
           <>
-            <InfoItem
-              label="대표 제품 카테고리"
-              value={data.mainProductCategory || ''}
-            />
-            <InfoItem label="대표 제품" value={data.mainProduct || ''} />
-            <InfoItem label="타겟(성별/연령)" value={data.target || ''} />
-            <InfoItem
-              label="홈페이지"
-              value={
-                data.referenceUrl ? (
-                  <a
-                    href={data.referenceUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={clsx(
-                      'inline-block max-w-full truncate',
-                      'text-blue-600 underline',
-                      'hover:text-blue-800',
-                      'transition-colors duration-200'
-                    )}
-                  >
-                    {data.referenceUrl}
-                  </a>
-                ) : (
-                  ''
-                )
-              }
-            />
+            <div className="space-y-4">
+              <InfoItem label="Code" value={dataCode} name={data.id} />
+
+              {fields.map((field) => {
+                const value = formatValue(
+                  field.key,
+                  data[field.key as keyof BrandDataSetResponse]
+                );
+
+                return (
+                  <InfoItem
+                    key={field.key}
+                    name={field.key}
+                    label={field.label}
+                    value={value ?? ''}
+                  />
+                );
+              })}
+            </div>
           </>
         ) : (
           // Product specific information
           <>
-            <InfoItem label="출시/등록일" value={data.registeredAt || ''} />
-            <InfoItem
-              label="제품규격(사이즈/무게)"
-              value={`${data.size || ''}${data.weight ? `/${data.weight}` : ''}`}
-            />
-            <InfoItem label="소재" value={data.material || ''} />
-            <InfoItem
-              label="참고사이트"
-              value={
-                data.referenceUrl ? (
-                  <a
-                    href={data.referenceUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={clsx(
-                      'inline-block max-w-full truncate',
-                      'text-blue-600 underline',
-                      'hover:text-blue-800',
-                      'transition-colors duration-200'
-                    )}
-                  >
-                    {data.referenceUrl}
-                  </a>
-                ) : (
-                  ''
-                )
-              }
-            />
+            <div className="space-y-4">
+              <InfoItem label="ID" value={dataCode} name={data.id} />
+
+              {fields.map((field) => {
+                const value = formatValue(
+                  field.key,
+                  data[field.key as keyof ProductDataSetResponse]
+                );
+
+                return (
+                  <InfoItem
+                    key={field.key}
+                    name={field.key}
+                    label={field.label}
+                    value={value ?? ''}
+                  />
+                );
+              })}
+            </div>
           </>
         )}
       </div>

@@ -8,7 +8,7 @@ import { ThumbUp } from '@hdi/ui';
 
 interface WeightEvaluationSuccessProps {
   onRedirect?: () => void;
-  type: 'brand' | 'product';
+  type: 'visual' | 'industry';
 }
 
 export default function WeightEvaluationSuccess({

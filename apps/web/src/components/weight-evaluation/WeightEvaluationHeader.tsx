@@ -1,16 +1,16 @@
 interface WeightEvaluationHeaderProps {
-  type?: 'brand' | 'product';
+  type?: 'visual' | 'industry';
 }
 
 export default function WeightEvaluationHeader({
-  type = 'brand',
+  type = 'visual',
 }: WeightEvaluationHeaderProps) {
   const getHeaderContent = () => {
-    if (type === 'brand') {
+    if (type === 'visual') {
       return {
         title: '부문별 평가요인 가중치',
         description:
-          '각 카테고리 별 로고 디자인 평가 항목의 중요도에 대해 평가부탁드립니다.',
+          '각 카테고리 별 포스터 디자인 평가 항목의 중요도에 대해 평가부탁드립니다.',
       };
     } else {
       return {

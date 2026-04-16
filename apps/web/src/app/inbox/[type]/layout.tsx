@@ -16,8 +16,8 @@ export default async function InboxLayout({
   // params를 await하여 값을 가져옴
   const { type } = await params;
 
-  // type 파라미터를 'brand' | 'product' 타입으로 변환
-  const surveyType = type === 'brand' || type === 'product' ? type : 'brand'; // 기본값은 brand
+  // type 파라미터를 'visual' | 'industry' 타입으로 변환
+  const surveyType = type === 'visual' || type === 'industry' ? type : 'visual'; // 기본값은 brand
 
   return (
     <div className="min-h-screen">
