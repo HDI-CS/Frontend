@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import ProductImage from '@/components/survey/ProductImage';
 import ProductInfo from '@/components/survey/ProductInfo';
@@ -9,7 +9,7 @@ import QualitativeEvaluation from '@/components/survey/QualitativeEvaluation';
 import SurveyHeader from '@/components/survey/SurveyHeader';
 import SurveyNavigationWithArrows from '@/components/survey/SurveyNavigationWithArrows';
 import SurveyQuestion from '@/components/survey/SurveyQuestion';
-import { INDUSTRY_QUESTION_TYPE_RANGES } from '@/config/surveyTypeMap';
+import { PREFIX_TO_TYPE, QuestionType } from '@/config/surveyTypeMap';
 import { useSurveyNavigation } from '@/hooks/useSurveyNavigation';
 import {
   useSaveSurveyResponse,
@@ -60,10 +60,12 @@ export default function ProductSurvey({
   const [isSavingQualitative, setIsSavingQualitative] = useState(false);
 
   const product = detail.result.industryDataSetResponse;
-  const questions: ProductSurveyQuestion[] =
-    detail.result.productSurveyResponse?.response ?? [];
+  const questions: ProductSurveyQuestion[] = useMemo(() => {
+    return detail.result.productSurveyResponse?.response ?? [];
+  }, [detail]);
   const textSurveyId =
     detail.result.productSurveyResponse.textResponse?.surveyId;
+  const isSubmitted = detail.result.productSurveyResponse.isSubmitted;
 
   // 서버에서 받아온 데이터를 클라이언트 상태에 반영
   useEffect(() => {
@@ -171,13 +173,13 @@ export default function ProductSurvey({
   };
 
   const handleComplete = async () => {
-    console.log('제품 설문 평가완료:', { answers, qualitativeAnswer });
+    // console.log('제품 설문 평가완료:', { answers, qualitativeAnswer });
 
     try {
       // 설문 제출 API 호출
       await submitSurveyMutation.mutateAsync({
         type: surveyType,
-        responseId: Number(surveyId),
+        dataId: Number(surveyId),
       });
 
       // 설문 진행 상태 저장
@@ -227,11 +229,35 @@ export default function ProductSurvey({
       imagePath !== null && imagePath !== undefined
   );
 
-  const getQuestionType = (questionNumber: number) => {
-    return INDUSTRY_QUESTION_TYPE_RANGES.find(
-      (range) => questionNumber >= range.start && questionNumber <= range.end
-    )?.type;
+  // 설문 문항 유형 결정 함수
+  const getQuestionType = (surveyCode: string) => {
+    const prefix = surveyCode.split('_').slice(0, 2).join('_');
+    return PREFIX_TO_TYPE[prefix as keyof typeof PREFIX_TO_TYPE];
   };
+
+  const idToIndexMap = useMemo(() => {
+    const map: Record<number, number> = {};
+    questions.forEach((q, i) => {
+      map[q.surveyId ?? 0] = i + 1;
+    });
+    return map;
+  }, [questions]);
+
+  const groupedQuestions = useMemo(() => {
+    return questions.reduce<Record<QuestionType, ProductSurveyQuestion[]>>(
+      (acc, question) => {
+        const type = getQuestionType(question?.surveyCode ?? '');
+
+        if (!type) return acc;
+
+        if (!acc[type]) acc[type] = [];
+        acc[type].push(question);
+
+        return acc;
+      },
+      {} as Record<QuestionType, ProductSurveyQuestion[]>
+    );
+  }, [questions]);
 
   return (
     <div className="mx-auto h-full px-8 py-6">
@@ -283,41 +309,43 @@ export default function ProductSurvey({
             <SurveyHeader type="industry" />
 
             <div className="space-y-8">
-              {questions.map((question, index) => {
-                const qId = String(question.surveyId);
-                const qIndex = String(index + 1);
-                const qText = String(question.survey ?? `문항 ${qId}`);
-                const currentValue =
-                  question.response && question.response > 0
-                    ? question.response
-                    : answers[qId];
-                const currentType = getQuestionType(parseInt(qIndex));
-                const prevType = index > 0 ? getQuestionType(index) : null;
-                const showHeader = currentType !== prevType;
+              <div className="flex flex-col gap-8">
+                {Object.entries(groupedQuestions).map(([type, group]) => (
+                  <div key={type} className="flex flex-col gap-6">
+                    <div className="font-bold">
+                      <SurveyTypeHeader
+                        type={'industry'}
+                        category={type as QuestionType}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-8 bg-gray-50">
+                      {group.map((question) => {
+                        const qId = String(question.surveyId);
+                        const qIndex =
+                          idToIndexMap[question.surveyId ?? 0] ?? '?';
+                        const qText = String(question.survey ?? `문항 ${qId}`);
+                        const currentValue =
+                          question.response && question.response > 0
+                            ? question.response
+                            : answers[qId];
 
-                return (
-                  <div key={question.surveyId} className="flex flex-col gap-8">
-                    {showHeader && currentType && (
-                      <div className="font-bold">
-                        <SurveyTypeHeader
-                          type={'industry'}
-                          category={currentType}
-                        />
-                      </div>
-                    )}
-                    <SurveyQuestion
-                      key={qId}
-                      questionId={qId}
-                      questionNumber={qIndex}
-                      question={qText}
-                      value={currentValue}
-                      onChange={(value) => handleAnswerChange(qId, value)}
-                      onSave={handleQuantitativeSave}
-                      isSaving={savingQuestions.has(qId)}
-                    />
+                        return (
+                          <SurveyQuestion
+                            key={qId}
+                            questionId={qId}
+                            questionNumber={String(qIndex)}
+                            question={qText}
+                            value={currentValue}
+                            onChange={(value) => handleAnswerChange(qId, value)}
+                            onSave={handleQuantitativeSave}
+                            isSaving={savingQuestions.has(qId)}
+                          />
+                        );
+                      })}
+                    </div>
                   </div>
-                );
-              })}
+                ))}
+              </div>
 
               {/* 정성평가 섹션 */}
               <QualitativeEvaluation
@@ -335,6 +363,7 @@ export default function ProductSurvey({
             <SurveyNavigationWithArrows
               onComplete={handleComplete}
               canComplete={isAllAnswered && isQualitativeValid}
+              isSubmitted={isSubmitted}
               onPrevious={goToPrevious}
               onNext={goToNext}
               canGoPrevious={canGoPrevious}

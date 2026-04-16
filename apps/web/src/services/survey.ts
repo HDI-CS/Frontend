@@ -203,18 +203,18 @@ export const surveyService = {
    */
   async submitSurvey({
     type,
-    responseId,
+    dataId,
   }: {
     type: UserType;
-    responseId: number;
+    dataId: number;
   }): Promise<void> {
     const response = await apiClient.post(
-      `/api/v1/user/${type.toLowerCase()}/survey/${responseId}/submit`
+      `/api/v1/user/${type.toLowerCase()}/survey/${dataId}/submit`
     );
 
     console.log('Survey Submit:', {
       type,
-      responseId,
+      dataId,
       response: response.data,
     });
 

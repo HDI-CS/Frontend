@@ -85,6 +85,7 @@ export const ProductDataSetResponseSchema = z.object({
 
 export const ProductSurveyQuestionSchema = z.object({
   surveyId: z.number().nullable(),
+  surveyCode: z.string().nullable(),
   survey: z.string().nullable(),
   response: z.int32().nullable(),
 });
@@ -102,6 +103,7 @@ export const ProductSurveyDataSchema = z.object({
   industryDataSetResponse: ProductDataSetResponseSchema,
   productSurveyResponse: z.object({
     dataCode: z.string(),
+    isSubmitted: z.boolean(),
     response: z.array(ProductSurveyQuestionSchema),
     textResponse: ProductTextSurveyResponseSchema.nullable(),
   }),
@@ -152,6 +154,7 @@ export const BrandDataSetResponseSchema = z.object({
 
 export const BrandSurveyQuestionSchema = z.object({
   surveyId: z.number().nullable(),
+  surveyCode: z.string().nullable(),
   survey: z.string().nullable(),
   response: z.int32().nullable(),
 });
@@ -168,6 +171,7 @@ export const BrandSurveyDataSchema = z.object({
   visualDatasetResponse: BrandDataSetResponseSchema.optional(), // API 응답과 일치하도록 필드명 수정
   brandSurveyResponse: z.object({
     dataCode: z.string(),
+    isSubmitted: z.boolean(),
     response: z.array(BrandSurveyQuestionSchema),
     textResponse: BrandTextSurveyResponseSchema,
   }),

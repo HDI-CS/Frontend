@@ -1,9 +1,9 @@
 import type { NextConfig } from 'next';
-const isDev = process.env.NODE_ENV === 'development';
-
 const ADMIN_APP_URL = process.env.ADMIN_APP_URL;
 
-const commonConfig: NextConfig = {
+console.log('ADMIN_APP_URL=', process.env.ADMIN_APP_URL);
+
+const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -11,19 +11,6 @@ const commonConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   transpilePackages: ['@hdi/ui', '@hdi/fonts'],
-
-  images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'hdi-s3.s3.ap-northeast-2.amazonaws.com',
-        pathname: '/**',
-      },
-    ],
-    unoptimized: true,
-  },
-};
-const redirectConfig: NextConfig = {
   async redirects() {
     return [
       // Auth redirect to root
@@ -34,20 +21,7 @@ const redirectConfig: NextConfig = {
       },
     ];
   },
-};
-
-const devConfig: NextConfig = {
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: 'http://localhost:8080/:path*',
-      },
-    ];
-  },
-};
-// 개발 환경에서 API 프록시 설정 - 크로스 오리진 쿠키 문제 해결
-const prodConfig: NextConfig = {
+  // 개발 환경에서 API 프록시 설정 - 크로스 오리진 쿠키 문제 해결
   async rewrites() {
     if (!ADMIN_APP_URL) {
       console.warn('⚠️ ADMIN_APP_URL is not set');
@@ -57,6 +31,7 @@ const prodConfig: NextConfig = {
       {
         source: '/api/:path*',
         destination: 'https://api.hdi.ai.kr/:path*',
+        // destination: 'http://localhost:8080/:path*',
       },
       // admin API proxy
       {
@@ -73,12 +48,11 @@ const prodConfig: NextConfig = {
       },
     ];
   },
+  images: {
+    remotePatterns: [
+      new URL('https://hdi-s3.s3.ap-northeast-2.amazonaws.com/**'),
+    ],
+    unoptimized: true,
+  },
 };
-
-const nextConfig: NextConfig = {
-  ...commonConfig,
-  ...redirectConfig,
-  ...(isDev ? devConfig : prodConfig),
-};
-
 export default nextConfig;

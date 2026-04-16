@@ -101,7 +101,6 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
     });
   }, [categorieItem, categories]);
 
-  // Grid에서 “추가” 버튼 누르면 실제로 데이터 추가되게 (데모)
   // 검색어 관리
   // const { activeIndex, setResultCount } = useSearchStore();
 
@@ -350,7 +349,8 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
                 const rowMeta = getRowMeta(
                   'VISUAL',
                   yearName as Years,
-                  displayRows as WithIndex<VisualRow>[]
+                  displayRows as WithIndex<VisualRow>[],
+                  activeCategory as VisualCategory
                 );
 
                 const columns = rowMeta.columns as ColumnDef<
@@ -380,7 +380,8 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
               const rowMeta = getRowMeta(
                 'INDUSTRY',
                 (yearName ?? '2025') as Years,
-                displayRows as WithIndex<IndustrialRow>[]
+                displayRows as WithIndex<IndustrialRow>[],
+                activeCategory as IndustryCategory
               );
 
               const columns = rowMeta.columns as ColumnDef<

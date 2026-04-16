@@ -117,6 +117,8 @@ const ProfileGridTable = () => {
 
     editForm.reset({
       name: selectedExpertData.name ?? '',
+      email: selectedExpertData.email ?? '',
+      password: selectedExpertData.password ?? '',
       phoneNumber: selectedExpertData.phoneNumber ?? '',
       gender: selectedExpertData.gender ?? '',
       age: selectedExpertData.age ?? '',
@@ -168,6 +170,8 @@ const ProfileGridTable = () => {
 
     const requestData: UpdateExpertMember = {
       name: data.name ?? selectedExpertData?.name,
+      email: data.email ?? selectedExpertData?.email,
+      password: data.password ?? selectedExpertData?.password,
       phoneNumber: data.phoneNumber ?? selectedExpertData?.phoneNumber,
       gender: data.gender ?? selectedExpertData?.gender,
       age: data.age ?? selectedExpertData?.age,

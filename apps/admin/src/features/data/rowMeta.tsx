@@ -1,11 +1,16 @@
 import empty from '@/public/data/EmptyIMg.svg';
-import { UserType } from '@/src/schemas/auth';
-import { EvaluationYears, RoundsSchema } from '@/src/schemas/survey';
 import {
-  UpdateVisualDatasetRequest,
-  VisualCategory,
-  YearFolderArray,
-} from '@/src/schemas/visual-data';
+  CATEGORY_FIELD_CONFIG,
+  INDUSTRY_DYNAMIC_COLUMN_MAP,
+  VISUAL_DYNAMIC_COLUMN_MAP,
+} from '@/src/config/categoryFieldConfig';
+import { UserType } from '@/src/schemas/auth';
+import {
+  IndustryCategory,
+  IndustryImageType,
+} from '@/src/schemas/industry-data';
+import { EvaluationYears, RoundsSchema } from '@/src/schemas/survey';
+import { VisualCategory, YearFolderArray } from '@/src/schemas/visual-data';
 import { useSearchStore } from '@/src/store/searchStore';
 import {
   ColumnDef,
@@ -58,22 +63,6 @@ type VisualDynamicFieldKey =
   | 'releaseYear'
   | 'referenceUrl';
 
-type IndustryColumnDef = {
-  key: IndustryDynamicFieldKey;
-  header: string;
-  thClassName: string;
-  className: string;
-  maxLength: number;
-};
-
-type VisualColumnDef = {
-  key: VisualDynamicFieldKey;
-  header: string;
-  thClassName: string;
-  className: string;
-  maxLength: number;
-};
-
 const DISPLAY_META_BY_CATEGORY = {
   FB: {
     field: 'name',
@@ -89,241 +78,12 @@ const DISPLAY_META_BY_CATEGORY = {
   },
 } as const;
 
-const INDUSTRY_DYNAMIC_COLUMN_MAP: Record<
-  IndustryDynamicFieldKey,
-  IndustryColumnDef
-> = {
-  material: {
-    key: 'material',
-    header: '재질',
-    thClassName: 'w-[120px]',
-    className: 'w-[120px]',
-    maxLength: 7,
-  },
-  productTypeName: {
-    key: 'productTypeName',
-    header: '제품 유형',
-    thClassName: 'w-[120px]',
-    className: 'w-[120px]',
-    maxLength: 12,
-  },
-  usage: {
-    key: 'usage',
-    header: '용도',
-    thClassName: 'w-[120px]',
-    className: 'w-[120px]',
-    maxLength: 10,
-  },
-  size: {
-    key: 'size',
-    header: '크기',
-    thClassName: 'w-[120px]',
-    className: 'w-[120px]',
-    maxLength: 6,
-  },
-  soundOutput: {
-    key: 'soundOutput',
-    header: '사운드 출력',
-    thClassName: 'w-[120px]',
-    className: 'w-[120px]',
-    maxLength: 10,
-  },
-  noiseCancelling: {
-    key: 'noiseCancelling',
-    header: '노이즈캔슬링',
-    thClassName: 'w-[140px]',
-    className: 'w-[140px]',
-    maxLength: 10,
-  },
-  codec: {
-    key: 'codec',
-    header: '코덱',
-    thClassName: 'w-[120px]',
-    className: 'w-[120px]',
-    maxLength: 8,
-  },
-  extraFeatures: {
-    key: 'extraFeatures',
-    header: '부가기능',
-    thClassName: 'w-[160px]',
-    className: 'w-[160px]',
-    maxLength: 12,
-  },
-  controlType: {
-    key: 'controlType',
-    header: '컨트롤',
-    thClassName: 'w-[120px]',
-    className: 'w-[120px]',
-    maxLength: 10,
-  },
-  waterproof: {
-    key: 'waterproof',
-    header: '방수기능',
-    thClassName: 'w-[120px]',
-    className: 'w-[120px]',
-    maxLength: 10,
-  },
-
-  connectivity: {
-    key: 'connectivity',
-    header: '입출력',
-    thClassName: 'w-[120px]',
-    className: 'w-[120px]',
-    maxLength: 10,
-  },
-  maxPlayTime: {
-    key: 'maxPlayTime',
-    header: '최대재생시간',
-    thClassName: 'w-[140px]',
-    className: 'w-[140px]',
-    maxLength: 10,
-  },
-  chargeTime: {
-    key: 'chargeTime',
-    header: '충전시간',
-    thClassName: 'w-[120px]',
-    className: 'w-[120px]',
-    maxLength: 10,
-  },
-  shoppingUrl: {
-    key: 'shoppingUrl',
-    header: '쇼핑몰 링크',
-    thClassName: 'min-w-[180px]',
-    className: 'min-w-[180px]',
-    maxLength: 20,
-  },
-};
-
-const VISUAL_DYNAMIC_COLUMN_MAP: Record<
-  VisualDynamicFieldKey,
-  VisualColumnDef
-> = {
-  name: {
-    key: 'name',
-    header: '브랜드명',
-    thClassName: 'w-[140px]',
-    className: 'w-[140px] px-3',
-    maxLength: 8,
-  },
-  sectorCategory: {
-    key: 'sectorCategory',
-    header: '부문·카테고리',
-    thClassName: 'w-[140px]',
-    className: 'w-[140px]',
-    maxLength: 9,
-  },
-  mainProductCategory: {
-    key: 'mainProductCategory',
-    header: '대표 제품 카테고리',
-    thClassName: 'w-[260px]',
-    className: 'min-w-[260px]',
-    maxLength: 20,
-  },
-  mainProduct: {
-    key: 'mainProduct',
-    header: '대표 제품',
-    thClassName: 'min-w-[240px]',
-    className: 'min-w-[240px]',
-    maxLength: 16,
-  },
-  target: {
-    key: 'target',
-    header: '타겟(성별/연령)',
-    thClassName: 'w-[160px]',
-    className: 'w-[160px]',
-    maxLength: 6,
-  },
-
-  releaseYear: {
-    key: 'releaseYear',
-    header: '년도',
-    thClassName: 'w-[120px]',
-    className: 'w-[120px]',
-    maxLength: 6,
-  },
-  title: {
-    key: 'title',
-    header: '제목',
-    thClassName: 'w-[200px]',
-    className: 'w-[200px]',
-    maxLength: 20,
-  },
-  country: {
-    key: 'country',
-    header: '국가',
-    thClassName: 'w-[120px]',
-    className: 'w-[120px]',
-    maxLength: 6,
-  },
-  clientName: {
-    key: 'clientName',
-    header: '클라이언트',
-    thClassName: 'w-[120px]',
-    className: 'w-[120px]',
-    maxLength: 8,
-  },
-  contentType: {
-    key: 'contentType',
-    header: '내용 유형',
-    thClassName: 'w-[140px]',
-    className: 'w-[140px]',
-    maxLength: 10,
-  },
-  visualType: {
-    key: 'visualType',
-    header: '시각 유형',
-    thClassName: 'w-[120px]',
-    className: 'w-[120px]',
-    maxLength: 10,
-  },
-  designDescription: {
-    key: 'designDescription',
-    header: '디자인 설명',
-    thClassName: 'w-[200px]',
-    className: 'w-[200px]',
-    maxLength: 20,
-  },
-
-  referenceUrl: {
-    key: 'referenceUrl',
-    header: '홈페이지',
-    thClassName: 'min-w-[180px]',
-    className: 'min-w-[180px]',
-    maxLength: 20,
-  },
-};
-
-const buildDynamicColumns = (rows: IndustrialRow[]) => {
-  if (!rows.length) return [];
-
-  // 고정 필드
-  const EXCLUDE_KEYS = [
-    'id',
-    '_no',
-    'code',
-    'productName',
-    'modelName',
-    'companyName',
-    'price',
-    'weight',
-    'registeredAt',
-    'productPath',
-    'referenceUrl',
-    'detailImagePath',
-    'frontImagePath',
-    'sideImagePath',
-    'side2ImagePath',
-    'side3ImagePath',
-  ];
+const buildIndustryDynamicColumns = (category: IndustryCategory) => {
+  if (!category) return [];
 
   const keySet = new Set<string>();
-
-  rows.forEach((row) => {
-    Object.entries(row).forEach(([key, value]) => {
-      if (!EXCLUDE_KEYS.includes(key) && value != null) {
-        keySet.add(key);
-      }
-    });
+  CATEGORY_FIELD_CONFIG.industry?.[category].forEach((field) => {
+    keySet.add(field.key);
   });
 
   return Array.from(keySet).map((key) => {
@@ -347,18 +107,12 @@ const buildDynamicColumns = (rows: IndustrialRow[]) => {
   });
 };
 
-const buildVisualDynamicColumns = (rows: VisualRow[]) => {
-  if (!rows.length) return [];
-  const EXCLUDE_KEYS = ['id', '_no', 'code', 'logoImage'];
+const buildVisualDynamicColumns = (category: VisualCategory) => {
+  if (!category) return [];
 
   const keySet = new Set<string>();
-  console.log('buildVisualDynamicColumns', { rows });
-  rows.forEach((row) => {
-    Object.entries(row).forEach(([key, value]) => {
-      if (!EXCLUDE_KEYS.includes(key) && value != null) {
-        keySet.add(key);
-      }
-    });
+  CATEGORY_FIELD_CONFIG.visual?.[category]?.forEach((field) => {
+    keySet.add(field.key);
   });
 
   return Object.keys(VISUAL_DYNAMIC_COLUMN_MAP)
@@ -388,12 +142,12 @@ export const getRowMeta = (
   type: 'VISUAL' | 'INDUSTRY',
   year?: Years,
   rows?: WithIndex<IndustrialRow | VisualRow>[],
-  activeCategory?: VisualCategory
+  activeCategory?: VisualCategory | IndustryCategory
 ) => {
-  const displayMeta =
-    activeCategory && DISPLAY_META_BY_CATEGORY[activeCategory];
-
   if (type === 'VISUAL') {
+    const displayMeta =
+      activeCategory &&
+      DISPLAY_META_BY_CATEGORY[activeCategory as VisualCategory];
     return {
       getImageSrc: (row: VisualRow) => row.logoImage,
       getImageAlt: (row: VisualRow) => row.name,
@@ -422,11 +176,11 @@ export const getRowMeta = (
         },
 
         ...buildVisualDynamicColumns(
-          (rows as WithIndex<VisualRow>[]) ?? ([] as WithIndex<VisualRow>[])
+          (activeCategory as VisualCategory) || 'POSTER'
         ),
 
         {
-          key: 'logoImage',
+          key: 'VisualImage',
           header: <span className="block text-center">이미지</span>,
           thClassName: 'w-[120px]',
           className: 'w-[120px] text-center',
@@ -461,6 +215,8 @@ export const getRowMeta = (
       ],
     };
   }
+
+  // INDUSTRY
 
   return {
     getImageSrc: (row: IndustrialRow) =>
@@ -533,10 +289,7 @@ export const getRowMeta = (
           }),
       },
 
-      ...buildDynamicColumns(
-        (rows as WithIndex<IndustrialRow>[]) ??
-          ([] as WithIndex<IndustrialRow>[])
-      ),
+      ...buildIndustryDynamicColumns(activeCategory as IndustryCategory),
 
       {
         key: 'weight',
@@ -592,6 +345,7 @@ export const getRowMeta = (
             width={44}
             height={44}
             loading="lazy"
+            unoptimized
           />
         ),
       },
@@ -608,6 +362,7 @@ export const getRowMeta = (
             width={44}
             height={44}
             loading="lazy"
+            sizes="9"
           />
         ),
       },
@@ -675,57 +430,6 @@ export const getRowMeta = (
     ],
   };
 };
-
-// export const getRowMeta = (type: 'VISUAL' | 'INDUSTRY') => rowMeta[type];
-
-export const VISUAL_FIELDS = [
-  { label: 'ID', field: 'code' },
-  { label: '브랜드명', field: 'name' },
-  { label: '부문·카테고리', field: 'sectorCategory' },
-  { label: '대표 제품 카테고리', field: 'mainProductCategory' },
-  { label: '대표 제품', field: 'mainProduct' },
-  { label: '타겟(성별/연령)', field: 'target' },
-  { label: '홈페이지', field: 'referenceUrl' },
-
-  // 2026
-  { label: '제목', field: 'title' },
-  { label: '국가', field: 'country' },
-  { label: '클라이언트', field: 'clientName' },
-  { label: '내용 유형', field: 'contentType' },
-  { label: '시각 유형', field: 'visualType' },
-  { label: '디자인 설명', field: 'designDescription' },
-  { label: '년도', field: 'releaseYear' },
-] as const satisfies readonly {
-  label: string;
-  field: keyof UpdateVisualDatasetRequest;
-}[];
-
-export const INDUSTRY_FIELDS = [
-  { label: 'ID', field: 'code' },
-  { label: '제품명', field: 'productName' },
-  { label: '회사명', field: 'companyName' },
-  { label: '모델명', field: 'modelName' },
-  { label: '가격', field: 'price' },
-  { label: '재질', field: 'material' },
-  { label: '크기', field: 'size' },
-  { label: '무게', field: 'weight' },
-  { label: '출시일', field: 'registeredAt' },
-  { label: '제품 카테고리', field: 'productPath' },
-  { label: '제품 유형', field: 'productTypeName' },
-  { label: '홈페이지', field: 'referenceUrl' },
-
-  // 2026
-  { label: '용도', field: 'usage' },
-  { label: '사운드 출력', field: 'soundOutput' },
-  { label: '노이즈캔슬링', field: 'noiseCancelling' },
-  { label: '코덱', field: 'codec' },
-  { label: '부가기능', field: 'extraFeatures' },
-  { label: '컨트롤', field: 'controlType' },
-  { label: '방수기능', field: 'waterproof' },
-  { label: '최대재생시간', field: 'maxPlayTime' },
-  { label: '충전시간', field: 'chargeTime' },
-  { label: '입출력', field: 'connectivity' },
-] as const;
 
 // get detail API → UpdateForm 변환 mapper
 export const updateRequestMapper = {
@@ -798,12 +502,7 @@ export function normalizeImageUrl(url?: string | null): string | null {
 export function getImageSrcByType(
   type: UserType,
   detail?: GetDetailResponseByType[keyof GetDetailResponseByType],
-  field?:
-    | 'originalDetailImagePath'
-    | 'originalFrontImagePath'
-    | 'originalSideImagePath'
-    | 'originalSide2ImagePath'
-    | 'originalSide3ImagePath'
+  field?: IndustryImageType
 ): string | null {
   if (!detail) return null;
 

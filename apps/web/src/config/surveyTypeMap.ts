@@ -1,34 +1,37 @@
-export const VIUSAL_QUESTION_TYPE_RANGES = [
-  { start: 1, end: 4, type: 'AESTHETIC' },
-  { start: 5, end: 9, type: 'FORM' },
-  { start: 10, end: 12, type: 'CREATIVITY' },
-  { start: 13, end: 14, type: 'USABILITY' },
-  { start: 15, end: 17, type: 'FUNCTIONALITY' },
-  { start: 18, end: 20, type: 'ETHICS' },
-  { start: 21, end: 23, type: 'ECONOMY' },
-  { start: 24, end: 25, type: 'PURPOSE' },
-  { start: 26, end: 30, type: 'OVERALL' },
-] as const;
+export type QuestionType =
+  | 'AESTHETIC'
+  | 'FORM'
+  | 'CREATIVITY'
+  | 'USABILITY'
+  | 'FUNCTIONALITY'
+  | 'ETHICS'
+  | 'ECONOMY'
+  | 'PURPOSE'
+  | 'OVERALL';
 
-export const INDUSTRY_QUESTION_TYPE_RANGES = [
-  { start: 1, end: 6, type: 'AESTHETIC' }, // 심미성
+export const PREFIX_TO_TYPE = {
+  // industry
+  PR_AES: 'AESTHETIC',
+  PR_FRM: 'FORM',
+  PR_ORI: 'CREATIVITY',
+  PR_USB: 'USABILITY',
+  PR_FNC: 'FUNCTIONALITY',
+  PR_ETH: 'ETHICS',
+  PR_ECN: 'ECONOMY',
+  PR_PRP: 'PURPOSE',
+  PR_OVE: 'OVERALL',
 
-  { start: 7, end: 9, type: 'FORM' }, // 조형성
-
-  { start: 10, end: 16, type: 'CREATIVITY' }, // 혁신성 (독창성)
-
-  { start: 17, end: 21, type: 'USABILITY' }, // 사용성
-
-  { start: 22, end: 23, type: 'FUNCTIONALITY' }, // 기능성
-
-  { start: 24, end: 26, type: 'ETHICS' }, // 윤리성
-
-  { start: 27, end: 29, type: 'ECONOMY' }, // 경제성
-
-  { start: 30, end: 32, type: 'PURPOSE' }, // 목적성
-
-  { start: 33, end: 41, type: 'OVERALL' }, // 종합평가
-] as const;
+  // visual
+  VI_AES: 'AESTHETIC',
+  VI_FRM: 'FORM',
+  VI_CRE: 'CREATIVITY',
+  VI_USB: 'USABILITY',
+  VI_FNC: 'FUNCTIONALITY',
+  VI_ETH: 'ETHICS',
+  VI_ECN: 'ECONOMY',
+  VI_PRP: 'PURPOSE',
+  VI_OVE: 'OVERALL',
+} as const;
 
 export const QUESTION_TYPE_META = {
   visual: {

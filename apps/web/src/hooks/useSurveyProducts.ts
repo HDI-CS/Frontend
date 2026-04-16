@@ -73,16 +73,10 @@ export const useSubmitSurvey = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      type,
-      responseId,
-    }: {
-      type: UserType;
-      responseId: number;
-    }) =>
+    mutationFn: ({ type, dataId }: { type: UserType; dataId: number }) =>
       surveyService.submitSurvey({
         type,
-        responseId,
+        dataId,
       }),
     onSuccess: (_, variables) => {
       // 설문함 데이터를 다시 fetch하여 최신 상태로 업데이트
@@ -92,7 +86,7 @@ export const useSubmitSurvey = () => {
 
       // 설문 상세 데이터도 invalidate하여 최신 상태로 업데이트
       queryClient.invalidateQueries({
-        queryKey: ['surveyDetail', variables.responseId],
+        queryKey: ['surveyDetail', variables.dataId],
       });
 
       console.log('설문 제출 성공:', variables);
