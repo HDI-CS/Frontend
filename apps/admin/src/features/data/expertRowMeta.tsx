@@ -32,9 +32,9 @@ export const EXPERT_EDIT_FIELDS: readonly ExpertlFieldMeta[] = [
   //  표시 전용 (개인정보 / 서버 계산값 -> 이메일, 비밀번호, 차수 )
   { label: '평가자명', field: 'name', editable: true },
   { label: '참여 차수', field: 'participation', editable: false },
-  { label: '전문가 이메일', field: 'email', editable: false },
+  { label: '전문가 이메일', field: 'email', editable: true },
   { label: '연락처', field: 'phoneNumber', editable: true },
-  { label: '비밀번호', field: 'password', editable: false },
+  { label: '비밀번호', field: 'password', editable: true },
   { label: '성별', field: 'gender', editable: true },
   { label: '나이', field: 'age', editable: true },
   { label: '경력', field: 'career', editable: true },

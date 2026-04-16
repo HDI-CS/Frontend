@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import {  z } from 'zod';
 import { BasicResponseWithResultSchema } from './auth';
 
 // profile //
@@ -54,11 +54,11 @@ export const CreateExpertMemberResponseShcema = BasicResponseWithResultSchema;
 // 전문가 인적사항 수정 요청 스키마
 export const UpdateExpertMemberSchema = z.object({
   name: z.string(),
-
+  email: z.string(),
+  password: z.string(),
   phoneNumber: z.string(),
   gender: z.string(),
   age: z.string(),
-  password: z.string(),
 
   career: z.string(), // 경력
   academic: z.string(), // 학계
