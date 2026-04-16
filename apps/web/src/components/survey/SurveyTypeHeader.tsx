@@ -15,7 +15,7 @@ export default function SurveyTypeHeader({
 
   return (
     <div className="flex gap-4 text-[16px] font-light text-[#7686FC]">
-      <div className="w-1 flex-shrink-0 self-stretch rounded-full bg-gray-50"></div>
+      <div className="w-1 flex-shrink-0 self-stretch rounded-full bg-[#DDE1FF]"></div>
       <div className="flex flex-col">
         <p>
           다음은 <span className="font-semibold">‘{meta.title}’</span> 에 관한

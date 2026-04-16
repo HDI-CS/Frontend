@@ -85,6 +85,7 @@ export const ProductDataSetResponseSchema = z.object({
 
 export const ProductSurveyQuestionSchema = z.object({
   surveyId: z.number().nullable(),
+  surveyCode: z.string().nullable(),
   survey: z.string().nullable(),
   response: z.int32().nullable(),
 });
@@ -153,6 +154,7 @@ export const BrandDataSetResponseSchema = z.object({
 
 export const BrandSurveyQuestionSchema = z.object({
   surveyId: z.number().nullable(),
+  surveyCode: z.string().nullable(),
   survey: z.string().nullable(),
   response: z.int32().nullable(),
 });
