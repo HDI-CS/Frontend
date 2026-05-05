@@ -92,14 +92,15 @@ export default function SurveyNavigationWithArrows({
             onClick={onComplete}
             disabled={!canComplete}
             className={clsx(
-              'w-full whitespace-nowrap rounded-xl px-4 py-3 text-sm font-medium shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:w-36 sm:px-4 lg:w-40 lg:px-5 xl:w-44 xl:px-6',
+              'w-full whitespace-nowrap rounded-xl px-4 py-3 text-sm font-medium shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 sm:w-36 sm:px-4 lg:w-40 lg:px-5 xl:w-44 xl:px-6',
               {
-                'bg-blue-600 text-white hover:bg-blue-700': !isSubmitted,
+                'bg-blue-600 text-white': !isSubmitted,
                 'cursor-not-allowed bg-gray-300 text-gray-500': isSubmitted,
+                'bg-gray-300 text-gray-500': !canComplete,
               }
             )}
           >
-            평가완료
+            {canComplete ? '평가완료' : '설문중'}
           </button>
         </div>
 
