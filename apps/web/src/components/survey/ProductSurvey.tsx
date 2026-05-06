@@ -1,6 +1,6 @@
 'use client';
 
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
 import ProductImage from '@/components/survey/ProductImage';
@@ -25,6 +25,7 @@ import {
   loadSurveyProgress,
   saveSurveyProgress,
 } from '@/utils/survey';
+import axios from 'axios';
 import SurveyTypeHeader from './SurveyTypeHeader';
 
 interface ProductSurveyProps {
@@ -38,7 +39,6 @@ export default function ProductSurvey({
   detail,
   dataCode,
 }: ProductSurveyProps) {
-  const router = useRouter();
   const { type } = useParams();
   const surveyType = (type as string).toUpperCase() as UserType;
 
@@ -58,6 +58,18 @@ export default function ProductSurvey({
     new Set()
   );
   const [isSavingQualitative, setIsSavingQualitative] = useState(false);
+
+  // 설문 제출 실패시 사용
+  const [submitErrorMessage, setSubmitErrorMessage] = useState<string | null>(
+    null
+  );
+  const showTemporaryMessage = (message: string) => {
+    setSubmitErrorMessage(message);
+
+    setTimeout(() => {
+      setSubmitErrorMessage(null);
+    }, 3000);
+  };
 
   const product = detail.result.industryDataSetResponse;
   const questions: ProductSurveyQuestion[] = useMemo(() => {
@@ -173,8 +185,6 @@ export default function ProductSurvey({
   };
 
   const handleComplete = async () => {
-    // console.log('제품 설문 평가완료:', { answers, qualitativeAnswer });
-
     try {
       // 설문 제출 API 호출
       await submitSurveyMutation.mutateAsync({
@@ -191,10 +201,26 @@ export default function ProductSurvey({
       }
 
       // 설문함 페이지로 돌아가기
-      router.push(`/inbox/${surveyType.toLowerCase()}`);
+      // router.push(`/inbox/${surveyType.toLowerCase()}`);
     } catch (error) {
       console.error('설문 제출 실패:', error);
       // 에러 처리 로직 추가 가능
+      if (axios.isAxiosError(error)) {
+        const status = error.response?.status;
+        const message = error.response?.data?.message;
+
+        if (status === 400) {
+          showTemporaryMessage('ERROR: 아직 모든 문항에 응답하지 않았습니다.');
+          return;
+        }
+
+        if (status === 409) {
+          showTemporaryMessage(message ?? '이미 처리된 요청입니다.');
+          return;
+        }
+      }
+
+      showTemporaryMessage('ERROR: 설문 제출 중 오류가 발생했습니다.');
     }
   };
 
@@ -359,7 +385,12 @@ export default function ProductSurvey({
           </div>
 
           {/* 하단 고정 버튼 영역 */}
-          <div className="inset-shadow-sm flex-shrink-0 border-t border-gray-100 bg-gray-50/80 px-6 py-4">
+          <div className="inset-shadow-sm relative flex-shrink-0 border-t border-gray-100 bg-gray-50/80 px-6 py-4">
+            {submitErrorMessage && (
+              <div className="absolute bottom-20 right-5 rounded-md border border-red-500 bg-red-50 px-10 py-6 text-sm font-bold text-red-500 shadow-md">
+                {submitErrorMessage}
+              </div>
+            )}
             <SurveyNavigationWithArrows
               onComplete={handleComplete}
               canComplete={isAllAnswered && isQualitativeValid}

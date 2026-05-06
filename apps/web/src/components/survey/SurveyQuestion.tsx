@@ -105,7 +105,12 @@ export default function SurveyQuestion({
   return (
     <div className={clsx('min-h-25 flex gap-4', className)}>
       {/* Vertical Bar */}
-      <div className="w-1 flex-shrink-0 self-stretch rounded-full bg-[#DDE1FF]"></div>
+      <div
+        className={clsx(
+          'w-1 flex-shrink-0 self-stretch rounded-full',
+          value !== undefined ? 'bg-[#DDE1FF]' : 'bg-[#5b4cff]'
+        )}
+      ></div>
 
       {/* Question Content */}
       <div className="flex-1 space-y-4 py-3">
