@@ -24,8 +24,8 @@ export default function SurveyNavigationWithArrows({
   onNext,
   canGoPrevious = false,
   canGoNext = false,
-  currentStep = 1,
-  totalSteps = 1,
+  // currentStep = 1,
+  // totalSteps = 1,
   className,
 }: SurveyNavigationWithArrowsProps) {
   const router = useRouter();
@@ -138,9 +138,9 @@ export default function SurveyNavigationWithArrows({
       </div>
 
       {/* 진행 상황 표시 및 현재 위치 정보 */}
-      {totalSteps > 1 && (
+      {/* {totalSteps > 1 && (
         <div className="absolute left-1/2 top-[-50px] flex -translate-x-1/2 transform flex-col items-center gap-2">
-          {/* 진행 상황 점들 */}
+        
           <div className="flex items-center gap-2">
             {Array.from({ length: totalSteps }, (_, index) => (
               <div
@@ -155,12 +155,11 @@ export default function SurveyNavigationWithArrows({
               />
             ))}
           </div>
-          {/* 현재 위치 텍스트 */}
           <div className="text-xs text-gray-500">
             {currentStep} / {totalSteps}
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 }
