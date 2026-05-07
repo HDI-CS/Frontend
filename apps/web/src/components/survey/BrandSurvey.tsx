@@ -240,10 +240,10 @@ export default function BrandSurvey({
   });
 
   // 정성평가 유효성 검사
-  const currentQualitativeValue =
-    detail.result.brandSurveyResponse?.textResponse?.response ||
-    qualitativeAnswer;
-  const isQualitativeValid = currentQualitativeValue.length >= 300;
+  // const currentQualitativeValue =
+    // detail.result.brandSurveyResponse?.textResponse?.response ||
+    // qualitativeAnswer;
+  const isQualitativeValid = qualitativeAnswer.length >= 300;
 
   const category = brand?.visualDataCategory;
   const visualCategory = category as VisualCategory;
