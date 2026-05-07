@@ -230,10 +230,10 @@ export default function ProductSurvey({
   });
 
   // 정성평가 유효성 검사
-  const currentQualitativeValue =
-    detail.result.productSurveyResponse?.textResponse?.response ||
-    qualitativeAnswer;
-  const isQualitativeValid = currentQualitativeValue.length >= 300;
+  // const currentQualitativeValue =
+  // detail.result.productSurveyResponse?.textResponse?.response ||
+  // qualitativeAnswer;
+  const isQualitativeValid = qualitativeAnswer.length >= 300;
 
   // 제품 이미지들을 배열로 모음 (정면, 측면, 상세 순서)
   const imageMap = [
