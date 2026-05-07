@@ -328,19 +328,19 @@ export default function QualitativeEvaluation({
             {!hasUserInput &&
               !isSaving &&
               localValue !== '' &&
-              isMinimumMet && (
+              (
                 <div className="animate-fade-in flex items-center gap-1 text-xs text-green-600">
                   <span>✓ 저장됨</span>
                 </div>
               )}
-            {!hasUserInput &&
+            {/* {!hasUserInput &&
               !isSaving &&
               localValue !== '' &&
               !isMinimumMet && (
                 <div className="animate-fade-in flex items-center gap-1 text-xs text-green-800">
                   <span>✓ 임시 저장됨 (300자 이상 시 최종 저장)</span>
                 </div>
-              )}
+              )} */}
           </div>
           <p className="text-sm leading-relaxed text-gray-700">
             앞서 평가한 내용에 대한 전반적인 이유를 구체적으로 작성해 주세요.

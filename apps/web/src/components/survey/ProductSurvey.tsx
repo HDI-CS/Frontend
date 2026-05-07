@@ -136,10 +136,11 @@ export default function ProductSurvey({
   };
 
   // 정성평가 저장 핸들러
+  // 300자 미만도 저장이 되도록, 대신 평가 완료 제출은 되지 않음
   const handleQualitativeSave = async (textResponse: string) => {
-    if (textResponse.length < 300) {
-      return;
-    }
+    // if (textResponse.length < 300) {
+    //   return;
+    // }
     setIsSavingQualitative(true);
 
     try {

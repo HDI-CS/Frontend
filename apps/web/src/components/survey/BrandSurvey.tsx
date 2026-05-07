@@ -140,13 +140,12 @@ export default function BrandSurvey({
   };
 
   // 정성평가 저장 핸들러
-  const handleQualitativeSave = async (textResponse: string) => {
-    console.log('🔥 handleQualitativeSave called');
-    if (textResponse.length < 300) {
-      console.log('⛔️ blocked by length check');
+  // 수정:  300자 미만도 저장이 되도록, 대신 평가 완료 제출은 되지 않음
 
-      return;
-    }
+  const handleQualitativeSave = async (textResponse: string) => {
+    // if (textResponse.length < 300) {
+    //   return;
+    // }
 
     setIsSavingQualitative(true);
 
@@ -160,7 +159,6 @@ export default function BrandSurvey({
           textResponse,
         },
       });
-      console.log('✅ passed length check -> request will be sent');
 
       // 제출 완료 후 로컬스토리지 draft 정리
       clearSurveyProgress(surveyId);
@@ -241,8 +239,8 @@ export default function BrandSurvey({
 
   // 정성평가 유효성 검사
   // const currentQualitativeValue =
-    // detail.result.brandSurveyResponse?.textResponse?.response ||
-    // qualitativeAnswer;
+  // detail.result.brandSurveyResponse?.textResponse?.response ||
+  // qualitativeAnswer;
   const isQualitativeValid = qualitativeAnswer.length >= 300;
 
   const category = brand?.visualDataCategory;
