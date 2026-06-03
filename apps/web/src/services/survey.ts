@@ -199,6 +199,44 @@ export const surveyService = {
   },
 
   /**
+   * 임시 설문 저장 (저장만, 제출 없음)
+   */
+  async saveAllSurveyResponses({
+    type,
+    dataId,
+    requestData,
+  }: {
+    type: UserType;
+    dataId: number;
+    requestData: SurveyResponseRequest[];
+  }): Promise<void> {
+    const response = await apiClient.post(
+      `/api/v1/user/${type.toLowerCase()}/survey/${dataId}/save-all`,
+      { responses: requestData }
+    );
+    return response.data;
+  },
+
+  /**
+   * 최종제출 (저장 + 제출)
+   */
+  async submitAllSurveyResponses({
+    type,
+    dataId,
+    requestData,
+  }: {
+    type: UserType;
+    dataId: number;
+    requestData: SurveyResponseRequest[];
+  }): Promise<void> {
+    const response = await apiClient.post(
+      `/api/v1/user/${type.toLowerCase()}/survey/${dataId}/submit-all`,
+      { responses: requestData }
+    );
+    return response.data;
+  },
+
+  /**
    * 설문 제출 (완료)
    */
   async submitSurvey({

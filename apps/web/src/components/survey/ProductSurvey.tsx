@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import ProductImage from '@/components/survey/ProductImage';
 import ProductInfo from '@/components/survey/ProductInfo';
@@ -12,8 +12,8 @@ import SurveyQuestion from '@/components/survey/SurveyQuestion';
 import { PREFIX_TO_TYPE, QuestionType } from '@/config/surveyTypeMap';
 import { useSurveyNavigation } from '@/hooks/useSurveyNavigation';
 import {
-  useSaveSurveyResponse,
-  useSubmitSurvey,
+  useSaveAllSurveyResponses,
+  useSubmitAllSurveyResponses,
 } from '@/hooks/useSurveyProducts';
 import { UserType } from '@/schemas/auth';
 import {
@@ -54,30 +54,36 @@ export default function ProductSurvey({
 
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [qualitativeAnswer, setQualitativeAnswer] = useState<string>('');
-  const [savingQuestions, setSavingQuestions] = useState<Set<string>>(
-    new Set()
-  );
-  const [isSavingQualitative, setIsSavingQualitative] = useState(false);
+  // const [savingQuestions, setSavingQuestions] = useState<Set<string>>(
+  //   new Set()
+  // );
+  // const [isSavingQualitative, setIsSavingQualitative] = useState(false);
 
   // 설문 제출 실패시 사용
   const [submitErrorMessage, setSubmitErrorMessage] = useState<string | null>(
     null
   );
-  const showTemporaryMessage = (message: string) => {
-    setSubmitErrorMessage(message);
+  const [submitSuccessMessage, setSubmitSuccessMessage] = useState<
+    string | null
+  >(null);
 
-    setTimeout(() => {
-      setSubmitErrorMessage(null);
-    }, 3000);
-  };
+  // 제출되지 않았고, 수정시에 이탈 방지용 상태
+  const [isSubmittedLocal, setIsSubmittedLocal] = useState(
+    detail.result.productSurveyResponse.isSubmitted
+  );
+
+  // 마지막 제출(혹은 페이지 진입) 시점의 기준값
+  const initialAnswersRef = useRef<Record<string, number>>({});
+  const initialQualitativeRef = useRef<string>('');
 
   const product = detail.result.industryDataSetResponse;
   const questions: ProductSurveyQuestion[] = useMemo(() => {
     return detail.result.productSurveyResponse?.response ?? [];
   }, [detail]);
+
   const textSurveyId =
     detail.result.productSurveyResponse.textResponse?.surveyId;
-  const isSubmitted = detail.result.productSurveyResponse.isSubmitted;
+  // const isSubmitted = detail.result.productSurveyResponse.isSubmitted;
 
   // 서버에서 받아온 데이터를 클라이언트 상태에 반영
   useEffect(() => {
@@ -93,119 +99,105 @@ export default function ProductSurvey({
     });
 
     setAnswers(serverAnswers);
+    initialAnswersRef.current = serverAnswers; // 기준값 세팅
+
+    const serverQualitative =
+      detail.result.productSurveyResponse.textResponse?.response ?? '';
 
     // 정성평가 응답도 서버 데이터에서 초기화
     if (saved?.qualitativeAnswer && saved?.qualitativeAnswer.length < 300) {
       setQualitativeAnswer(saved.qualitativeAnswer);
-    } else if (detail.result.productSurveyResponse?.textResponse?.response) {
-      setQualitativeAnswer(
-        detail.result.productSurveyResponse.textResponse.response
-      );
+    } else {
+      setQualitativeAnswer(serverQualitative);
     }
+    initialQualitativeRef.current = serverQualitative; // 기준값 세팅
   }, [detail, surveyId]);
 
-  // 설문 응답 저장 mutation
-  const saveSurveyResponseMutation = useSaveSurveyResponse();
+  // isDirty: 제출완료 상태가 아니고 기준값과 현재 state가 다른 경우
+  const isDirty = useMemo(() => {
+    if (isSubmittedLocal) return false;
 
-  // 설문 제출 mutation
-  const submitSurveyMutation = useSubmitSurvey();
+    const answersChanged = Object.entries(answers).some(([key, value]) => {
+      return initialAnswersRef.current[key] !== value;
+    });
 
-  // 정량평가 저장 핸들러
-  const handleQuantitativeSave = async (questionId: string, value: number) => {
-    setSavingQuestions((prev) => new Set(prev).add(questionId));
+    const qualitativeChanged =
+      qualitativeAnswer !== initialQualitativeRef.current;
 
-    try {
-      await saveSurveyResponseMutation.mutateAsync({
-        type: surveyType,
-        productResponseId: Number(surveyId),
-        requestData: {
-          surveyId: Number(questionId),
-          response: value,
-          textResponse: null,
-        },
-      });
-    } catch (error) {
-      console.error('정량평가 저장 실패:', error);
-    } finally {
-      setSavingQuestions((prev) => {
-        const newSet = new Set(prev);
-        newSet.delete(questionId);
-        return newSet;
-      });
-    }
-  };
-
-  // 정성평가 저장 핸들러
-  // 300자 미만도 저장이 되도록, 대신 평가 완료 제출은 되지 않음
-  const handleQualitativeSave = async (textResponse: string) => {
-    // if (textResponse.length < 300) {
-    //   return;
+    // 정성평가 응답 비교
+    // if (qualitativeAnswer !== initialQualitativeRef.current) {
+    //   return true;
     // }
-    setIsSavingQualitative(true);
 
+    // return false;
+    return answersChanged || qualitativeChanged;
+  }, [answers, qualitativeAnswer, isSubmittedLocal]);
+
+  // isDIrty 일 때 브라우저 이탈 방지 팝업 등록
+  useEffect(() => {
+    if (!isDirty) return; // isDirty=false일 때 리턴
+
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = '';
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isDirty]); // 의존성 배열에 isDirty 추가
+
+  const saveAllMutation = useSaveAllSurveyResponses();
+  const submitAllMutation = useSubmitAllSurveyResponses();
+
+  // 공통으로 쓰는 응답 배열 생성 함수
+  const buildAllResponses = () => [
+    ...Object.entries(answers).map(([questionId, value]) => ({
+      surveyId: Number(questionId),
+      response: value,
+      textResponse: null,
+    })),
+    ...(qualitativeAnswer
+      ? [
+          {
+            surveyId: textSurveyId ?? 1,
+            response: null,
+            textResponse: qualitativeAnswer,
+          },
+        ]
+      : []),
+  ];
+
+  // 임시저장
+  const handleTempSave = async () => {
     try {
-      await saveSurveyResponseMutation.mutateAsync({
-        type: surveyType,
-        productResponseId: Number(surveyId),
-        requestData: {
-          surveyId: textSurveyId ?? 1,
-          response: null,
-          textResponse,
-        },
-      });
-      // 제출 완료 후 로컬스토리지 draft 정리
-      clearSurveyProgress(surveyId);
-    } catch (error) {
-      console.error('정성평가 저장 실패:', error);
-    } finally {
-      setIsSavingQualitative(false);
-    }
-  };
-
-  const handleAnswerChange = (questionId: string, value: number) => {
-    setAnswers((prev) => ({
-      ...prev,
-      [questionId]: value,
-    }));
-
-    // 로컬 스토리지에도 저장 (백업용)
-    saveSurveyProgress(surveyId, {
-      questionsAnswered: { ...answers, [questionId]: value },
-      qualitativeAnswer,
-    });
-  };
-
-  const handleQualitativeChange = (value: string) => {
-    setQualitativeAnswer(value);
-
-    // 로컬 스토리지에도 저장 (백업용)
-    saveSurveyProgress(surveyId, {
-      questionsAnswered: answers,
-      qualitativeAnswer: value,
-    });
-  };
-
-  const handleComplete = async () => {
-    try {
-      // 설문 제출 API 호출
-      await submitSurveyMutation.mutateAsync({
+      await saveAllMutation.mutateAsync({
         type: surveyType,
         dataId: Number(surveyId),
+        requestData: buildAllResponses(),
       });
+      initialAnswersRef.current = { ...answers };
+      initialQualitativeRef.current = qualitativeAnswer;
+      showSuccessMessage('임시저장되었습니다.');
+    } catch {
+      showTemporaryMessage('ERROR: 임시저장 중 오류가 발생했습니다.');
+    }
+  };
 
-      // 설문 진행 상태 저장
-      if (surveyId) {
-        saveSurveyProgress(surveyId, {
-          questionsAnswered: answers,
-          qualitativeAnswer,
-        });
-      }
-
-      // 설문함 페이지로 돌아가기
-      // router.push(`/inbox/${surveyType.toLowerCase()}`);
+  // 최종제출
+  const handleComplete = async () => {
+    try {
+      await submitAllMutation.mutateAsync({
+        type: surveyType,
+        dataId: Number(surveyId),
+        requestData: buildAllResponses(),
+      });
+      initialAnswersRef.current = { ...answers };
+      initialQualitativeRef.current = qualitativeAnswer;
+      setIsSubmittedLocal(true);
+      clearSurveyProgress(surveyId);
+      showSuccessMessage('평가가 성공적으로 제출되었습니다.');
     } catch (error) {
       console.error('설문 제출 실패:', error);
-      // 에러 처리 로직 추가 가능
       if (axios.isAxiosError(error)) {
         const status = error.response?.status;
         const message = error.response?.data?.message;
@@ -214,15 +206,31 @@ export default function ProductSurvey({
           showTemporaryMessage('ERROR: 아직 모든 문항에 응답하지 않았습니다.');
           return;
         }
-
         if (status === 409) {
           showTemporaryMessage(message ?? '이미 처리된 요청입니다.');
           return;
         }
       }
-
       showTemporaryMessage('ERROR: 설문 제출 중 오류가 발생했습니다.');
     }
+  };
+
+  const handleAnswerChange = (questionId: string, value: number) => {
+    setAnswers((prev) => ({ ...prev, [questionId]: value }));
+    if (isSubmittedLocal) setIsSubmittedLocal(false);
+    saveSurveyProgress(surveyId, {
+      questionsAnswered: { ...answers, [questionId]: value },
+      qualitativeAnswer,
+    });
+  };
+
+  const handleQualitativeChange = (value: string) => {
+    setQualitativeAnswer(value);
+    if (isSubmittedLocal) setIsSubmittedLocal(false);
+    saveSurveyProgress(surveyId, {
+      questionsAnswered: answers,
+      qualitativeAnswer: value,
+    });
   };
 
   const isAllAnswered = questions.every((q) => {
@@ -285,6 +293,19 @@ export default function ProductSurvey({
       {} as Record<QuestionType, ProductSurveyQuestion[]>
     );
   }, [questions]);
+
+  const showTemporaryMessage = (message: string) => {
+    setSubmitErrorMessage(message);
+
+    setTimeout(() => {
+      setSubmitErrorMessage(null);
+    }, 3000);
+  };
+
+  const showSuccessMessage = (message: string) => {
+    setSubmitSuccessMessage(message);
+    setTimeout(() => setSubmitSuccessMessage(null), 3000);
+  };
 
   return (
     <div className="mx-auto h-full px-8 py-6">
@@ -364,8 +385,8 @@ export default function ProductSurvey({
                             question={qText}
                             value={currentValue}
                             onChange={(value) => handleAnswerChange(qId, value)}
-                            onSave={handleQuantitativeSave}
-                            isSaving={savingQuestions.has(qId)}
+                            // onSave={handleQuantitativeSave}
+                            // isSaving={savingQuestions.has(qId)}
                           />
                         );
                       })}
@@ -379,8 +400,8 @@ export default function ProductSurvey({
                 value={qualitativeAnswer}
                 surveyId={surveyId}
                 onChange={handleQualitativeChange}
-                onSave={handleQualitativeSave}
-                isSaving={isSavingQualitative}
+                // onSave={handleQualitativeSave}
+                // isSaving={isSavingQualitative}
               />
             </div>
           </div>
@@ -392,16 +413,26 @@ export default function ProductSurvey({
                 {submitErrorMessage}
               </div>
             )}
+            {submitSuccessMessage && (
+              <div className="absolute bottom-20 right-5 rounded-md border border-green-500 bg-green-50 px-10 py-6 text-sm font-bold text-green-500 shadow-md">
+                {submitSuccessMessage}
+              </div>
+            )}
             <SurveyNavigationWithArrows
               onComplete={handleComplete}
+              onTempSave={handleTempSave}
+              canTempSave={isDirty}
               canComplete={isAllAnswered && isQualitativeValid}
-              isSubmitted={isSubmitted}
+              // isSubmitted={isSubmitted}
+              isSubmitted={isSubmittedLocal}
               onPrevious={goToPrevious}
               onNext={goToNext}
               canGoPrevious={canGoPrevious}
               canGoNext={canGoNext}
               currentStep={currentIndex + 1}
               totalSteps={totalSurveys}
+              isLoading={submitAllMutation.isPending}
+              isTempSaving={saveAllMutation.isPending} // 임시저장 로딩
             />
           </div>
         </div>

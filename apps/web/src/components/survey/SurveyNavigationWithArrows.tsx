@@ -7,12 +7,16 @@ interface SurveyNavigationWithArrowsProps {
   onComplete?: () => void;
   canComplete?: boolean;
   isSubmitted?: boolean;
+  onTempSave?: () => void;
+  canTempSave?: boolean;
   onPrevious?: () => void;
   onNext?: () => void;
   canGoPrevious?: boolean;
   canGoNext?: boolean;
   currentStep?: number;
   totalSteps?: number;
+  isLoading?: boolean;
+  isTempSaving?: boolean;
   className?: string;
 }
 
@@ -20,12 +24,16 @@ export default function SurveyNavigationWithArrows({
   onComplete,
   canComplete = false,
   isSubmitted = false,
+  onTempSave,
+  canTempSave = false,
   onPrevious,
   onNext,
   canGoPrevious = false,
   canGoNext = false,
   // currentStep = 1,
   // totalSteps = 1,
+  isLoading = false,
+  isTempSaving = false,
   className,
 }: SurveyNavigationWithArrowsProps) {
   const router = useRouter();
@@ -35,6 +43,30 @@ export default function SurveyNavigationWithArrows({
     const surveyType = (type as string).toLowerCase();
     router.push(`/inbox/${surveyType}`);
   };
+
+  const isAnyLoading = isLoading || isTempSaving;
+
+  // 버튼 텍스트 결정
+  const buttonLabel = () => {
+    if (isLoading) return '제출 중...';
+    if (isTempSaving) return '저장 중...';
+    if (isSubmitted) return '제출완료';
+    if (canComplete) return '평가제출';
+    if (canTempSave) return '임시저장';
+    return '설문 중';
+  };
+
+  // 버튼 클릭 핸들러 결정
+  const buttonHandler =
+    isAnyLoading || isSubmitted
+      ? undefined
+      : canComplete
+        ? onComplete
+        : onTempSave;
+
+  // 버튼 비활성 조건
+  const isButtonDisabled =
+    isAnyLoading || isSubmitted || (!canTempSave && !canComplete);
 
   return (
     <div
@@ -87,21 +119,52 @@ export default function SurveyNavigationWithArrows({
             리스트로 돌아가기
           </button>
 
-          {/* 평가완료 버튼 */}
+          {/* 임시저장 / 평가제출 통합 버튼 */}
           <button
-            onClick={onComplete}
-            disabled={!canComplete}
+            onClick={buttonHandler}
+            disabled={isButtonDisabled}
             className={clsx(
               'w-full whitespace-nowrap rounded-xl px-4 py-3 text-sm font-medium shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 sm:w-36 sm:px-4 lg:w-40 lg:px-5 xl:w-44 xl:px-6',
               {
+                // 로딩 중
+                'cursor-not-allowed bg-blue-400 text-white': isLoading,
+                'cursor-not-allowed bg-amber-400 text-white': isTempSaving,
+                // 전체 완료 → 파란색 제출 버튼
                 'bg-blue-600 text-white hover:bg-blue-700':
-                  !isSubmitted && canComplete,
-                'cursor-not-allowed bg-gray-300 text-gray-500': isSubmitted,
-                'bg-gray-300 text-gray-500': !canComplete,
+                  canComplete && !isSubmitted,
+                // 일부 응답 → amber 임시저장 버튼
+                'bg-amber-500 text-white hover:bg-amber-600':
+                  !canComplete && canTempSave && !isSubmitted,
+                // 비활성
+                'cursor-not-allowed bg-gray-300 text-gray-500':
+                  (!canTempSave && !canComplete) || isSubmitted,
               }
             )}
           >
-            {canComplete ? '평가완료' : '설문중'}
+            <span className="flex items-center justify-center gap-2">
+              {isAnyLoading && (
+                <svg
+                  className="h-4 w-4 animate-spin"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v8z"
+                  />
+                </svg>
+              )}
+              {buttonLabel()}
+            </span>
           </button>
         </div>
 

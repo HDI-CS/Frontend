@@ -24,7 +24,6 @@ import {
 } from '@/schemas/survey';
 import { VisualCategory } from '@/schemas/weight-evaluation';
 import {
-  clearSurveyProgress,
   loadSurveyProgress,
   saveSurveyProgress,
 } from '@/utils/survey';
@@ -60,7 +59,7 @@ export default function BrandSurvey({
   const [savingQuestions, setSavingQuestions] = useState<Set<string>>(
     new Set()
   );
-  const [isSavingQualitative, setIsSavingQualitative] = useState(false);
+  // const [isSavingQualitative, setIsSavingQualitative] = useState(false);
 
   // 설문 제출 실패시 사용
   const [submitErrorMessage, setSubmitErrorMessage] = useState<string | null>(
@@ -79,7 +78,7 @@ export default function BrandSurvey({
     return detail.result.brandSurveyResponse?.response ?? [];
   }, [detail]);
 
-  const textSurveyId = detail.result.brandSurveyResponse.textResponse.surveyId;
+  // const textSurveyId = detail.result.brandSurveyResponse.textResponse.surveyId;
   const isSubmitted = detail.result.brandSurveyResponse.isSubmitted;
 
   // 서버에서 받아온 데이터를 클라이언트 상태에 반영
@@ -142,32 +141,32 @@ export default function BrandSurvey({
   // 정성평가 저장 핸들러
   // 수정:  300자 미만도 저장이 되도록, 대신 평가 완료 제출은 되지 않음
 
-  const handleQualitativeSave = async (textResponse: string) => {
-    // if (textResponse.length < 300) {
-    //   return;
-    // }
+  // const handleQualitativeSave = async (textResponse: string) => {
+  //   // if (textResponse.length < 300) {
+  //   //   return;
+  //   // }
 
-    setIsSavingQualitative(true);
+  //   setIsSavingQualitative(true);
 
-    try {
-      await saveSurveyResponseMutation.mutateAsync({
-        type: surveyType,
-        productResponseId: Number(surveyId), // API는 여전히 productResponseId 필드를 사용
-        requestData: {
-          surveyId: textSurveyId,
-          response: null,
-          textResponse,
-        },
-      });
+  //   try {
+  //     await saveSurveyResponseMutation.mutateAsync({
+  //       type: surveyType,
+  //       productResponseId: Number(surveyId), // API는 여전히 productResponseId 필드를 사용
+  //       requestData: {
+  //         surveyId: textSurveyId,
+  //         response: null,
+  //         textResponse,
+  //       },
+  //     });
 
-      // 제출 완료 후 로컬스토리지 draft 정리
-      clearSurveyProgress(surveyId);
-    } catch (error) {
-      console.error('정성평가 저장 실패:', error);
-    } finally {
-      setIsSavingQualitative(false);
-    }
-  };
+  //     // 제출 완료 후 로컬스토리지 draft 정리
+  //     clearSurveyProgress(surveyId);
+  //   } catch (error) {
+  //     console.error('정성평가 저장 실패:', error);
+  //   } finally {
+  //     setIsSavingQualitative(false);
+  //   }
+  // };
 
   const handleAnswerChange = (questionId: string, value: number) => {
     setAnswers((prev) => ({
@@ -368,8 +367,8 @@ export default function BrandSurvey({
                 surveyId={surveyId}
                 value={qualitativeAnswer}
                 onChange={handleQualitativeChange}
-                onSave={handleQualitativeSave}
-                isSaving={isSavingQualitative}
+                // onSave={handleQualitativeSave}
+                // isSaving={isSavingQualitative}
               />
             </div>
           </div>
