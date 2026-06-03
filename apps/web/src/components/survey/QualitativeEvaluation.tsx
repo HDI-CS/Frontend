@@ -1,7 +1,6 @@
 import { clsx } from 'clsx';
 import { useEffect, useState } from 'react';
 
-import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { loadSurveyProgress, saveSurveyProgress } from '@/utils/survey';
 
 interface QualitativeEvaluationProps {

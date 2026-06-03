@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import ProductImage from '@/components/survey/ProductImage';
 import ProductInfo from '@/components/survey/ProductInfo';
@@ -10,6 +10,7 @@ import SurveyHeader from '@/components/survey/SurveyHeader';
 import SurveyNavigationWithArrows from '@/components/survey/SurveyNavigationWithArrows';
 import SurveyQuestion from '@/components/survey/SurveyQuestion';
 import { PREFIX_TO_TYPE, QuestionType } from '@/config/surveyTypeMap';
+import { useDirtyGuard } from '@/hooks/useDirtyGuard';
 import { useSurveyNavigation } from '@/hooks/useSurveyNavigation';
 import {
   useSaveAllSurveyResponses,
@@ -54,6 +55,11 @@ export default function ProductSurvey({
 
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [qualitativeAnswer, setQualitativeAnswer] = useState<string>('');
+  // 제출되지 않았고, 수정시에 이탈 방지용 상태
+  const [isSubmittedLocal, setIsSubmittedLocal] = useState(
+    detail.result.productSurveyResponse.isSubmitted
+  );
+
   // const [savingQuestions, setSavingQuestions] = useState<Set<string>>(
   //   new Set()
   // );
@@ -67,14 +73,15 @@ export default function ProductSurvey({
     string | null
   >(null);
 
-  // 제출되지 않았고, 수정시에 이탈 방지용 상태
-  const [isSubmittedLocal, setIsSubmittedLocal] = useState(
-    detail.result.productSurveyResponse.isSubmitted
-  );
+  const saveAllMutation = useSaveAllSurveyResponses();
+  const submitAllMutation = useSubmitAllSurveyResponses();
+
+  const { isDirty, guardNavigation, setInitialValues, syncInitialValues } =
+    useDirtyGuard({ answers, qualitativeAnswer, isSubmittedLocal });
 
   // 마지막 제출(혹은 페이지 진입) 시점의 기준값
-  const initialAnswersRef = useRef<Record<string, number>>({});
-  const initialQualitativeRef = useRef<string>('');
+  // const initialAnswersRef = useRef<Record<string, number>>({});
+  // const initialQualitativeRef = useRef<string>('');
 
   const product = detail.result.industryDataSetResponse;
   const questions: ProductSurveyQuestion[] = useMemo(() => {
@@ -99,7 +106,6 @@ export default function ProductSurvey({
     });
 
     setAnswers(serverAnswers);
-    initialAnswersRef.current = serverAnswers; // 기준값 세팅
 
     const serverQualitative =
       detail.result.productSurveyResponse.textResponse?.response ?? '';
@@ -110,28 +116,15 @@ export default function ProductSurvey({
     } else {
       setQualitativeAnswer(serverQualitative);
     }
-    initialQualitativeRef.current = serverQualitative; // 기준값 세팅
-  }, [detail, surveyId]);
+    setInitialValues(serverAnswers, serverQualitative);
+  }, [detail, surveyId, setInitialValues]);
 
-  // isDirty: 제출완료 상태가 아니고 기준값과 현재 state가 다른 경우
-  const isDirty = useMemo(() => {
-    if (isSubmittedLocal) return false;
+  // 정성평가 응답 비교
+  // if (qualitativeAnswer !== initialQualitativeRef.current) {
+  //   return true;
+  // }
 
-    const answersChanged = Object.entries(answers).some(([key, value]) => {
-      return initialAnswersRef.current[key] !== value;
-    });
-
-    const qualitativeChanged =
-      qualitativeAnswer !== initialQualitativeRef.current;
-
-    // 정성평가 응답 비교
-    // if (qualitativeAnswer !== initialQualitativeRef.current) {
-    //   return true;
-    // }
-
-    // return false;
-    return answersChanged || qualitativeChanged;
-  }, [answers, qualitativeAnswer, isSubmittedLocal]);
+  // return false;
 
   // isDIrty 일 때 브라우저 이탈 방지 팝업 등록
   useEffect(() => {
@@ -145,9 +138,6 @@ export default function ProductSurvey({
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [isDirty]); // 의존성 배열에 isDirty 추가
-
-  const saveAllMutation = useSaveAllSurveyResponses();
-  const submitAllMutation = useSubmitAllSurveyResponses();
 
   // 공통으로 쓰는 응답 배열 생성 함수
   const buildAllResponses = () => [
@@ -167,6 +157,16 @@ export default function ProductSurvey({
       : []),
   ];
 
+  const showTemporaryMessage = (message: string) => {
+    setSubmitErrorMessage(message);
+    setTimeout(() => setSubmitErrorMessage(null), 3000);
+  };
+
+  const showSuccessMessage = (message: string) => {
+    setSubmitSuccessMessage(message);
+    setTimeout(() => setSubmitSuccessMessage(null), 3000);
+  };
+
   // 임시저장
   const handleTempSave = async () => {
     try {
@@ -175,8 +175,7 @@ export default function ProductSurvey({
         dataId: Number(surveyId),
         requestData: buildAllResponses(),
       });
-      initialAnswersRef.current = { ...answers };
-      initialQualitativeRef.current = qualitativeAnswer;
+      syncInitialValues(answers, qualitativeAnswer);
       showSuccessMessage('임시저장되었습니다.');
     } catch {
       showTemporaryMessage('ERROR: 임시저장 중 오류가 발생했습니다.');
@@ -191,8 +190,7 @@ export default function ProductSurvey({
         dataId: Number(surveyId),
         requestData: buildAllResponses(),
       });
-      initialAnswersRef.current = { ...answers };
-      initialQualitativeRef.current = qualitativeAnswer;
+      syncInitialValues(answers, qualitativeAnswer);
       setIsSubmittedLocal(true);
       clearSurveyProgress(surveyId);
       showSuccessMessage('평가가 성공적으로 제출되었습니다.');
@@ -294,19 +292,6 @@ export default function ProductSurvey({
     );
   }, [questions]);
 
-  const showTemporaryMessage = (message: string) => {
-    setSubmitErrorMessage(message);
-
-    setTimeout(() => {
-      setSubmitErrorMessage(null);
-    }, 3000);
-  };
-
-  const showSuccessMessage = (message: string) => {
-    setSubmitSuccessMessage(message);
-    setTimeout(() => setSubmitSuccessMessage(null), 3000);
-  };
-
   return (
     <div className="mx-auto h-full px-8 py-6">
       <div className="grid h-full grid-cols-1 gap-6 lg:grid-cols-2">
@@ -373,9 +358,11 @@ export default function ProductSurvey({
                           idToIndexMap[question.surveyId ?? 0] ?? '?';
                         const qText = String(question.survey ?? `문항 ${qId}`);
                         const currentValue =
-                          question.response && question.response > 0
-                            ? question.response
-                            : answers[qId];
+                          answers[qId] !== undefined
+                            ? answers[qId]
+                            : question.response && question.response > 0
+                              ? question.response
+                              : undefined;
 
                         return (
                           <SurveyQuestion
@@ -425,8 +412,8 @@ export default function ProductSurvey({
               canComplete={isAllAnswered && isQualitativeValid}
               // isSubmitted={isSubmitted}
               isSubmitted={isSubmittedLocal}
-              onPrevious={goToPrevious}
-              onNext={goToNext}
+              onPrevious={() => guardNavigation(goToPrevious)}
+              onNext={() => guardNavigation(goToNext)}
               canGoPrevious={canGoPrevious}
               canGoNext={canGoNext}
               currentStep={currentIndex + 1}

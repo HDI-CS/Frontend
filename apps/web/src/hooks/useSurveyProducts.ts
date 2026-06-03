@@ -131,7 +131,6 @@ export const useSubmitWeightedScores = (type: UserType) => {
   });
 };
 
-
 // 임시저장 훅
 export const useSaveAllSurveyResponses = () => {
   const queryClient = useQueryClient();
@@ -173,8 +172,7 @@ export const useSubmitAllSurveyResponses = () => {
       type: UserType;
       dataId: number;
       requestData: SurveyResponseRequest[];
-    }) =>
-      surveyService.submitAllSurveyResponses({ type, dataId, requestData }),
+    }) => surveyService.submitAllSurveyResponses({ type, dataId, requestData }),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
         queryKey: ['surveyDetail', variables.dataId],
