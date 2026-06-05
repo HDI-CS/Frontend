@@ -377,7 +377,7 @@ export default function ProductSurvey({
   // 배지 컴포넌트
   const SurveyStatusBadge = () => {
     const getBadgeStyle = () => {
-      if (isSubmittedLocal && !isDirty) return 'bg-green-500 text-white';
+      if (isSubmittedLocal && !isDirty) return 'bg-blue-400 text-white';
       if (lastSavedTime && !isDirty)
         return 'bg-white text-blue-500 border border-gray-200';
       return 'bg-white text-blue-500 border border-gray-200';

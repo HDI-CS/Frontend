@@ -397,7 +397,7 @@ export default function BrandSurvey({
 
   const SurveyStatusBadge = () => {
     const getBadgeStyle = () => {
-      if (isSubmittedLocal && !isDirty) return 'bg-green-500 text-white';
+      if (isSubmittedLocal && !isDirty) return 'bg-blue-400 text-white';
       return 'bg-white text-blue-500 border border-gray-200';
     };
 
