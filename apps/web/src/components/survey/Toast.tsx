@@ -1,7 +1,7 @@
 'use client';
 
 import { clsx } from 'clsx';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 interface ToastProps {
   message: string | null;
@@ -15,6 +15,22 @@ export default function Toast({ message, type, onClose }: ToastProps) {
     const timer = setTimeout(onClose, 3000);
     return () => clearTimeout(timer);
   }, [message, onClose]);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    if (!message) return;
+
+    const showTimer = setTimeout(() => setVisible(true), 10);
+    const hideTimer = setTimeout(() => setVisible(false), 2700);
+    const closeTimer = setTimeout(onClose, 3000);
+
+    return () => {
+      clearTimeout(showTimer);
+      clearTimeout(hideTimer);
+      clearTimeout(closeTimer);
+      setVisible(false);
+    };
+  }, [message, onClose]);
 
   if (!message) return null;
 
@@ -22,6 +38,8 @@ export default function Toast({ message, type, onClose }: ToastProps) {
     <div
       className={clsx(
         'bottom-35 min-h-15 fixed right-0 z-50 flex min-w-72 -translate-x-1/2 items-center justify-between gap-3 rounded-xl px-5 py-3 shadow-lg',
+        'transition-all duration-300 ease-in-out',
+        visible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0',
         type === 'error'
           ? 'border border-red-200 bg-red-50'
           : 'border border-green-200 bg-green-50'
