@@ -37,7 +37,7 @@ export default function Toast({ message, type, onClose }: ToastProps) {
   return (
     <div
       className={clsx(
-        'bottom-35 min-h-15 fixed right-0 z-50 flex min-w-72 -translate-x-1/2 items-center justify-between gap-3 rounded-xl px-5 py-3 shadow-lg',
+        'bottom-35 min-h-15 absolute right-[-90px] z-50 flex min-w-72 -translate-x-1/2 items-center justify-between gap-3 rounded-xl px-5 py-3 shadow-lg',
         'transition-all duration-300 ease-in-out',
         visible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0',
         type === 'error'
