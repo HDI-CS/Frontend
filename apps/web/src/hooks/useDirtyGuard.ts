@@ -1,3 +1,4 @@
+import { useDirtyGuardContext } from '@/context/DirtyGuardContext';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 interface UseDirtyGuardProps {
@@ -13,6 +14,7 @@ export const useDirtyGuard = ({
 }: UseDirtyGuardProps) => {
   const initialAnswersRef = useRef<Record<string, number>>({});
   const initialQualitativeRef = useRef<string>('');
+  const { setIsDirty } = useDirtyGuardContext();
 
   const isDirty = useMemo(() => {
     if (isSubmittedLocal) return false;
@@ -52,6 +54,11 @@ export const useDirtyGuard = ({
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, [isDirty]);
+
+  useEffect(() => {
+    setIsDirty(isDirty);
+    return () => setIsDirty(false);
+  }, [isDirty, setIsDirty]);
 
   // 화살표 네비게이션 래퍼
   const guardNavigation = useCallback(
