@@ -155,10 +155,10 @@ export default function BrandSurvey({
       response: value,
       textResponse: null,
     })),
-    ...(qualitativeAnswer
+    ...(textSurveyId != null
       ? [
           {
-            surveyId: textSurveyId ?? 1,
+            surveyId: textSurveyId,
             response: null,
             textResponse: qualitativeAnswer,
           },

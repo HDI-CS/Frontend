@@ -175,12 +175,12 @@ export default function ProductSurvey({
       response: value,
       textResponse: null,
     })),
-    ...(qualitativeAnswer
+    ...(textSurveyId != null
       ? [
           {
-            surveyId: textSurveyId ?? 1,
+            surveyId: textSurveyId,
             response: null,
-            textResponse: qualitativeAnswer || '',
+            textResponse: qualitativeAnswer,
           },
         ]
       : []),
