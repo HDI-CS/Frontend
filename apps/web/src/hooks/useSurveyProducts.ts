@@ -130,3 +130,59 @@ export const useSubmitWeightedScores = (type: UserType) => {
     },
   });
 };
+
+// 임시저장 훅
+export const useSaveAllSurveyResponses = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      type,
+      dataId,
+      requestData,
+    }: {
+      type: UserType;
+      dataId: number;
+      requestData: SurveyResponseRequest[];
+    }) => surveyService.saveAllSurveyResponses({ type, dataId, requestData }),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ['surveyDetail', variables.dataId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['surveyProducts', variables.type],
+      });
+    },
+    onError: (error) => {
+      console.error('임시저장 실패:', error);
+    },
+  });
+};
+
+// 최종제출 훅
+export const useSubmitAllSurveyResponses = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      type,
+      dataId,
+      requestData,
+    }: {
+      type: UserType;
+      dataId: number;
+      requestData: SurveyResponseRequest[];
+    }) => surveyService.submitAllSurveyResponses({ type, dataId, requestData }),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ['surveyDetail', variables.dataId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['surveyProducts', variables.type],
+      });
+    },
+    onError: (error) => {
+      console.error('최종제출 실패:', error);
+    },
+  });
+};
