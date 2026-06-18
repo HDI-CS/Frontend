@@ -52,7 +52,7 @@ export default function WeightEvaluationHeader({
           </div>
         </div>
         <p className="mt-2 text-xs text-gray-600">
-          각 카테고리별 가중치 합이 정확히 100%가 되어야 평가완료가 가능합니다.
+          각 카테고리별 가중치 합이 정확히 100%가 되어야 평가 완료가 가능합니다.
         </p>
       </div>
     </div>

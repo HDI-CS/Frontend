@@ -240,7 +240,7 @@ export default function BrandSurvey({
       syncInitialValues(answers, qualitativeAnswer);
       setIsSubmittedLocal(true);
       clearSurveyProgress(surveyId);
-      showModal('모든 평가가 완료되었습니다.', 'success', () => {
+      showModal('설문이 완료되었습니다.', 'success', () => {
         hideModal();
         if (canGoNext) {
           goToNext();
@@ -411,7 +411,7 @@ export default function BrandSurvey({
 
     const getBadgeText = () => {
       if (isSubmittedLocal && !isDirty)
-        return `${answeredCount}/${totalQuestions} 평가완료`;
+        return `${answeredCount}/${totalQuestions} 평가 완료`;
       return `${answeredCount}/${totalQuestions} 평가중`;
     };
 
