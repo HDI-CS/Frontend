@@ -5,7 +5,7 @@ import { SURVEY_INTRODUCTION } from '@/constants/notice';
 
 interface SurveyIntroductionProps {
   className?: string;
-  type?: 'brand' | 'product';
+  type?: 'visual' | 'industry';
 }
 
 interface RichSegment {
@@ -66,7 +66,7 @@ function renderContentItem(item: ContentItem, index: number): ReactNode {
 
 export default function SurveyIntroduction({
   className = '',
-  type = 'brand',
+  type = 'visual',
 }: SurveyIntroductionProps) {
   const { TITLE, CONTENT, FOOTER } = SURVEY_INTRODUCTION[type];
 

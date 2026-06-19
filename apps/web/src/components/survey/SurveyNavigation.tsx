@@ -21,7 +21,7 @@ export default function SurveyNavigation({
           'pointer-events-none bg-gray-300 text-gray-400': !canComplete,
         })}
       >
-        평가완료
+        평가 완료
       </button>
     </div>
   );

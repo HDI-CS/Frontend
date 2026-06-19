@@ -111,3 +111,16 @@ export const clearSurveyProgress = (surveyId: string): void => {
     console.error('설문 진행 상태 삭제 실패:', error);
   }
 };
+
+// 설문 관련 값만 초기화
+export const clearSurveyProgressStorage = () => {
+  try {
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith('survey_progress_')) {
+        localStorage.removeItem(key);
+      }
+    });
+  } catch (error) {
+    console.error('설문 로컬스토리지 초기화 실패:', error);
+  }
+};

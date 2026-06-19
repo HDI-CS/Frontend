@@ -1,6 +1,6 @@
 import { useParams, useRouter } from 'next/navigation';
 
-import { SurveyProduct } from '@/schemas/survey';
+import { SurveyResult } from '@/schemas/survey';
 
 import { useMe } from './useMe';
 import { useSurveyProducts } from './useSurveyProducts';
@@ -12,27 +12,24 @@ export const useSurveyNavigation = () => {
   const surveyType = params.type as string;
 
   const { data: userInfo } = useMe();
-  const { userType } = userInfo?.data || {};
+  const { userType } = userInfo?.result || {};
 
   const { data: surveysData } = useSurveyProducts({ type: userType });
-  const surveys = (surveysData?.data as SurveyProduct[]) || [];
+  const surveys = (surveysData?.result as SurveyResult[]) || [];
 
   // 설문 목록을 responseId 순서대로 정렬
   const sortedSurveys = [...surveys].sort((a, b) => {
-    // responseId를 숫자로 변환하여 비교
-    const aId =
-      typeof a.responseId === 'bigint' ? Number(a.responseId) : a.responseId;
-    const bId =
-      typeof b.responseId === 'bigint' ? Number(b.responseId) : b.responseId;
+    // (기존) responseId를 숫자로 변환하여 비교
+    // (1차 수정) responseId -> dataId(number)
+    const aId = typeof a.dataId === 'bigint' ? Number(a.dataId) : a.dataId;
+    const bId = typeof b.dataId === 'bigint' ? Number(b.dataId) : b.dataId;
     return aId - bId;
   });
 
   // 현재 설문의 인덱스 찾기 (정렬된 배열에서 responseId로 비교)
   const currentIndex = sortedSurveys.findIndex((survey) => {
     const surveyId =
-      typeof survey.responseId === 'bigint'
-        ? Number(survey.responseId)
-        : survey.responseId;
+      typeof survey.dataId === 'bigint' ? Number(survey.dataId) : survey.dataId;
     const currentId = Number(currentSurveyId);
     return surveyId === currentId;
   });
@@ -40,14 +37,14 @@ export const useSurveyNavigation = () => {
   // 디버깅을 위한 로그 (클라이언트 사이드에서만)
   if (typeof window !== 'undefined') {
     console.log('Survey Navigation Debug:', {
-      currentSurveyId: currentSurveyId.toString(),
+      currentSurveyId: currentSurveyId.toString() ?? '',
       surveyType,
       totalSurveys: surveys.length,
       sortedSurveyIds: sortedSurveys.map((s) => {
-        if (typeof s.responseId === 'bigint') {
-          return s.responseId.toString();
+        if (typeof s.dataId === 'bigint') {
+          return Number(s.dataId).toString();
         }
-        return String(s.responseId);
+        return String(s.dataId);
       }),
       currentIndex,
       currentSurvey: sortedSurveys[currentIndex]?.name || 'Not found',
@@ -70,9 +67,9 @@ export const useSurveyNavigation = () => {
   const goToPrevious = () => {
     if (canGoPrevious && previousSurvey) {
       const previousId =
-        typeof previousSurvey.responseId === 'bigint'
-          ? previousSurvey.responseId.toString()
-          : String(previousSurvey.responseId);
+        typeof previousSurvey.dataId === 'bigint'
+          ? Number(previousSurvey.dataId).toString()
+          : String(previousSurvey.dataId);
       router.push(`/survey/${surveyType}/${previousId}`);
     }
   };
@@ -81,9 +78,9 @@ export const useSurveyNavigation = () => {
   const goToNext = () => {
     if (canGoNext && nextSurvey) {
       const nextId =
-        typeof nextSurvey.responseId === 'bigint'
-          ? nextSurvey.responseId.toString()
-          : String(nextSurvey.responseId);
+        typeof nextSurvey.dataId === 'bigint'
+          ? Number(nextSurvey.dataId).toString()
+          : String(nextSurvey.dataId);
       router.push(`/survey/${surveyType}/${nextId}`);
     }
   };

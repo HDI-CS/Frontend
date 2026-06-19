@@ -26,7 +26,7 @@ export const useLogin = () => {
       queryClient.setQueryData(['me'], {
         status: 200,
         message: 'OK',
-        data: data.data,
+        data: data.result,
       });
       console.log('✅ 사용자 정보 캐시에 직접 설정 완료');
 
@@ -44,7 +44,7 @@ export const useLogin = () => {
       }
 
       // 성공 후 inbox로 리다이렉트
-      router.push(`/inbox/${data.data.userType.toLowerCase()}`);
+      router.push(`/inbox/${data.result.userType.toLowerCase()}`);
     },
     onError: (error) => {
       console.error('로그인 실패:', error);

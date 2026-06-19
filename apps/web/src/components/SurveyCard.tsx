@@ -9,16 +9,16 @@ import {
   SURVEY_STATUS_BUTTON_STYLES,
   SURVEY_STATUS_LABELS,
 } from '@/constants/survey';
-import type { SurveyProduct } from '@/schemas/survey';
+import type { SurveyResult } from '@/schemas/survey';
 
 export default function SurveyCard({
   item,
   index,
 }: {
-  item: SurveyProduct;
+  item: SurveyResult;
   index: number;
 }) {
-  const { name, image, responseId, responseStatus } = item;
+  const { name, image, dataId, responseStatus } = item;
   const { type } = useParams();
   const [imageLoading, setImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
@@ -76,7 +76,7 @@ export default function SurveyCard({
 
       {/* 버튼 */}
       <Link
-        href={`/survey/${type}/${responseId}`}
+        href={`/survey/${type}/${dataId}`}
         className={`block w-full rounded-lg px-3 py-2.5 text-center text-[13px] transition-colors md:py-2.5 md:text-sm ${SURVEY_STATUS_BUTTON_STYLES[status]}`}
       >
         {SURVEY_STATUS_LABELS[status]}

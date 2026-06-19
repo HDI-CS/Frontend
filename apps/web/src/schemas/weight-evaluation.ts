@@ -11,7 +11,15 @@ export const WeightEvaluationCategorySchema = z.enum([
   'VACUUM_CLEANER',
   'AIR_PURIFIER',
   'HAIR_DRYER',
+
+  // 2026
+  'POSTER',
+  'BLUETOOTH_SPEAKER',
+  'HEADPHONE',
+  'EARPHONE',
 ]);
+export const VisualCategorySchema = z.enum(['COSMETIC', 'FB', 'POSTER']);
+export type VisualCategory = z.infer<typeof VisualCategorySchema>;
 
 // 가중치 평가 요청 스키마
 export const WeightedScoreRequestSchema = z.object({
@@ -27,7 +35,7 @@ export const WeightedScoreRequestSchema = z.object({
   score8: z.int32(),
 });
 
-// 가중치 평가 요청 배열 스키마 (API는 배열을 받음)
+// 가중치 평가 요청 배열 스키마 (API는 배열을 받음 -> 수정: 카테고리 별로 하나씩)
 export const WeightedScoreRequestArraySchema = z.array(
   WeightedScoreRequestSchema
 );
@@ -48,9 +56,9 @@ export const WeightedScoreResponseSchema = z.object({
 
 // 가중치 평가 응답 데이터 스키마 (API 응답 구조)
 export const WeightedScoreApiResponseSchema = z.object({
-  status: z.number(),
+  code: z.number(),
   message: z.string(),
-  data: z.array(WeightedScoreResponseSchema),
+  result: z.array(WeightedScoreResponseSchema),
 });
 
 // 스키마에서 추출한 타입들
