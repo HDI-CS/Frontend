@@ -16,6 +16,17 @@ type VisualColumnDef = {
 
 export const CATEGORY_FIELD_CONFIG = {
   visual: {
+    // 2026 2차
+    PACKAGE: [
+      { label: '부문', key: 'sectorCategory' },
+      { label: '주체', key: 'clientName' },
+      { label: '분류', key: 'visualType' },
+      { label: '이름', key: 'title' },
+      { label: '내용(번역본)', key: 'designDescription' },
+      { label: '내용(원문)', key: 'originalDescription' },
+      { label: '웹사이트', key: 'referenceUrl', type: 'link' },
+    ],
+
     // 2026
     POSTER: [
       { label: '부문·카테고리', key: 'sectorCategory' },
@@ -25,15 +36,6 @@ export const CATEGORY_FIELD_CONFIG = {
       { label: '내용 유형', key: 'contentType' },
       { label: '시각 유형', key: 'visualType' },
       { label: '디자인 설명', key: 'designDescription' },
-      { label: '웹사이트', key: 'referenceUrl', type: 'link' },
-    ],
-    PACKAGE: [
-      { label: '부문', key: 'sectorCategory' },
-      { label: '주체', key: 'clientName' },
-      { label: '분류', key: 'visualType' },
-      { label: '이름', key: 'title' },
-      { label: '내용(번역본)', key: 'designDescription' },
-      { label: '내용(원문)', key: 'originalDescription' },
       { label: '웹사이트', key: 'referenceUrl', type: 'link' },
     ],
 

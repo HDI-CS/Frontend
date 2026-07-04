@@ -334,4 +334,4 @@ export type DataDetailModalProps =
       /* 공통 props */
     };
 
-export type Years = '2025' | '2026';
+export type Years = '2025' | '2026' | '2026 2차';

@@ -60,8 +60,12 @@ const CATEGORY_MAP: Record<
     INDUSTRY: ['VACUUM_CLEANER', 'AIR_PURIFIER', 'HAIR_DRYER'],
   },
   2026: {
-    VISUAL: ['POSTER', 'PACKAGE'],
+    VISUAL: ['POSTER'],
     INDUSTRY: ['HEADPHONE', 'EARPHONE', 'BLUETOOTH_SPEAKER'],
+  },
+  '2026 2차': {
+    VISUAL: ['PACKAGE'],
+    INDUSTRY: [],
   },
 } as const;
 

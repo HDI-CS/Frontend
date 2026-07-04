@@ -13,11 +13,13 @@ export const WeightEvaluationCategorySchema = z.enum([
   'HAIR_DRYER',
 
   // 2026
-  'PACKAGE',
   'POSTER',
   'BLUETOOTH_SPEAKER',
   'HEADPHONE',
   'EARPHONE',
+
+  // 2026 2차
+  'PACKAGE',
 ]);
 export const VisualCategorySchema = z.enum(['COSMETIC', 'FB', 'POSTER']);
 export type VisualCategory = z.infer<typeof VisualCategorySchema>;
