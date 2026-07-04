@@ -132,7 +132,7 @@ export type ProductTextSurveyResponse = z.infer<
 // ========================
 
 export const BrandDataSetResponseSchema = z.object({
-  name: z.string(),
+  name: z.string().nullable(),
   id: z.string(),
   sectorCategory: z.string().nullable(),
   mainProductCategory: z.string().nullable(),
@@ -147,6 +147,7 @@ export const BrandDataSetResponseSchema = z.object({
   visualType: z.string().nullable(),
   releaseYear: z.string().nullable(),
   designDescription: z.string().nullable(),
+  originalDescription: z.string().nullable(),
   visualDataCategory: z.string().nullable(),
 
   image: z.string().nullable(),

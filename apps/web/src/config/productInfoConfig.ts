@@ -6,6 +6,14 @@ export type FieldConfig = {
 
 export const SURVEY_INFO_CONFIG = {
   visual: {
+    PACKAGE: {
+      title: '패키지 정보',
+      subTitle: '패키지 상세 정보',
+      surveyTitle: '패키지 평가 설문',
+      surveyDescription:
+        '웹사이트에 있는 내용을 참고하되, 평가는 제시된 이미지만을 기준으로 평가해주세요.',
+    },
+
     POSTER: {
       title: '포스터 정보',
       subTitle: '포스터 상세 정보',
@@ -39,6 +47,16 @@ export const SURVEY_INFO_CONFIG = {
 
 export const PRODUCT_INFO_CONFIG = {
   visual: {
+    PACKAGE: [
+      { label: '부문·카테고리', key: 'sectorCategory' },
+      { label: '이름', key: 'title' },
+      { label: '분류', key: 'visualType' },
+      { label: '주체', key: 'clientName' },
+      { label: '내용', key: 'designDescription' },
+      // { label: '내용(원문)', key: 'originalDescription' },
+      { label: '웹사이트', key: 'referenceUrl', type: 'link' },
+    ],
+
     POSTER: [
       { label: '부문·카테고리', key: 'sectorCategory' },
       { label: '년도', key: 'releaseYear' },

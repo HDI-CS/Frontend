@@ -207,7 +207,7 @@ export const getRowMeta = (
       //  갤러리 카드에 보여줄 필드
       galleryFields: [
         {
-          label: '이미지',
+          label: '로고 이미지',
           value: (row: VisualRow) => row.logoImage ?? '',
         }, //
         { label: 'ID', value: (row: VisualRow) => row.code },
@@ -588,6 +588,7 @@ export const buildFieldsFromColumns = (
   const EXCLUDE_KEYS = [
     '_no',
     'logoImage',
+    'VisualImage',
     'detailImagePath',
     'frontImagePath',
     'sideImagePath',

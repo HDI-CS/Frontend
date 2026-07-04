@@ -269,7 +269,7 @@ export default function InboxPage() {
     Array<WeightedScoreResponse['category']>
   > = {
     INDUSTRY: ['HEADPHONE', 'EARPHONE', 'BLUETOOTH_SPEAKER'],
-    VISUAL: ['POSTER', 'PACKAGE'],
+    VISUAL: [ 'PACKAGE'],
   };
   const normalizedUserType = userType?.toUpperCase() ?? '';
   const requiredWeightCategories =

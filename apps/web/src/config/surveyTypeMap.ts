@@ -42,7 +42,7 @@ export const QUESTION_TYPE_META = {
         suffix: '에서',
       },
       description:
-        '포스터가 감각적으로 얼마나 매력적이고 긍정적인 인상을 주는지',
+        '이 디자인이 감각적으로 얼마나 매력적이고 긍정적인 인상을 주는지',
     },
     FORM: {
       title: '조형성',
@@ -51,7 +51,7 @@ export const QUESTION_TYPE_META = {
         suffix: '에서',
       },
       description:
-        '포스터의 시각 요소들이 구조적으로 균형 있고 조화롭게 구성되어 있는지',
+        '이 디자인의 시각 요소들이 구조적으로 균형 있고 조화롭게 구성되어 있는지',
     },
     CREATIVITY: {
       title: '독창성',
@@ -60,7 +60,7 @@ export const QUESTION_TYPE_META = {
         suffix: '에서',
       },
       description:
-        '포스터가 얼마나 새롭고 차별화된 시각적 표현을 지니고 있는지',
+        '이 디자인이 얼마나 새롭고 차별화된 시각적 표현을 지니고 있는지',
     },
     USABILITY: {
       title: '사용성',
@@ -69,7 +69,7 @@ export const QUESTION_TYPE_META = {
         suffix: '에서',
       },
       description:
-        '포스터가 다양한 상황과 매체에서 효과적으로 활용 가능해 보이는지',
+        '이 디자인이 다양한 상황과 매체에서 효과적으로 활용 가능해 보이는지',
     },
     FUNCTIONALITY: {
       title: '기능성',
@@ -77,7 +77,7 @@ export const QUESTION_TYPE_META = {
         highlight: '전문가의 관점',
         suffix: '에서',
       },
-      description: '포스터가 정보를 명확하게 전달하고 가독성이 우수한지',
+      description: '이 디자인이 정보를 명확하게 전달하고 가독성이 우수한지',
     },
     ETHICS: {
       title: '윤리성',
@@ -86,7 +86,7 @@ export const QUESTION_TYPE_META = {
         suffix: '에서',
       },
       description:
-        '포스터가 사회적·문화적 기준을 준수하고 부적절한 요소를 포함하지 않는지',
+        '이 디자인이 사회적·문화적 기준을 준수하고 부적절한 요소를 포함하지 않는지',
     },
     ECONOMY: {
       title: '경제성',
@@ -95,7 +95,7 @@ export const QUESTION_TYPE_META = {
         suffix: '에서',
       },
       description:
-        '포스터가 제작 및 활용 측면에서 비용 효율성을 고려하고 있는지',
+        '이 디자인이 제작 및 활용 측면에서 비용 효율성을 고려하고 있는지',
     },
     PURPOSE: {
       title: '목적성',
@@ -104,7 +104,7 @@ export const QUESTION_TYPE_META = {
         suffix: '에서',
       },
       description:
-        '포스터가 전달하고자 하는 메시지와 목표에 적합하게 설계되어 있는지',
+        '이 디자인이 전달하고자 하는 메시지와 목표에 적합하게 설계되어 있는지',
     },
     OVERALL: {
       title: '종합평가',
@@ -112,7 +112,7 @@ export const QUESTION_TYPE_META = {
         highlight: '전문가의 관점',
         suffix: '에서',
       },
-      description: '포스터의 전반적인 시각적 완성도와 만족도를',
+      description: '이 디자인의 전반적인 시각적 완성도와 만족도를',
     },
   },
 

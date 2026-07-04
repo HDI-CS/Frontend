@@ -27,7 +27,7 @@ const getWeightEvaluationFactors = (type: 'visual' | 'industry') => {
       name: '심미성',
       description:
         type === 'visual'
-          ? '포스터가 감각적으로 얼마나 매력적이고 긍정적인 인상을 주는 정도'
+          ? '디자인이 감각적으로 얼마나 매력적이고 긍정적인 인상을 주는 정도'
           : 'CMF(Color, Material, Finish)의 우수성, 제품 디자인이 주는 감성적 인상(고급스러움, 세련됨 등)',
     },
     {
@@ -35,7 +35,7 @@ const getWeightEvaluationFactors = (type: 'visual' | 'industry') => {
       name: '조형성',
       description:
         type === 'visual'
-          ? '포스터의 시각 요소들이 구조적으로 균형 있고 조화로운 정도'
+          ? '디자인의 시각 요소들이 구조적으로 균형 있고 조화로운 정도'
           : '형태 문법의 우수성(부피감, 비례, 균형, 리듬, 선·면의 연속성, 실루엣, 부품 분할/조립선 배치, 디테일 해결 등)',
     },
     {
@@ -43,7 +43,7 @@ const getWeightEvaluationFactors = (type: 'visual' | 'industry') => {
       name: '독창성',
       description:
         type === 'visual'
-          ? '포스터가 새롭고 차별화된 시각적 표현을 지니는 정도'
+          ? '디자인이 새롭고 차별화된 시각적 표현을 지니는 정도'
           : '고유성을 표현하려는 창의적 시도로 소비자가 기존 제품과의 차별화를 바탕으로 새로움을 인지할 수 있는 정도',
     },
     {
@@ -51,7 +51,7 @@ const getWeightEvaluationFactors = (type: 'visual' | 'industry') => {
       name: '사용성',
       description:
         type === 'visual'
-          ? '포스터가 다양한 상황과 매체에서 효과적으로 활용 가능한 정도 '
+          ? '디자인이 다양한 상황과 매체에서 효과적으로 활용 가능한 정도 '
           : '사용자가 의도된 사용 맥락에서 원하는 목표를 효과적, 효율적, 편리하게 달성할 수 있는 정도',
     },
     {
@@ -59,7 +59,7 @@ const getWeightEvaluationFactors = (type: 'visual' | 'industry') => {
       name: '기능성',
       description:
         type === 'visual'
-          ? '포스터가 정보를 명확하게 전달하고 가독성이 우수한 정도'
+          ? '디자인이 정보를 명확하게 전달하고 가독성이 우수한 정도'
           : '제품의 디자인이나 전체 시스템/기능이 목적에 맞게 완전성(completeness), 정확성(accuracy), 적절성(suitability)을 제공하는 정도',
     },
     {
@@ -67,7 +67,7 @@ const getWeightEvaluationFactors = (type: 'visual' | 'industry') => {
       name: '윤리성',
       description:
         type === 'visual'
-          ? '포스터가 사회적·문화적 기준을 준수하고 부적절한 요소가 없는 정도'
+          ? '디자인이 사회적·문화적 기준을 준수하고 부적절한 요소가 없는 정도'
           : '사용자, 사회, 자연 간의 상호의존적 관계에서 올바르고 책임감 있는 행동 원칙을 바탕으로 지속가능한 발전을 이루는 정도',
     },
     {
@@ -75,7 +75,7 @@ const getWeightEvaluationFactors = (type: 'visual' | 'industry') => {
       name: '경제성',
       description:
         type === 'visual'
-          ? '포스터가 제작 및 활용 측면에서 비용 효율적으로 구성된 정도'
+          ? '디자인이 제작 및 활용 측면에서 비용 효율적으로 구성된 정도'
           : '제품이 제조, 조립, 생애주기 전반에 걸쳐 전체 비용을 최소화하면서도 목표 성능과 품질을 유지하도록 설계된 정도',
     },
     {
@@ -83,7 +83,7 @@ const getWeightEvaluationFactors = (type: 'visual' | 'industry') => {
       name: '목적성',
       description:
         type === 'visual'
-          ? '포스터가 전달하고자 하는 메시지와 목표에 적합한 정도'
+          ? '디자인이 전달하고자 하는 메시지와 목표에 적합한 정도'
           : "사용자의 명시적, 암시적 목적과 요구사항을 만족시키기 위해 필요한 기능, 가치, 의도가 정확하게 제공되어 사용자가 의도한 '작업'을 달성할 수 있게 하는 정도",
     },
   ];
@@ -111,8 +111,8 @@ const getWeightEvaluationCategories = (
   > = {
     visual: [
       {
-        id: 'poster',
-        name: '포스터',
+        id: 'package',
+        name: '패키지',
         weights: {
           aesthetics: 0,
           formative: 0,
@@ -124,6 +124,20 @@ const getWeightEvaluationCategories = (
           purpose: 0,
         },
       },
+      // {
+      //   id: 'poster',
+      //   name: '포스터',
+      //   weights: {
+      //     aesthetics: 0,
+      //     formative: 0,
+      //     originality: 0,
+      //     usability: 0,
+      //     functionality: 0,
+      //     ethics: 0,
+      //     economy: 0,
+      //     purpose: 0,
+      //   },s
+      // },
       // {
       //   id: 'fnb',
       //   name: 'F&B',
