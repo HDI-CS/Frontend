@@ -48,21 +48,23 @@ type IndustryDynamicFieldKey =
   | 'connectivity'
   | 'soundOutput';
 
-type VisualDynamicFieldKey =
-  | 'sectorCategory'
-  | 'mainProductCategory'
-  | 'mainProduct'
-  | 'target'
-  | 'name'
-  | 'title'
-  | 'country'
-  | 'clientName'
-  | 'contentType'
-  | 'visualType'
-  | 'designDescription'
-  | 'releaseYear'
-  | 'referenceUrl';
+// type VisualDynamicFieldKey =
+//   | 'sectorCategory'
+//   | 'mainProductCategory'
+//   | 'mainProduct'
+//   | 'target'
+//   | 'name'
+//   | 'title'
+//   | 'country'
+//   | 'clientName'
+//   | 'contentType'
+//   | 'visualType'
+//   | 'designDescription'
+//   | 'originalDescription'
+//   | 'releaseYear'
+//   | 'referenceUrl';
 
+// 갤러리 뷰에서 보여줄 카테고리별 "대표값" 라벨
 const DISPLAY_META_BY_CATEGORY = {
   FB: {
     field: 'name',
@@ -73,6 +75,10 @@ const DISPLAY_META_BY_CATEGORY = {
     label: '브랜드명',
   },
   POSTER: {
+    field: 'title',
+    label: '제목',
+  },
+  PACKAGE: {
     field: 'title',
     label: '제목',
   },
@@ -110,15 +116,18 @@ const buildIndustryDynamicColumns = (category: IndustryCategory) => {
 const buildVisualDynamicColumns = (category: VisualCategory) => {
   if (!category) return [];
 
-  const keySet = new Set<string>();
-  CATEGORY_FIELD_CONFIG.visual?.[category]?.forEach((field) => {
-    keySet.add(field.key);
-  });
+  // const keySet = new Set<string>();
+  // CATEGORY_FIELD_CONFIG.visual?.[category]?.forEach((field) => {
+  //   keySet.add(field.key);
+  // });
 
-  return Object.keys(VISUAL_DYNAMIC_COLUMN_MAP)
-    .filter((key) => keySet.has(key))
-    .map((key) => {
-      const meta = VISUAL_DYNAMIC_COLUMN_MAP[key as VisualDynamicFieldKey];
+  const fieldConfigs = CATEGORY_FIELD_CONFIG.visual?.[category] ?? [];
+  const categoryMap = VISUAL_DYNAMIC_COLUMN_MAP[category] ?? {};
+
+  return fieldConfigs
+    .filter((field) => field.key in categoryMap)
+    .map(({ key }) => {
+      const meta = categoryMap[key];
 
       return {
         key,
@@ -137,7 +146,6 @@ const buildVisualDynamicColumns = (category: VisualCategory) => {
       };
     });
 };
-
 export const getRowMeta = (
   type: 'VISUAL' | 'INDUSTRY',
   year?: Years,
@@ -452,6 +460,7 @@ export const updateRequestMapper = {
     contentType: detail.contentType ?? '',
     visualType: detail.visualType ?? '',
     designDescription: detail.designDescription ?? '',
+    originalDescription: detail.originalDescription ?? '',
     releaseYear: detail.releaseYear ?? '',
 
     visualDataCategory: category,

@@ -257,6 +257,7 @@ const mapApiCategoryToCategoryId = (apiCategory: ApiCategory): string => {
     AIR_PURIFIER: 'airpurifier',
     HAIR_DRYER: 'hairdryer',
     POSTER: 'poster',
+    PACKAGE: 'package',
     HEADPHONE: 'headphone',
     EARPHONE: 'earphone',
     BLUETOOTH_SPEAKER: 'bluetooth_speaker',

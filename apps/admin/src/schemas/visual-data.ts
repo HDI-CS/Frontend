@@ -1,7 +1,12 @@
 import z from 'zod';
 import { YearsSchema } from './survey';
 
-export const VisualCategorySchema = z.enum(['COSMETIC', 'FB', 'POSTER']);
+export const VisualCategorySchema = z.enum([
+  'COSMETIC',
+  'FB',
+  'POSTER',
+  'PACKAGE',
+]);
 
 // 연도 스키마
 export const YearFolderSchema = z.object({
@@ -32,6 +37,7 @@ export const VisualDataItemSchema = z.object({
   releaseYear: z.string().nullable(),
 
   designDescription: z.string().nullable(),
+  originalDescription: z.string().nullable(),
 });
 
 export const VisualDatasItemSchema = z.array(VisualDataItemSchema);
@@ -96,6 +102,8 @@ export const CreateVisualDatasetRequestSchema = z.object({
   contentType: z.string().nullable(),
   visualType: z.string().nullable(),
   designDescription: z.string().nullable(),
+  originalDescription: z.string().nullable(),
+
   releaseYear: z.string().nullable(),
 
   visualDataCategory: VisualCategorySchema.nullable(),
@@ -132,6 +140,8 @@ export const UpdateVisualDatasetRequestSchema = z
     contentType: z.string().nullable(),
     visualType: z.string().nullable(),
     designDescription: z.string().nullable(),
+    originalDescription: z.string().nullable(),
+
     releaseYear: z.string().nullable(),
 
     originalLogoImage: z.string().nullable(), // 빈 값일 땐 널

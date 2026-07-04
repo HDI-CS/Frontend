@@ -13,6 +13,7 @@ export const WeightEvaluationCategorySchema = z.enum([
   'HAIR_DRYER',
 
   // 2026
+  'PACKAGE',
   'POSTER',
   'BLUETOOTH_SPEAKER',
   'HEADPHONE',
