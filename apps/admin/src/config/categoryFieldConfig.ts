@@ -18,7 +18,7 @@ export const CATEGORY_FIELD_CONFIG = {
   visual: {
     // 2026 2차
     PACKAGE: [
-      { label: '부문', key: 'sectorCategory' },
+      { label: '부문·카테고리', key: 'sectorCategory' },
       { label: '주체', key: 'clientName' },
       { label: '분류', key: 'visualType' },
       { label: '이름', key: 'title' },
@@ -282,7 +282,7 @@ export const VISUAL_DYNAMIC_COLUMN_MAP: Record<
   PACKAGE: {
     sectorCategory: {
       key: 'sectorCategory',
-      header: '부문',
+      header: '부문·카테고리',
       thClassName: 'w-[80px]',
       className: 'w-[80px]',
       maxLength: 6,

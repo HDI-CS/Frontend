@@ -227,7 +227,7 @@ export type VisualRow = BaseRow & {
   // 2026
   title: string;
   country: string;
-  client: string;
+  clientName: string;
   contentType: string;
   visualType: string;
   designDescription: string;
@@ -334,4 +334,4 @@ export type DataDetailModalProps =
       /* 공통 props */
     };
 
-export type Years = '2025' | '2026' | '2026 2차';
+export type Years = string; // 리터럴 유니온 제거

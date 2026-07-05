@@ -1,7 +1,7 @@
 'use client';
 import empty from '@/public/data/EmptyIMg.svg';
 import close from '@/public/data/close.svg';
-import { CategoryByType } from '@/src/features/data/DataYearPage';
+import { CategoryByType } from '@/src/features/data/categoryMap';
 import {
   getImageSrcByType,
   updateRequestMapper,

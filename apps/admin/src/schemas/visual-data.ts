@@ -1,12 +1,17 @@
 import z from 'zod';
+import {
+  buildNullableShape,
+  VISUAL_CATEGORY_CONFIG,
+  VISUAL_CATEGORY_KEYS,
+  VISUAL_ITEM_NULLABLE_KEYS,
+} from '../config/adminCategoryConfig';
 import { YearsSchema } from './survey';
 
-export const VisualCategorySchema = z.enum([
-  'COSMETIC',
-  'FB',
-  'POSTER',
-  'PACKAGE',
-]);
+type VisualCategoryKey = keyof typeof VISUAL_CATEGORY_CONFIG;
+
+export const VisualCategorySchema = z.enum(
+  VISUAL_CATEGORY_KEYS as [VisualCategoryKey, ...VisualCategoryKey[]]
+);
 
 // 연도 스키마
 export const YearFolderSchema = z.object({
@@ -21,23 +26,8 @@ export const YearFolderArraySchema = z.array(YearFolderSchema);
 export const VisualDataItemSchema = z.object({
   id: z.number(),
   code: z.string(),
-  name: z.string().nullable(),
-  sectorCategory: z.string().nullable(),
-  mainProductCategory: z.string().nullable(),
-  mainProduct: z.string().nullable(),
-  target: z.string().nullable(),
-  referenceUrl: z.string().nullable(),
   logoImage: z.string().nullable(),
-
-  title: z.string().nullable(),
-  country: z.string().nullable(),
-  clientName: z.string().nullable(),
-  contentType: z.string().nullable(),
-  visualType: z.string().nullable(),
-  releaseYear: z.string().nullable(),
-
-  designDescription: z.string().nullable(),
-  originalDescription: z.string().nullable(),
+  ...buildNullableShape(VISUAL_ITEM_NULLABLE_KEYS),
 });
 
 export const VisualDatasItemSchema = z.array(VisualDataItemSchema);

@@ -1,4 +1,12 @@
+import {
+  INDUSTRY_ITEM_NULLABLE_KEYS,
+  VISUAL_FIELD_KEYS,
+} from '@/config/categoryConfig';
 import { z } from 'zod';
+import {
+  IndustryCategorySchema,
+  VisualCategorySchema,
+} from './weight-evaluation';
 
 // 설문 제품 응답 상태 스키마 (실제 API 스펙에 맞게 수정)
 export const SurveyProductResponseStatusSchema = z.enum([
@@ -42,6 +50,12 @@ export type SurveyProductApiResponse = z.infer<
   typeof SurveyProductApiResponseSchema
 >;
 
+// 카테고리별 필드 키 목록 → 전부 nullable string 스키마로 변환
+const buildNullableStringShape = <K extends readonly string[]>(keys: K) =>
+  Object.fromEntries(
+    keys.map((key) => [key, z.string().nullable()] as const)
+  ) as { [P in K[number]]: z.ZodNullable<z.ZodString> };
+
 // ========================
 // 상품 설문 상세 스키마
 // ========================
@@ -50,37 +64,17 @@ export type SurveyProductApiResponse = z.infer<
 export const ProductDataSetResponseSchema = z.object({
   // 백엔드가 숫자 혹은 문자열을 반환할 수 있어 유연하게 수용 후 문자열로 정규화
   id: z.string(),
-  productName: z.string().nullable(),
-  companyName: z.string().nullable(),
-  modelName: z.string().nullable(),
-  price: z.string().nullable(),
-  material: z.string().nullable(),
-  size: z.string().nullable(),
-  weight: z.string().nullable(),
-  referenceUrl: z.string().nullable(),
-  registeredAt: z.string(),
-  productPath: z.string().nullable(),
-  productTypeName: z.string().nullable(),
+  industryDataCategory: IndustryCategorySchema.nullable(),
+
+  // 이미지 필드는 fields 레지스트리에 없는 "구조적" 필드라 별도 명시
   detailImagePath: z.string().nullable(),
   frontImagePath: z.string().nullable(),
   sideImagePath: z.string().nullable(),
   side2ImagePath: z.string().nullable(),
   side3ImagePath: z.string().nullable(),
 
-  industryDataCategory: z.string().nullable(),
-
-  // 2026
-  noiseCancelling: z.string().nullable(),
-  codec: z.string().nullable(),
-  extraFeatures: z.string().nullable(),
-  controlType: z.string().nullable(),
-  waterproof: z.string().nullable(),
-  maxPlayTime: z.string().nullable(),
-  chargeTime: z.string().nullable(),
-  usage: z.string().nullable(),
-  shoppingUrl: z.string().nullable(),
-  connectivity: z.string().nullable(),
-  soundOutput: z.string().nullable(),
+  // 카테고리별 동적 필드는 레지스트리에서 자동 생성
+  ...buildNullableStringShape(INDUSTRY_ITEM_NULLABLE_KEYS),
 });
 
 export const ProductSurveyQuestionSchema = z.object({
@@ -132,25 +126,13 @@ export type ProductTextSurveyResponse = z.infer<
 // ========================
 
 export const BrandDataSetResponseSchema = z.object({
-  name: z.string().nullable(),
   id: z.string(),
-  sectorCategory: z.string().nullable(),
-  mainProductCategory: z.string().nullable(),
-  mainProduct: z.string().nullable(),
-  target: z.string().nullable(),
-  referenceUrl: z.string().nullable(),
-
-  title: z.string().nullable(),
-  country: z.string().nullable(),
-  clientName: z.string().nullable(),
-  contentType: z.string().nullable(),
-  visualType: z.string().nullable(),
-  releaseYear: z.string().nullable(),
-  designDescription: z.string().nullable(),
-  originalDescription: z.string().nullable(),
-  visualDataCategory: z.string().nullable(),
-
+  name: z.string().nullable(),
   image: z.string().nullable(),
+  visualDataCategory: VisualCategorySchema.nullable(),
+
+  // 카테고리별 동적 필드는 레지스트리에서 자동 생성
+  ...buildNullableStringShape(VISUAL_FIELD_KEYS),
 });
 
 export const BrandSurveyQuestionSchema = z.object({

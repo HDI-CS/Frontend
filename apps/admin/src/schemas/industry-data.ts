@@ -1,13 +1,16 @@
 import z from 'zod';
+import {
+  buildNullableShape,
+  INDUSTRY_CATEGORY_CONFIG,
+  INDUSTRY_CATEGORY_KEYS,
+  INDUSTRY_ITEM_NULLABLE_KEYS,
+} from '../config/adminCategoryConfig';
 
-export const IndustryCategorySchema = z.enum([
-  'VACUUM_CLEANER',
-  'AIR_PURIFIER',
-  'HAIR_DRYER',
-  'HEADPHONE',
-  'EARPHONE',
-  'BLUETOOTH_SPEAKER',
-]);
+type IndustryCategoryKey = keyof typeof INDUSTRY_CATEGORY_CONFIG;
+
+export const IndustryCategorySchema = z.enum(
+  INDUSTRY_CATEGORY_KEYS as [IndustryCategoryKey, ...IndustryCategoryKey[]]
+);
 
 export const IndustryImageTypeSchema = z.enum([
   'originalDetailImagePath',
@@ -23,31 +26,8 @@ export type IndustryCategory = z.infer<typeof IndustryCategorySchema>;
 export const IndustrialDataItemSchema = z.object({
   id: z.number(),
   code: z.string(),
+  ...buildNullableShape(INDUSTRY_ITEM_NULLABLE_KEYS),
   productName: z.string(),
-  companyName: z.string().nullable(),
-  modelName: z.string().nullable(),
-  price: z.string().nullable(),
-  material: z.string().nullable(),
-  size: z.string().nullable(),
-  weight: z.string().nullable(),
-  referenceUrl: z.string().nullable(),
-  registeredAt: z.string().nullable(),
-  productPath: z.string().nullable(),
-  productTypeName: z.string().nullable(),
-
-  // 2026
-  noiseCancelling: z.string().nullable(),
-  codec: z.string().nullable(),
-  extraFeatures: z.string().nullable(),
-  controlType: z.string().nullable(),
-  waterproof: z.string().nullable(),
-  maxPlayTime: z.string().nullable(),
-  chargeTime: z.string().nullable(),
-  usage: z.string().nullable(),
-  shoppingUrl: z.string().nullable(),
-  connectivity: z.string().nullable(),
-  soundOutput: z.string().nullable(),
-
   detailImagePath: z.string().nullable(),
   frontImagePath: z.string().nullable(),
   sideImagePath: z.string().nullable(),
@@ -95,30 +75,8 @@ export const UploadUrlSchema = z.object({
 // 데이터셋 생성 요청 스키마
 export const CreateIndustrialDatasetRequestSchema = z.object({
   code: z.string(),
+  ...buildNullableShape(INDUSTRY_ITEM_NULLABLE_KEYS),
   productName: z.string(),
-  companyName: z.string().nullable(),
-  modelName: z.string().nullable(),
-  price: z.string().nullable(),
-  material: z.string().nullable(),
-  size: z.string().nullable(),
-  weight: z.string().nullable(),
-  referenceUrl: z.string().nullable(),
-  registeredAt: z.string().nullable(),
-  productPath: z.string().nullable(),
-  productTypeName: z.string().nullable(),
-
-  // 2026
-  noiseCancelling: z.string().nullable(),
-  codec: z.string().nullable(),
-  extraFeatures: z.string().nullable(),
-  controlType: z.string().nullable(),
-  waterproof: z.string().nullable(),
-  maxPlayTime: z.string().nullable(),
-  chargeTime: z.string().nullable(),
-  usage: z.string().nullable(),
-  shoppingUrl: z.string().nullable(),
-  connectivity: z.string().nullable(),
-  soundOutput: z.string().nullable(),
 
   originalDetailImagePath: z.string().nullable(),
   originalFrontImagePath: z.string().nullable(),
@@ -150,36 +108,13 @@ export const CreateIndustrialDatasetResponseSchema = z.object({
 export const UpdateIndustrialDatasetRequestSchema = z
   .object({
     code: z.string(),
-    productName: z.string().nullable(),
-    companyName: z.string().nullable(),
-    modelName: z.string().nullable(),
-    price: z.string().nullable(),
-    material: z.string().nullable(),
-    size: z.string().nullable(),
-    weight: z.string().nullable(),
-    referenceUrl: z.string().nullable(),
-    registeredAt: z.string().nullable(),
-    productPath: z.string().nullable(),
-    productTypeName: z.string().nullable(),
+    ...buildNullableShape(INDUSTRY_ITEM_NULLABLE_KEYS),
 
-    // 2026
-    noiseCancelling: z.string().nullable(),
-    codec: z.string().nullable(),
-    extraFeatures: z.string().nullable(),
-    controlType: z.string().nullable(),
-    waterproof: z.string().nullable(),
-    maxPlayTime: z.string().nullable(),
-    chargeTime: z.string().nullable(),
-    usage: z.string().nullable(),
-    shoppingUrl: z.string().nullable(),
-    connectivity: z.string().nullable(),
-    soundOutput: z.string().nullable(),
-
-    originalDetailImagePath: z.string().nullable(), // 빈 값일 땐 널
-    originalFrontImagePath: z.string().nullable(), // 빈 값일 땐 널
-    originalSideImagePath: z.string().nullable(), // 빈 값일 땐 널 여러개 삭제되면 리스트로…!! (image=DETAIL & image=FRONT)
-    originalSide2ImagePath: z.string().nullable(), // 빈 값일 땐 널
-    originalSide3ImagePath: z.string().nullable(), // 빈 값일 땐 널
+    originalDetailImagePath: z.string().nullable(),
+    originalFrontImagePath: z.string().nullable(),
+    originalSideImagePath: z.string().nullable(),
+    originalSide2ImagePath: z.string().nullable(),
+    originalSide3ImagePath: z.string().nullable(),
 
     industryDataCategory: IndustryCategorySchema,
   })
