@@ -1,4 +1,4 @@
-import { CategoryByType } from '@/src/features/data/DataYearPage';
+import { CategoryByType } from '@/src/features/data/categoryMap';
 import useGridManager, { SortType } from '@/src/hooks/useGridManager';
 import { UserType } from '@/src/schemas/auth';
 import { IndustryCategory } from '@/src/schemas/industry-data';

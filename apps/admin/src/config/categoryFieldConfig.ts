@@ -16,6 +16,18 @@ type VisualColumnDef = {
 
 export const CATEGORY_FIELD_CONFIG = {
   visual: {
+    // 2026 2차
+    PACKAGE: [
+      { label: '부문·카테고리', key: 'sectorCategory' },
+      { label: '주체', key: 'clientName' },
+      { label: '분류', key: 'visualType' },
+      { label: '이름', key: 'title' },
+      { label: '내용(번역본)', key: 'designDescription' },
+      { label: '내용(원문)', key: 'originalDescription' },
+      { label: '웹사이트', key: 'referenceUrl', type: 'link' },
+    ],
+
+    // 2026
     POSTER: [
       { label: '부문·카테고리', key: 'sectorCategory' },
       { label: '년도', key: 'releaseYear' },
@@ -27,6 +39,7 @@ export const CATEGORY_FIELD_CONFIG = {
       { label: '웹사이트', key: 'referenceUrl', type: 'link' },
     ],
 
+    // 2025
     COSMETIC: [
       { label: '부문·카테고리', key: 'sectorCategory' },
       { label: '대표 제품 카테고리', key: 'mainProductCategory' },
@@ -203,98 +216,195 @@ export const INDUSTRY_DYNAMIC_COLUMN_MAP: Record<string, IndustryColumnDef> = {
   },
 };
 
-export const VISUAL_DYNAMIC_COLUMN_MAP: Record<string, VisualColumnDef> = {
-  name: {
-    key: 'name',
-    header: '브랜드명',
-    thClassName: 'w-[140px]',
-    className: 'w-[140px] px-3',
-    maxLength: 8,
-  },
-  sectorCategory: {
-    key: 'sectorCategory',
-    header: '부문·카테고리',
-    thClassName: 'w-[140px]',
-    className: 'w-[140px]',
-    maxLength: 9,
-  },
-  mainProductCategory: {
-    key: 'mainProductCategory',
-    header: '대표 제품 카테고리',
-    thClassName: 'w-[260px]',
-    className: 'min-w-[260px]',
-    maxLength: 20,
-  },
-  mainProduct: {
-    key: 'mainProduct',
-    header: '대표 제품',
-    thClassName: 'min-w-[240px]',
-    className: 'min-w-[240px]',
-    maxLength: 16,
-  },
-  target: {
-    key: 'target',
-    header: '타겟(성별/연령)',
-    thClassName: 'w-[160px]',
-    className: 'w-[160px]',
-    maxLength: 6,
-  },
-
-  releaseYear: {
-    key: 'releaseYear',
-    header: '년도',
-    thClassName: 'w-[120px]',
-    className: 'w-[120px]',
-    maxLength: 6,
-  },
-  title: {
-    key: 'title',
-    header: '제목',
-    thClassName: 'w-[200px]',
-    className: 'w-[200px]',
-    maxLength: 20,
-  },
-  country: {
-    key: 'country',
-    header: '국가',
-    thClassName: 'w-[120px]',
-    className: 'w-[120px]',
-    maxLength: 6,
-  },
-  clientName: {
-    key: 'clientName',
-    header: '클라이언트',
-    thClassName: 'w-[120px]',
-    className: 'w-[120px]',
-    maxLength: 8,
-  },
-  contentType: {
-    key: 'contentType',
-    header: '내용 유형',
-    thClassName: 'w-[140px]',
-    className: 'w-[140px]',
-    maxLength: 10,
-  },
-  visualType: {
-    key: 'visualType',
-    header: '시각 유형',
-    thClassName: 'w-[120px]',
-    className: 'w-[120px]',
-    maxLength: 10,
-  },
-  designDescription: {
-    key: 'designDescription',
-    header: '디자인 설명',
-    thClassName: 'w-[200px]',
-    className: 'w-[200px]',
-    maxLength: 20,
+export const VISUAL_DYNAMIC_COLUMN_MAP: Record<
+  string,
+  Record<string, VisualColumnDef>
+> = {
+  POSTER: {
+    sectorCategory: {
+      key: 'sectorCategory',
+      header: '부문·카테고리',
+      thClassName: 'w-[140px]',
+      className: 'w-[140px]',
+      maxLength: 9,
+    },
+    releaseYear: {
+      key: 'releaseYear',
+      header: '년도',
+      thClassName: 'w-[120px]',
+      className: 'w-[120px]',
+      maxLength: 6,
+    },
+    country: {
+      key: 'country',
+      header: '국가',
+      thClassName: 'w-[120px]',
+      className: 'w-[120px]',
+      maxLength: 6,
+    },
+    clientName: {
+      key: 'clientName',
+      header: '클라이언트',
+      thClassName: 'w-[120px]',
+      className: 'w-[120px]',
+      maxLength: 10,
+    },
+    contentType: {
+      key: 'contentType',
+      header: '내용 유형',
+      thClassName: 'w-[140px]',
+      className: 'w-[140px]',
+      maxLength: 10,
+    },
+    visualType: {
+      key: 'visualType',
+      header: '시각 유형',
+      thClassName: 'w-[120px]',
+      className: 'w-[120px]',
+      maxLength: 10,
+    },
+    designDescription: {
+      key: 'designDescription',
+      header: '디자인 설명',
+      thClassName: 'w-[200px]',
+      className: 'w-[200px]',
+      maxLength: 20,
+    },
+    referenceUrl: {
+      key: 'referenceUrl',
+      header: '홈페이지',
+      thClassName: 'min-w-[180px]',
+      className: 'min-w-[180px]',
+      maxLength: 20,
+    },
   },
 
-  referenceUrl: {
-    key: 'referenceUrl',
-    header: '홈페이지',
-    thClassName: 'min-w-[180px]',
-    className: 'min-w-[180px]',
-    maxLength: 20,
+  PACKAGE: {
+    sectorCategory: {
+      key: 'sectorCategory',
+      header: '부문·카테고리',
+      thClassName: 'w-[80px]',
+      className: 'w-[80px]',
+      maxLength: 6,
+    },
+    clientName: {
+      key: 'clientName',
+      header: '주체',
+      thClassName: 'w-[160px]',
+      className: 'w-[160px]',
+      maxLength: 14,
+    },
+    visualType: {
+      key: 'visualType',
+      header: '분류',
+      thClassName: 'w-[220px]',
+      className: 'w-[220px]',
+      maxLength: 24,
+    },
+    title: {
+      key: 'title',
+      header: '이름',
+      thClassName: 'w-[200px]',
+      className: 'w-[200px]',
+      maxLength: 20,
+    },
+    designDescription: {
+      key: 'designDescription',
+      header: '내용(번역본)',
+      thClassName: 'w-[200px]',
+      className: 'w-[200px]',
+      maxLength: 20,
+    },
+    originalDescription: {
+      key: 'originalDescription',
+      header: '내용(원문)',
+      thClassName: 'w-[200px]',
+      className: 'w-[200px]',
+      maxLength: 20,
+    },
+    referenceUrl: {
+      key: 'referenceUrl',
+      header: '웹사이트',
+      thClassName: 'min-w-[180px]',
+      className: 'min-w-[180px]',
+      maxLength: 20,
+    },
+  },
+
+  COSMETIC: {
+    sectorCategory: {
+      key: 'sectorCategory',
+      header: '부문·카테고리',
+      thClassName: 'w-[140px]',
+      className: 'w-[140px]',
+      maxLength: 9,
+    },
+    mainProductCategory: {
+      key: 'mainProductCategory',
+      header: '대표 제품 카테고리',
+      thClassName: 'w-[260px]',
+      className: 'min-w-[260px]',
+      maxLength: 20,
+    },
+    mainProduct: {
+      key: 'mainProduct',
+      header: '대표 제품',
+      thClassName: 'min-w-[240px]',
+      className: 'min-w-[240px]',
+      maxLength: 16,
+    },
+    target: {
+      key: 'target',
+      header: '타겟(성별/연령)',
+      thClassName: 'w-[160px]',
+      className: 'w-[160px]',
+      maxLength: 6,
+    },
+    referenceUrl: {
+      key: 'referenceUrl',
+      header: '홈페이지',
+      thClassName: 'min-w-[180px]',
+      className: 'min-w-[180px]',
+      maxLength: 20,
+    },
+  },
+
+  FB: {
+    // COSMETIC과 필드 구성 동일
+    sectorCategory: {
+      key: 'sectorCategory',
+      header: '부문·카테고리',
+      thClassName: 'w-[140px]',
+      className: 'w-[140px]',
+      maxLength: 9,
+    },
+    mainProductCategory: {
+      key: 'mainProductCategory',
+      header: '대표 제품 카테고리',
+      thClassName: 'w-[260px]',
+      className: 'min-w-[260px]',
+      maxLength: 20,
+    },
+    mainProduct: {
+      key: 'mainProduct',
+      header: '대표 제품',
+      thClassName: 'min-w-[240px]',
+      className: 'min-w-[240px]',
+      maxLength: 16,
+    },
+    target: {
+      key: 'target',
+      header: '타겟(성별/연령)',
+      thClassName: 'w-[160px]',
+      className: 'w-[160px]',
+      maxLength: 6,
+    },
+    referenceUrl: {
+      key: 'referenceUrl',
+      header: '홈페이지',
+      thClassName: 'min-w-[180px]',
+      className: 'min-w-[180px]',
+      maxLength: 20,
+    },
   },
 };

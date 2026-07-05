@@ -2,6 +2,8 @@
 
 import { Button } from '@/components/Button';
 import SurveyCard from '@/components/SurveyCard';
+import { ACTIVE_WEIGHT_EVALUATION_CATEGORIES } from '@/config/categoryConfig';
+import { EvaluationDomainType } from '@/config/productInfoConfig';
 import {
   SURVEY_STATUS_BUTTON_STYLES,
   SURVEY_STATUS_LABELS,
@@ -263,23 +265,21 @@ export default function InboxPage() {
   ).length;
   const totalSurveysCount = surveys.length;
 
-  // ****** 해당 평가마다 카테고리 수정 필요 ****** //
-  const weightEvaluationCategoriesByType: Record<
-    string,
-    Array<WeightedScoreResponse['category']>
-  > = {
-    INDUSTRY: ['HEADPHONE', 'EARPHONE', 'BLUETOOTH_SPEAKER'],
-    VISUAL: ['POSTER'],
-  };
-  const normalizedUserType = userType?.toUpperCase() ?? '';
-  const requiredWeightCategories =
-    weightEvaluationCategoriesByType[normalizedUserType] ?? [];
+  const normalizedUserType = (
+    userType === 'VISUAL' || userType === 'INDUSTRY' ? userType : 'VISUAL'
+  ) as EvaluationDomainType;
+
+  const requiredWeightCategories: string[] = [
+    ...(ACTIVE_WEIGHT_EVALUATION_CATEGORIES[normalizedUserType] ?? []),
+  ];
+
   const weightEvaluationData = (weightedScoresData?.result ??
     []) as WeightedScoreResponse[];
-  const fallbackCategories = Array.from(
+
+  const fallbackCategories: string[] = Array.from(
     new Set(weightEvaluationData.map((score) => score.category))
   );
-  const categoriesToConsider =
+  const categoriesToConsider: string[] =
     requiredWeightCategories.length > 0
       ? requiredWeightCategories
       : fallbackCategories;
@@ -318,7 +318,6 @@ export default function InboxPage() {
       categoryStatusMap[score.category] = 'IN_PROGRESS';
     }
   });
-  console.log(categoryStatusMap);
   const categoryStatuses = Object.values(categoryStatusMap);
   const hasAnyWeightInput = categoryStatuses.some(
     (status) => status !== 'NOT_STARTED'

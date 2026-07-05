@@ -14,7 +14,6 @@ import {
   IndustryCategory,
 } from '@/src/schemas/industry-data';
 import { VisualCategory, VisualDataItem } from '@/src/schemas/visual-data';
-import { downloadExcel, downloadImageZip } from '@/src/services/data/common';
 import { useSearchStore } from '@/src/store/searchStore';
 import {
   ColumnDef,
@@ -25,45 +24,27 @@ import {
   mapVisualToUIItem,
   VisualRow,
   WithIndex,
-  Years,
 } from '@/src/types/data/visual-data';
 
 import { DataPageProps } from '@/src/app/[type]/data/[year]/page';
 import DataDetailModal from '@/src/components/data/DataDetailModal';
+import { useDatasetDownload } from '@/src/hooks/useDatasetDownload';
+import { compareDatasetRows } from '@/src/hooks/useDatasetSort';
 import useGridManager from '@/src/hooks/useGridManager';
-import { sortByString } from '@/src/utils/sortByType';
 import clsx from 'clsx';
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
-import { buildFieldsFromColumns, getRowMeta } from './rowMeta';
+import {
+  CATEGORY_MAP,
+  CategoryByType,
+  getRowMetaAndFields,
+} from './categoryMap';
 import { GalleryFieldDef } from './uiDef';
-
-export type CategoryByType = {
-  VISUAL: VisualCategory;
-  INDUSTRY: IndustryCategory;
-};
 
 type ItemByType = {
   VISUAL: VisualDataItem;
   INDUSTRY: IndustrialDataItem;
 };
-
-const CATEGORY_MAP: Record<
-  Years,
-  {
-    VISUAL: readonly VisualCategory[];
-    INDUSTRY: readonly IndustryCategory[];
-  }
-> = {
-  2025: {
-    VISUAL: ['COSMETIC', 'FB'],
-    INDUSTRY: ['VACUUM_CLEANER', 'AIR_PURIFIER', 'HAIR_DRYER'],
-  },
-  2026: {
-    VISUAL: ['POSTER'],
-    INDUSTRY: ['HEADPHONE', 'EARPHONE', 'BLUETOOTH_SPEAKER'],
-  },
-} as const;
 
 const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
   type,
@@ -71,14 +52,17 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
   categories = [],
   yearName,
 }: DataPageProps & { type: T }) => {
+  // ── 현재 연도 폴더에서 보여줄 카테고리 탭 목록 ──────────────
+
   const categorieItem = useMemo(() => {
     if (!yearName) return [];
 
-    if (type === 'VISUAL') {
-      return [...CATEGORY_MAP[yearName as Years].VISUAL];
-    }
+    const yearConfig = CATEGORY_MAP[yearName];
+    if (!yearConfig) return [];
 
-    return [...CATEGORY_MAP[yearName as Years].INDUSTRY];
+    return type === 'VISUAL'
+      ? [...yearConfig.VISUAL]
+      : [...yearConfig.INDUSTRY];
   }, [yearName, type]);
 
   const { orderBy, setOrderBy, sortType, setSortType } = useGridManager(type!);
@@ -88,9 +72,9 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
     VisualCategory | IndustryCategory | null
   >(null);
   const [isAdd, setIsAdd] = useState(false);
-  const [isDownload, setIsDownload] = useState(false);
   const [rowIds, setRowIds] = useState<number[]>([]);
 
+  // 카테고리 목록이 바뀌면(연도 변경 등) 활성 탭을 유효한 값으로 재조정
   useEffect(() => {
     setActiveCategory((prev) => {
       if (prev && categories.some((c) => c.categoryName === prev)) {
@@ -101,24 +85,18 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
     });
   }, [categorieItem, categories]);
 
-  // 검색어 관리
+  // ── 검색 ──────────────────────────────────────────────
   // const { activeIndex, setResultCount } = useSearchStore();
-
   const { keyword, setResultFromData, clear } = useSearchStore();
-
   const { data } = useSearchDatasets({
     type,
     keyword,
     category: activeCategory ?? undefined,
   });
 
-  {
-    /* 초기 데이터 세팅 */
-  } // 카테고리 단위 데이터는 “무조건 배열”로 고정
-
+  // 카테고리별 원본 데이터. 검색어가 있으면 활성 카테고리 데이터를 검색 결과로 교체
   const localData = useMemo<DatasetByCategory>(() => {
     const init: DatasetByCategory = {};
-
     for (const c of categories) {
       init[c.categoryName] = c.data ?? [];
     }
@@ -138,55 +116,15 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
     return init;
   }, [keyword, activeCategory, categories, data]);
 
-  // 생성 핸들 함수 -> (변경) 디테일 조회 모달 창이랑 동일하게 사용해서 생성
-  const handleAddRow = () => {
-    if (!activeCategory) return;
-    setIsAdd(true);
-  };
-
-  // 테이블 정리 함수
+  // ── 화면에 보여줄 최종 row 목록 (정렬 + UI 아이템 매핑) ──────
   const displayRows = useMemo(() => {
     if (!activeCategory) return [];
 
     const activeData = localData[activeCategory] ?? [];
-    const sorted = [...activeData].sort((a, b) => {
-      if (sortType === 'ID') {
-        return sortByString(a.code, b.code, orderBy);
-      }
+    const sorted = [...activeData].sort((a, b) =>
+      compareDatasetRows(a, b, type, sortType, orderBy)
+    );
 
-      if (type === 'INDUSTRY') {
-        switch (sortType) {
-          case 'COMPANY':
-            return sortByString(a.companyName, b.companyName, orderBy);
-          case 'MODEL':
-            return sortByString(a.modelName, b.modelName, orderBy);
-          case 'PRODUCT':
-            return sortByString(a.productName, b.productName, orderBy);
-          default:
-            return 0;
-        }
-      }
-      if (type === 'VISUAL') {
-        switch (sortType) {
-          case 'NAME':
-            return sortByString(a.name, b.name, orderBy);
-          case 'SECTOR':
-            return sortByString(a.sectorCategory, b.sectorCategory, orderBy);
-          case 'MAINPRODUCT':
-            return sortByString(a.mainProduct, b.mainProduct, orderBy);
-          case 'MAINCATEGORY':
-            return sortByString(
-              a.mainProductCategory,
-              b.mainProductCategory,
-              orderBy
-            );
-          default:
-            return 0;
-        }
-      }
-
-      return 0;
-    });
     return sorted.map((item, idx) =>
       type === 'VISUAL'
         ? mapVisualToUIItem(
@@ -207,80 +145,38 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
     );
   }, [localData, activeCategory, orderBy, type, sortType]);
 
+  // 검색어가 있을 때만 검색창에 결과 개수 반영
   useEffect(() => {
-    // 검색어가 있을 때만 검색 결과 카운트 반영
     if (keyword.length > 0) {
       setResultFromData(displayRows);
     } else {
-      clear(); // 검색어 없으면 초기화 (선택)
+      clear();
     }
   }, [keyword, displayRows, setResultFromData, clear]);
 
-  // 화살표 disabled 관리
   const lastIndex = displayRows?.length ?? 2 - 1;
 
-  {
-    /* 엑셀 다운로드 */
-  }
-  const handleDownload = async () => {
-    const res = await downloadExcel({
-      type: type ?? 'VISUAL',
+  // ── 다운로드(엑셀/이미지 zip) ─────────────────────────────
+  const { isDownload, handleDownload, handleImageDownload } =
+    useDatasetDownload({
+      type,
       yearId,
-      category: activeCategory ?? undefined,
+      activeCategory,
     });
 
-    const blob = new Blob([res.data], {
-      type: res.headers['content-type'],
-    });
-
-    // 파일명 추출 (서버가 내려준 filename 사용)
-    const disposition = res.headers['content-disposition'];
-    const filenameMatch = disposition?.match(/filename\*=UTF-8''(.+)/);
-    const filename = filenameMatch
-      ? decodeURIComponent(filenameMatch[1])
-      : `${type.toLowerCase()}_data.xlsx`;
-
-    const url = window.URL.createObjectURL(blob);
-
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-
-    a.remove();
-    window.URL.revokeObjectURL(url);
-  };
-  {
-    /* 이미지 zip 다운로드 */
-  }
-  const downloadBlob = (blob: Blob, filename: string) => {
-    const url = window.URL.createObjectURL(blob);
-
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-
-    window.URL.revokeObjectURL(url);
+  // ── 신규 데이터 생성 ───────────────────────────────────
+  const handleAddRow = () => {
+    if (!activeCategory) return;
+    setIsAdd(true);
   };
 
-  const handleImageDownload = async () => {
-    try {
-      if (!rowIds) return;
-      setIsDownload(true);
-      const blob = await downloadImageZip(type ?? 'VISUAL', {
-        ids: rowIds,
-      });
-      downloadBlob(blob, 'images.zip');
-    } catch (e) {
-      console.error('이미지 zip 다운로드 실패:', e);
-      alert('다운로드 실패! (서버 응답 지연)');
-    } finally {
-      setIsDownload(false);
-      setRowIds([]);
-    }
-  };
+  // 그리드/갤러리/생성모달이 공통으로 쓰는 컬럼 메타 + 상세 필드 목록
+  const { rowMeta, fields } = getRowMetaAndFields(
+    type,
+    yearName,
+    displayRows as WithIndex<VisualRow | IndustrialRow>[],
+    activeCategory as CategoryByType[T] | null
+  );
 
   return (
     <div className="min-h-screen bg-[#F4F7FF] px-2 pt-1.5">
@@ -315,7 +211,11 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
             >
               {activeTab === 'grid' ? (
                 <Image
-                  onClick={isDownload ? undefined : handleImageDownload}
+                  onClick={
+                    isDownload
+                      ? undefined
+                      : () => handleImageDownload(rowIds, () => setRowIds([]))
+                  }
                   src={imgDown}
                   alt="img-download"
                   width={16}
@@ -343,196 +243,111 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
         </div>
 
         {/* content */}
-        {activeTab === 'grid'
-          ? (() => {
-              if (type === 'VISUAL') {
-                const rowMeta = getRowMeta(
-                  'VISUAL',
-                  yearName as Years,
-                  displayRows as WithIndex<VisualRow>[],
-                  activeCategory as VisualCategory
-                );
-
-                const columns = rowMeta.columns as ColumnDef<
+        {activeTab === 'grid' ? (
+          type === 'VISUAL' ? (
+            <GridTable<VisualRow, 'VISUAL'>
+              type="VISUAL"
+              rows={displayRows as WithIndex<VisualRow>[]}
+              rowIds={rowIds}
+              columns={
+                rowMeta.columns as ColumnDef<
                   WithIndex<VisualRow | IndustrialRow>
-                >[];
-
-                const fields = buildFieldsFromColumns(columns);
-
-                return (
-                  <GridTable<VisualRow, 'VISUAL'>
-                    type="VISUAL"
-                    rows={displayRows as WithIndex<VisualRow>[]}
-                    rowIds={rowIds}
-                    columns={columns}
-                    fields={fields}
-                    onAddRow={handleAddRow}
-                    orderBy={orderBy}
-                    setOrderBy={setOrderBy}
-                    setSortType={setSortType}
-                    lastIndex={lastIndex}
-                    activeCategory={activeCategory as VisualCategory}
-                    setRowIds={setRowIds}
-                  />
-                );
+                >[]
               }
-
-              const rowMeta = getRowMeta(
-                'INDUSTRY',
-                (yearName ?? '2025') as Years,
-                displayRows as WithIndex<IndustrialRow>[],
-                activeCategory as IndustryCategory
-              );
-
-              const columns = rowMeta.columns as ColumnDef<
-                WithIndex<IndustrialRow | VisualRow>
-              >[];
-
-              const fields = buildFieldsFromColumns(columns);
-
-              return (
-                <GridTable<IndustrialRow, 'INDUSTRY'>
-                  type="INDUSTRY"
-                  rows={displayRows as WithIndex<IndustrialRow>[]}
-                  rowIds={rowIds}
-                  columns={columns}
-                  fields={fields}
-                  onAddRow={handleAddRow}
-                  orderBy={orderBy}
-                  setOrderBy={setOrderBy}
-                  setSortType={setSortType}
-                  lastIndex={lastIndex}
-                  activeCategory={activeCategory as IndustryCategory}
-                  setRowIds={setRowIds}
-                />
-              );
-            })()
-          : (() => {
-              if (type === 'VISUAL') {
-                const rowMeta = getRowMeta(
-                  'VISUAL',
-                  yearName as Years,
-                  displayRows as WithIndex<VisualRow>[],
-                  activeCategory as VisualCategory
-                );
-
-                const fields = buildFieldsFromColumns(
-                  rowMeta.columns as ColumnDef<
-                    WithIndex<VisualRow | IndustrialRow>
-                  >[]
-                );
-
-                return (
-                  <div className="border border-t-0 border-[#E9E9E7] bg-white p-3">
-                    <GalleryView<VisualRow>
-                      type="VISUAL"
-                      rows={displayRows as WithIndex<VisualRow>[]}
-                      galleryFields={
-                        rowMeta.galleryFields as GalleryFieldDef<
-                          WithIndex<VisualRow>
-                        >[]
-                      }
-                      fields={fields}
-                      onAdd={handleAddRow}
-                      orderBy={orderBy}
-                      setOrderBy={setOrderBy}
-                      lastIndex={lastIndex}
-                      activeCategory={activeCategory!}
-                    />
-                  </div>
-                );
-              }
-
-              const rowMeta = getRowMeta(
-                'INDUSTRY',
-                (yearName ?? '2025') as Years,
-                displayRows as WithIndex<IndustrialRow>[]
-              );
-
-              const fields = buildFieldsFromColumns(
+              fields={fields}
+              onAddRow={handleAddRow}
+              orderBy={orderBy}
+              setOrderBy={setOrderBy}
+              setSortType={setSortType}
+              lastIndex={lastIndex}
+              activeCategory={activeCategory as VisualCategory}
+              setRowIds={setRowIds}
+            />
+          ) : (
+            <GridTable<IndustrialRow, 'INDUSTRY'>
+              type="INDUSTRY"
+              rows={displayRows as WithIndex<IndustrialRow>[]}
+              rowIds={rowIds}
+              columns={
                 rowMeta.columns as ColumnDef<
                   WithIndex<IndustrialRow | VisualRow>
                 >[]
-              );
-
-              return (
-                <div className="border border-t-0 border-[#E9E9E7] bg-white p-3">
-                  <GalleryView<IndustrialRow>
-                    type="INDUSTRY"
-                    rows={displayRows as WithIndex<IndustrialRow>[]}
-                    galleryFields={
-                      rowMeta.galleryFields as GalleryFieldDef<
-                        WithIndex<IndustrialRow>
-                      >[]
-                    }
-                    fields={fields}
-                    orderBy={orderBy}
-                    setOrderBy={setOrderBy}
-                    onAdd={handleAddRow}
-                    lastIndex={lastIndex}
-                    activeCategory={activeCategory!}
-                  />
-                </div>
-              );
-            })()}
+              }
+              fields={fields}
+              onAddRow={handleAddRow}
+              orderBy={orderBy}
+              setOrderBy={setOrderBy}
+              setSortType={setSortType}
+              lastIndex={lastIndex}
+              activeCategory={activeCategory as IndustryCategory}
+              setRowIds={setRowIds}
+            />
+          )
+        ) : (
+          <div className="border border-t-0 border-[#E9E9E7] bg-white p-3">
+            {type === 'VISUAL' ? (
+              <GalleryView<VisualRow>
+                type="VISUAL"
+                rows={displayRows as WithIndex<VisualRow>[]}
+                galleryFields={
+                  rowMeta.galleryFields as GalleryFieldDef<
+                    WithIndex<VisualRow>
+                  >[]
+                }
+                fields={fields}
+                onAdd={handleAddRow}
+                orderBy={orderBy}
+                setOrderBy={setOrderBy}
+                lastIndex={lastIndex}
+                activeCategory={activeCategory!}
+              />
+            ) : (
+              <GalleryView<IndustrialRow>
+                type="INDUSTRY"
+                rows={displayRows as WithIndex<IndustrialRow>[]}
+                galleryFields={
+                  rowMeta.galleryFields as GalleryFieldDef<
+                    WithIndex<IndustrialRow>
+                  >[]
+                }
+                fields={fields}
+                orderBy={orderBy}
+                setOrderBy={setOrderBy}
+                onAdd={handleAddRow}
+                lastIndex={lastIndex}
+                activeCategory={activeCategory!}
+              />
+            )}
+          </div>
+        )}
 
         {isAdd &&
           activeCategory &&
-          (() => {
-            if (type === 'VISUAL') {
-              const rowMeta = getRowMeta(
-                'VISUAL',
-                yearName as Years,
-                displayRows as WithIndex<VisualRow>[]
-              );
-
-              const fields = buildFieldsFromColumns(
-                rowMeta.columns as ColumnDef<
-                  WithIndex<VisualRow | IndustrialRow>
-                >[]
-              );
-
-              return (
-                <DataDetailModal<VisualRow, 'VISUAL'>
-                  type="VISUAL"
-                  isEdit={true}
-                  isAdd={isAdd}
-                  fields={fields}
-                  activeCategory={activeCategory as VisualCategory}
-                  onClose={() => {
-                    setIsAdd(false);
-                  }}
-                  totalLength={displayRows?.length ?? 1}
-                />
-              );
-            }
-
-            const rowMeta = getRowMeta(
-              'INDUSTRY',
-              (yearName ?? '2025') as Years,
-              displayRows as WithIndex<IndustrialRow>[]
-            );
-
-            const fields = buildFieldsFromColumns(
-              rowMeta.columns as ColumnDef<
-                WithIndex<IndustrialRow | VisualRow>
-              >[]
-            );
-
-            return (
-              <DataDetailModal<IndustrialRow, 'INDUSTRY'>
-                type="INDUSTRY"
-                isEdit={true}
-                isAdd={isAdd}
-                fields={fields}
-                activeCategory={activeCategory as IndustryCategory}
-                onClose={() => {
-                  setIsAdd(false);
-                }}
-                totalLength={displayRows?.length ?? 1}
-              />
-            );
-          })()}
+          (type === 'VISUAL' ? (
+            <DataDetailModal<VisualRow, 'VISUAL'>
+              type="VISUAL"
+              isEdit={true}
+              isAdd={isAdd}
+              fields={fields}
+              activeCategory={activeCategory as VisualCategory}
+              onClose={() => {
+                setIsAdd(false);
+              }}
+              totalLength={displayRows?.length ?? 1}
+            />
+          ) : (
+            <DataDetailModal<IndustrialRow, 'INDUSTRY'>
+              type="INDUSTRY"
+              isEdit={true}
+              isAdd={isAdd}
+              fields={fields}
+              activeCategory={activeCategory as IndustryCategory}
+              onClose={() => {
+                setIsAdd(false);
+              }}
+              totalLength={displayRows?.length ?? 1}
+            />
+          ))}
       </div>
     </div>
   );
