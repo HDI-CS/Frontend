@@ -267,7 +267,7 @@ export const INDUSTRY_CATEGORY_CONFIG = {
     { key: 'maxPlayTime', label: '최대 재생시간' },
     { key: 'chargeTime', label: '충전 시간' },
     { key: 'connectivity', label: '입출력' },
-    ...ELECTRONICS_COMMON_FIELDS,
+    // ...ELECTRONICS_COMMON_FIELDS,
   ],
 
   // 2026 2차 신규
@@ -279,6 +279,29 @@ export const INDUSTRY_CATEGORY_CONFIG = {
 } as const satisfies Record<string, readonly AdminFieldMeta[]>;
 
 export type IndustryCategory = keyof typeof INDUSTRY_CATEGORY_CONFIG;
+
+// ⚠️ 같은 카테고리 enum이 회차마다 다른 속성을 채울 때만 쓰는 오버라이드.
+// (BLUETOOTH_SPEAKER처럼 카테고리가 재사용되지만 실제 채우는 필드가 완전히 바뀐 경우)
+export const INDUSTRY_FIELD_OVERRIDES_BY_YEAR: Record<
+  string,
+  Partial<Record<string, readonly AdminFieldMeta[]>>
+> = {
+  '2026 2차': {
+    BLUETOOTH_SPEAKER: ELECTRONICS_COMMON_FIELDS,
+  },
+};
+
+export const getIndustryFieldsForYear = (
+  yearName: string | undefined,
+  category: string
+): readonly AdminFieldMeta[] => {
+  const override = yearName
+    ? INDUSTRY_FIELD_OVERRIDES_BY_YEAR[yearName]?.[category]
+    : undefined;
+  return (
+    override ?? INDUSTRY_CATEGORY_CONFIG[category as IndustryCategory] ?? []
+  );
+};
 
 // ── 도메인 전체에서 항상 필요한 core 필드 ──────
 export const VISUAL_CORE_FIELDS = [
@@ -424,20 +447,6 @@ export const EMPTY_INDUSTRY_DATASET = {
   originalFrontImagePath: null,
   originalSideImagePath: null,
 } as IndustryDatasetDefaults;
-
-// ── zod 스키마 ──
-// export const UpdateIndustrialDatasetRequestSchema = z
-//   .object({
-//     ...buildNullableShape(INDUSTRY_CORE_FIELDS),
-//     ...buildNullableShape(INDUSTRY_OPTIONAL_FIELD_KEYS),
-//     originalDetailImagePath: z.string().nullable(),
-//     originalFrontImagePath: z.string().nullable(),
-//     originalSideImagePath: z.string().nullable(),
-//     originalSide2ImagePath: z.string().nullable(),
-//     originalSide3ImagePath: z.string().nullable(),
-//     industryDataCategory: IndustryCategorySchema,
-//   })
-//   .partial();
 
 export const VISUAL_CATEGORY_KEYS = Object.keys(
   VISUAL_CATEGORY_CONFIG

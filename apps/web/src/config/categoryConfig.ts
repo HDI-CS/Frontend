@@ -202,20 +202,23 @@ export const INDUSTRY_CATEGORY_CONFIG = {
   },
 
   BLUETOOTH_SPEAKER: {
-    survey: {
-      title: '블루투스 스피커 정보',
-      subTitle: '블루투스 스피커 상세 정보',
-      surveyTitle: '블루투스 스피커 평가 설문',
-      surveyDescription: '블루투스 스피커 디자인에 대한 평가를 진행해주세요.',
-    },
-    fields: [
-      { key: 'soundOutput', label: '사운드 출력' },
-      { key: 'codec', label: '코덱' },
-      { key: 'extraFeatures', label: '부가기능' },
-      { key: 'maxPlayTime', label: '최대 재생시간' },
-      { key: 'chargeTime', label: '충전 시간' },
-      { key: 'connectivity', label: '입출력' },
-    ],
+    // survey: {
+    //   title: '블루투스 스피커 정보',
+    //   subTitle: '블루투스 스피커 상세 정보',
+    //   surveyTitle: '블루투스 스피커 평가 설문',
+    //   surveyDescription: '블루투스 스피커 디자인에 대한 평가를 진행해주세요.',
+    // },
+    // fields: [
+    //   { key: 'soundOutput', label: '사운드 출력' },
+    //   { key: 'codec', label: '코덱' },
+    //   { key: 'extraFeatures', label: '부가기능' },
+    //   { key: 'maxPlayTime', label: '최대 재생시간' },
+    //   { key: 'chargeTime', label: '충전 시간' },
+    //   { key: 'connectivity', label: '입출력' },
+    // ],
+
+    survey: ELECTRONICS_SURVEY_META('포터블 스피커'),
+    fields: ELECTRONICS_FIELDS,
   },
 
   // 2026 2차

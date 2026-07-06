@@ -184,7 +184,7 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
         {/* 상단 */}
         <div className="relative flex items-center justify-between border-b border-[#E5E5E5]">
           {/* 탭 영역: 넘치면 스크롤, 남은 공간만 차지 */}
-          <div className="min-w-0 max-w-[600px] flex-1 overflow-x-auto overflow-y-hidden">
+          <div className="scrollbar-hidden min-w-0 max-w-[600px] flex-1 overflow-x-auto overflow-y-hidden">
             <CategoryTab
               type={type}
               categories={categorieItem}

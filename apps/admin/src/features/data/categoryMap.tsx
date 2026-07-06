@@ -44,7 +44,7 @@ export const CATEGORY_MAP: Record<
       'WEBCAM',
       'PROJECTOR',
       'BLUETOOTH_SPEAKER',
-    ], 
+    ],
   },
 } as const;
 

@@ -95,8 +95,6 @@ const getWeightEvaluationFactors = (type: 'visual' | 'industry') => {
   return baseFactors;
 };
 
-
-
 const getWeightEvaluationCategories = (
   type: 'visual' | 'industry'
 ): Array<{
