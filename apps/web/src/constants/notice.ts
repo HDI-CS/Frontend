@@ -28,23 +28,23 @@ export const PROGRESS_GUIDELINES = {
           '[평가 제출]: 평가 완료 시 (제출 후에도 수정 가능, 수정시 다시 저장 필요)',
         ],
       },
+      // {
+      //   number: 3,
+      //   content:
+      //     '누락된 평가 항목이 없는지 확인한 후 ‘가중치 평가 설문 버튼을 클릭하여 제출해주세요.',
+      // },
       {
         number: 3,
-        content:
-          '누락된 평가 항목이 없는지 확인한 후 ‘가중치 평가 설문 버튼을 클릭하여 제출해주세요.',
-      },
-      {
-        number: 4,
         content:
           "좌측 상단 '홍익대학교' 로고를 클릭하면 첫 화면으로 이동 가능합니다.",
         image: HongikUnivLogo,
       },
       {
-        number: 5,
+        number: 4,
         content: '총 50개 평가가 완료되면 ‘가중치 평가 설문’을 진행해 주세요.',
       },
       {
-        number: 6,
+        number: 5,
         content: "'최종 제출하기' 버튼을 클릭하여 제출을 완료해주세요.",
       },
     ] as ProgressStep[],
@@ -66,23 +66,23 @@ export const PROGRESS_GUIDELINES = {
           '[평가 제출]: 평가 완료 시 (제출 후에도 수정 가능, 수정시 다시 저장 필요)',
         ],
       },
+      // {
+      //   number: 3,
+      //   content:
+      //     '누락된 평가 항목이 없는지 확인한 후 ‘전체 평가 제출’ 버튼을 클릭하여 제출해주세요.',
+      // },
       {
         number: 3,
-        content:
-          '누락된 평가 항목이 없는지 확인한 후 ‘전체 평가 제출’ 버튼을 클릭하여 제출해주세요.',
-      },
-      {
-        number: 4,
         content:
           "좌측 상단 '홍익대학교' 로고를 클릭하면 첫 화면으로 이동 가능합니다.",
         image: HongikUnivLogo,
       },
       {
-        number: 5,
+        number: 4,
         content: '총 50개 평가가 완료되면 ‘가중치 평가 설문’을 진행해 주세요.',
       },
       {
-        number: 6,
+        number: 5,
         content: "'최종 제출하기' 버튼을 클릭하여 제출을 완료해주세요.",
       },
     ] as ProgressStep[],
@@ -105,7 +105,7 @@ interface ContentItem {
 
 export const SURVEY_INTRODUCTION = {
   visual: {
-    TITLE: '포스터 디자인 해석·평가 AI 개발을 위한 설문지',
+    TITLE: '패키지 디자인 해석·평가 AI 개발을 위한 설문지',
     CONTENT: [
       {
         type: 'rich',
@@ -122,7 +122,7 @@ export const SURVEY_INTRODUCTION = {
       {
         type: 'text',
         content:
-          '참여자는 제시된 포스터 디자인을 평가하게 되며, 그 결과는 연구 데이터베이스에 축적되어 AI 모델이 디자인을 해석하고 분석하는 방식을 정교화하는 데 활용됩니다.',
+          '참여자는 제시된 패키지 디자인을 평가하게 되며, 그 결과는 연구 데이터베이스에 축적되어 AI 모델이 디자인을 해석하고 분석하는 방식을 정교화하는 데 활용됩니다.',
       },
       {
         type: 'text',

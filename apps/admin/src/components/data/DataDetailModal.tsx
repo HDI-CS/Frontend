@@ -1,7 +1,7 @@
 'use client';
 import empty from '@/public/data/EmptyIMg.svg';
 import close from '@/public/data/close.svg';
-import { CategoryByType } from '@/src/features/data/DataYearPage';
+import { CategoryByType } from '@/src/features/data/categoryMap';
 import {
   getImageSrcByType,
   updateRequestMapper,
@@ -40,6 +40,16 @@ export type FieldDef = {
   field: string;
 };
 
+type VisualDatasetDefaults = Omit<
+  CreateVisualDatasetRequest,
+  'visualDataCategory'
+>;
+
+type IndustryDatasetDefaults = Omit<
+  CreateIndustrialDatasetRequest,
+  'industryDataCategory'
+>;
+
 interface DataDetailModalProps<TRow, TType extends UserType> {
   type: TType;
   row?: WithIndex<TRow>;
@@ -59,7 +69,7 @@ interface DataDetailModalProps<TRow, TType extends UserType> {
   onNext?: () => void;
 }
 
-const EMPTY_VISUAL_DATASET: UpdateVisualDatasetRequest = {
+const EMPTY_VISUAL_DATASET: VisualDatasetDefaults = {
   code: '',
   name: '',
   sectorCategory: '',
@@ -75,13 +85,13 @@ const EMPTY_VISUAL_DATASET: UpdateVisualDatasetRequest = {
   contentType: null,
   visualType: null,
   designDescription: null,
+  originalDescription: null,
   releaseYear: null,
 
   originalLogoImage: null,
-  visualDataCategory: 'COSMETIC',
 };
 
-const EMPTY_INDUSTRY_DATASET: UpdateIndustrialDatasetRequest = {
+const EMPTY_INDUSTRY_DATASET: IndustryDatasetDefaults = {
   code: '',
   productName: '',
   companyName: '',
@@ -111,7 +121,8 @@ const EMPTY_INDUSTRY_DATASET: UpdateIndustrialDatasetRequest = {
   originalDetailImagePath: null,
   originalFrontImagePath: null,
   originalSideImagePath: null,
-  industryDataCategory: 'AIR_PURIFIER',
+  originalSide2ImagePath: null,
+  originalSide3ImagePath: null,
 };
 
 /* =======================
@@ -391,23 +402,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
 
     if (type === 'VISUAL') {
       const requestData: CreateVisualDatasetRequest = {
-        code: '',
-        name: '',
-        sectorCategory: '',
-        mainProductCategory: '',
-        mainProduct: '',
-        target: '',
-        referenceUrl: '',
-        originalLogoImage: null,
-
-        // 2026
-        title: null,
-        country: null,
-        clientName: null,
-        contentType: null,
-        visualType: null,
-        designDescription: null,
-        releaseYear: null,
+        ...EMPTY_VISUAL_DATASET,
         visualDataCategory: activeCategory as VisualCategory,
       };
 
@@ -433,37 +428,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
 
     if (type === 'INDUSTRY') {
       const requestData: CreateIndustrialDatasetRequest = {
-        code: '',
-        productName: '',
-        companyName: '',
-        modelName: '',
-        price: '',
-        material: '',
-        size: '',
-        weight: '',
-        referenceUrl: '',
-        registeredAt: '',
-        productPath: '',
-        productTypeName: '',
-
-        // 2026
-        noiseCancelling: null,
-        codec: null,
-        extraFeatures: null,
-        controlType: null,
-        waterproof: null,
-        maxPlayTime: null,
-        chargeTime: null,
-        usage: null,
-        shoppingUrl: null,
-        connectivity: null,
-        soundOutput: null,
-
-        originalDetailImagePath: null,
-        originalFrontImagePath: null,
-        originalSideImagePath: null,
-        originalSide2ImagePath: null,
-        originalSide3ImagePath: null,
+        ...EMPTY_INDUSTRY_DATASET,
         industryDataCategory: activeCategory as IndustryCategory,
       };
 

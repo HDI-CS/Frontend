@@ -1,3 +1,8 @@
+import {
+  ALL_WEIGHT_CATEGORY_KEYS,
+  INDUSTRY_CATEGORY_KEYS,
+  VISUAL_CATEGORY_KEYS,
+} from '@/config/categoryConfig';
 import { z } from 'zod';
 
 // ========================
@@ -5,21 +10,19 @@ import { z } from 'zod';
 // ========================
 
 // 가중치 평가 카테고리 enum
-export const WeightEvaluationCategorySchema = z.enum([
-  'COSMETIC',
-  'FB',
-  'VACUUM_CLEANER',
-  'AIR_PURIFIER',
-  'HAIR_DRYER',
+export const WeightEvaluationCategorySchema = z.enum(
+  ALL_WEIGHT_CATEGORY_KEYS as [string, ...string[]]
+);
 
-  // 2026
-  'POSTER',
-  'BLUETOOTH_SPEAKER',
-  'HEADPHONE',
-  'EARPHONE',
-]);
-export const VisualCategorySchema = z.enum(['COSMETIC', 'FB', 'POSTER']);
+export const VisualCategorySchema = z.enum(
+  VISUAL_CATEGORY_KEYS as [string, ...string[]]
+);
 export type VisualCategory = z.infer<typeof VisualCategorySchema>;
+
+export const IndustryCategorySchema = z.enum(
+  INDUSTRY_CATEGORY_KEYS as [string, ...string[]]
+);
+export type IndustryCategory = z.infer<typeof IndustryCategorySchema>;
 
 // 가중치 평가 요청 스키마
 export const WeightedScoreRequestSchema = z.object({

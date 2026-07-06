@@ -1,16 +1,20 @@
 import empty from '@/public/data/EmptyIMg.svg';
+
 import {
-  CATEGORY_FIELD_CONFIG,
+  DISPLAY_META_BY_CATEGORY,
+  getIndustryFieldsForYear,
   INDUSTRY_DYNAMIC_COLUMN_MAP,
-  VISUAL_DYNAMIC_COLUMN_MAP,
-} from '@/src/config/categoryFieldConfig';
+  VISUAL_CATEGORY_CONFIG,
+  VisualCategory,
+} from '@/src/config/adminCategoryConfig';
+
 import { UserType } from '@/src/schemas/auth';
 import {
   IndustryCategory,
   IndustryImageType,
 } from '@/src/schemas/industry-data';
 import { EvaluationYears, RoundsSchema } from '@/src/schemas/survey';
-import { VisualCategory, YearFolderArray } from '@/src/schemas/visual-data';
+import { YearFolderArray } from '@/src/schemas/visual-data';
 import { useSearchStore } from '@/src/store/searchStore';
 import {
   ColumnDef,
@@ -24,7 +28,7 @@ import { EvaluationYearFolder } from '@/src/types/evaluation';
 import { renderCellText } from '@/src/utils/highlightText';
 import { truncateText } from '@/src/utils/truncateText';
 import Image from 'next/image';
-import { CategoryByType } from './DataYearPage';
+import { CategoryByType } from './categoryMap';
 const getKeyword = () => useSearchStore.getState().keyword;
 
 const toHttpUrl = (url?: string) => {
@@ -32,63 +36,32 @@ const toHttpUrl = (url?: string) => {
   return url.startsWith('http') ? url : `https://${url}`;
 };
 
-type IndustryDynamicFieldKey =
-  | 'productTypeName'
-  | 'size'
-  | 'material'
-  | 'noiseCancelling'
-  | 'codec'
-  | 'extraFeatures'
-  | 'controlType'
-  | 'waterproof'
-  | 'maxPlayTime'
-  | 'chargeTime'
-  | 'usage'
-  | 'shoppingUrl'
-  | 'connectivity'
-  | 'soundOutput';
+// type IndustryDynamicFieldKey =
+//   | 'productTypeName'
+//   | 'size'
+//   | 'material'
+//   | 'noiseCancelling'
+//   | 'codec'
+//   | 'extraFeatures'
+//   | 'controlType'
+//   | 'waterproof'
+//   | 'maxPlayTime'
+//   | 'chargeTime'
+//   | 'usage'
+//   | 'shoppingUrl'
+//   | 'connectivity'
+//   | 'soundOutput';
 
-type VisualDynamicFieldKey =
-  | 'sectorCategory'
-  | 'mainProductCategory'
-  | 'mainProduct'
-  | 'target'
-  | 'name'
-  | 'title'
-  | 'country'
-  | 'clientName'
-  | 'contentType'
-  | 'visualType'
-  | 'designDescription'
-  | 'releaseYear'
-  | 'referenceUrl';
-
-const DISPLAY_META_BY_CATEGORY = {
-  FB: {
-    field: 'name',
-    label: '브랜드명',
-  },
-  COSMETIC: {
-    field: 'name',
-    label: '브랜드명',
-  },
-  POSTER: {
-    field: 'title',
-    label: '제목',
-  },
-} as const;
-
-const buildIndustryDynamicColumns = (category: IndustryCategory) => {
+const buildIndustryDynamicColumns = (
+  category: IndustryCategory,
+  yearName: Years | undefined // 파라미터 추가
+) => {
   if (!category) return [];
 
-  const keySet = new Set<string>();
-  CATEGORY_FIELD_CONFIG.industry?.[category].forEach((field) => {
-    keySet.add(field.key);
-  });
+  const fields = getIndustryFieldsForYear(yearName, category); // 변경
 
-  return Array.from(keySet).map((key) => {
-    const meta = INDUSTRY_DYNAMIC_COLUMN_MAP[key as IndustryDynamicFieldKey];
-
+  return fields.map(({ key }) => {
+    const meta = INDUSTRY_DYNAMIC_COLUMN_MAP[key];
     return {
       key,
       header: meta?.header || key,
@@ -98,10 +71,7 @@ const buildIndustryDynamicColumns = (category: IndustryCategory) => {
         renderCellText(
           String(row[key as keyof IndustrialRow] ?? ''),
           getKeyword(),
-          {
-            active: isActiveRow,
-            maxLength: meta?.maxLength || 10,
-          }
+          { active: isActiveRow, maxLength: meta?.maxLength || 10 }
         ),
     };
   });
@@ -110,32 +80,24 @@ const buildIndustryDynamicColumns = (category: IndustryCategory) => {
 const buildVisualDynamicColumns = (category: VisualCategory) => {
   if (!category) return [];
 
-  const keySet = new Set<string>();
-  CATEGORY_FIELD_CONFIG.visual?.[category]?.forEach((field) => {
-    keySet.add(field.key);
-  });
+  const meta = VISUAL_CATEGORY_CONFIG[category];
+  const fields = meta?.fields ?? [];
 
-  return Object.keys(VISUAL_DYNAMIC_COLUMN_MAP)
-    .filter((key) => keySet.has(key))
-    .map((key) => {
-      const meta = VISUAL_DYNAMIC_COLUMN_MAP[key as VisualDynamicFieldKey];
-
-      return {
-        key,
-        header: meta?.header || key,
-        thClassName: meta?.thClassName || 'w-[120px]',
-        className: meta?.className || 'w-[120px]',
-        cell: (row: WithIndex<VisualRow>, isActiveRow: boolean) =>
-          renderCellText(
-            String(row[key as keyof VisualRow] ?? ''),
-            getKeyword(),
-            {
-              active: isActiveRow,
-              maxLength: meta?.maxLength || 10,
-            }
-          ),
-      };
-    });
+  return fields.map((meta) => ({
+    key: meta.key,
+    header: meta.label,
+    thClassName: meta.thClassName || 'w-[120px]',
+    className: meta.className || 'w-[120px]',
+    cell: (row: WithIndex<VisualRow>, isActiveRow: boolean) =>
+      renderCellText(
+        String(row[meta.key as keyof VisualRow] ?? ''),
+        getKeyword(),
+        {
+          active: isActiveRow,
+          maxLength: meta.maxLength || 10,
+        }
+      ),
+  }));
 };
 
 export const getRowMeta = (
@@ -145,9 +107,9 @@ export const getRowMeta = (
   activeCategory?: VisualCategory | IndustryCategory
 ) => {
   if (type === 'VISUAL') {
-    const displayMeta =
-      activeCategory &&
-      DISPLAY_META_BY_CATEGORY[activeCategory as VisualCategory];
+    const displayMeta = activeCategory
+      ? DISPLAY_META_BY_CATEGORY[activeCategory as VisualCategory]
+      : undefined;
     return {
       getImageSrc: (row: VisualRow) => row.logoImage,
       getImageAlt: (row: VisualRow) => row.name,
@@ -199,7 +161,7 @@ export const getRowMeta = (
       //  갤러리 카드에 보여줄 필드
       galleryFields: [
         {
-          label: '이미지',
+          label: '로고 이미지',
           value: (row: VisualRow) => row.logoImage ?? '',
         }, //
         { label: 'ID', value: (row: VisualRow) => row.code },
@@ -289,7 +251,7 @@ export const getRowMeta = (
           }),
       },
 
-      ...buildIndustryDynamicColumns(activeCategory as IndustryCategory),
+      ...buildIndustryDynamicColumns(activeCategory as IndustryCategory, year),
 
       {
         key: 'weight',
@@ -452,6 +414,7 @@ export const updateRequestMapper = {
     contentType: detail.contentType ?? '',
     visualType: detail.visualType ?? '',
     designDescription: detail.designDescription ?? '',
+    originalDescription: detail.originalDescription ?? '',
     releaseYear: detail.releaseYear ?? '',
 
     visualDataCategory: category,
@@ -579,6 +542,7 @@ export const buildFieldsFromColumns = (
   const EXCLUDE_KEYS = [
     '_no',
     'logoImage',
+    'VisualImage',
     'detailImagePath',
     'frontImagePath',
     'sideImagePath',
