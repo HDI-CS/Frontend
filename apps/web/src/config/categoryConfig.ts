@@ -102,6 +102,25 @@ export const VISUAL_CATEGORY_CONFIG = {
 } as const satisfies Record<string, CategoryDefinition>;
 
 // ── INDUSTRY ────────────────────────────────────────────
+
+const ELECTRONICS_SURVEY_META = (title: string) => ({
+  title: `${title} 정보`,
+  subTitle: `${title} 상세 정보`,
+  surveyTitle: `${title} 평가 설문`,
+  surveyDescription: `${title} 디자인에 대한 평가를 진행해주세요.`,
+});
+
+const ELECTRONICS_FIELDS: FieldMeta[] = [
+  { key: 'companyName', label: '회사명' },
+  { key: 'productPath', label: '카테고리' },
+  { key: 'productTypeName', label: '유형' },
+  { key: 'usage', label: '용도' },
+  { key: 'weight', label: '무게' },
+  { key: 'price', label: '가격' },
+  { key: 'registeredAt', label: '출시일' },
+  { key: 'referenceUrl', label: '구매 링크', type: 'link' },
+];
+
 export const INDUSTRY_CATEGORY_CONFIG = {
   VACUUM_CLEANER: {
     survey: {
@@ -198,6 +217,29 @@ export const INDUSTRY_CATEGORY_CONFIG = {
       { key: 'connectivity', label: '입출력' },
     ],
   },
+
+  // 2026 2차
+
+  WIRELESS_MOUSE: {
+    survey: ELECTRONICS_SURVEY_META('무선 마우스'),
+    fields: ELECTRONICS_FIELDS,
+  },
+  UMPC: {
+    survey: ELECTRONICS_SURVEY_META('UMPC 무선게임기'),
+    fields: ELECTRONICS_FIELDS,
+  },
+  CAMERA: {
+    survey: ELECTRONICS_SURVEY_META('카메라'),
+    fields: ELECTRONICS_FIELDS,
+  },
+  WEBCAM: {
+    survey: ELECTRONICS_SURVEY_META('웹캠'),
+    fields: ELECTRONICS_FIELDS,
+  },
+  PROJECTOR: {
+    survey: ELECTRONICS_SURVEY_META('프로젝터'),
+    fields: ELECTRONICS_FIELDS,
+  },
 } as const satisfies Record<string, CategoryDefinition>;
 
 export const INDUSTRY_CORE_FIELDS = [
@@ -244,7 +286,38 @@ export const ALL_WEIGHT_CATEGORY_KEYS = [
 
 export const ACTIVE_WEIGHT_EVALUATION_CATEGORIES = {
   VISUAL: ['PACKAGE'] as const,
-  INDUSTRY: [] as const,
+  INDUSTRY: [
+    'WIRELESS_MOUSE',
+    'UMPC',
+    'CAMERA',
+    'WEBCAM',
+    'PROJECTOR',
+    'BLUETOOTH_SPEAKER',
+  ] as const,
+};
+
+// categoryConfig.ts에 추가
+
+export type WeightCategoryMeta = { id: string; name: string };
+
+export const WEIGHT_CATEGORY_META: Record<string, WeightCategoryMeta> = {
+  COSMETIC: { id: 'cosmetics', name: '화장품' },
+  FB: { id: 'fnb', name: 'F&B' },
+  POSTER: { id: 'poster', name: '포스터' },
+  PACKAGE: { id: 'package', name: '패키지' },
+
+  VACUUM_CLEANER: { id: 'vacuum', name: '핸디스틱청소기' },
+  AIR_PURIFIER: { id: 'airpurifier', name: '공기청정기/가습기' },
+  HAIR_DRYER: { id: 'hairdryer', name: '헤어드라이기' },
+  HEADPHONE: { id: 'headphone', name: '헤드폰' },
+  EARPHONE: { id: 'earphone', name: '이어폰' },
+  BLUETOOTH_SPEAKER: { id: 'bluetooth_speaker', name: '블루투스 스피커' },
+
+  WIRELESS_MOUSE: { id: 'wireless_mouse', name: '무선 마우스' },
+  UMPC: { id: 'umpc', name: 'UMPC 무선게임기' },
+  CAMERA: { id: 'camera', name: '카메라' },
+  WEBCAM: { id: 'webcam', name: '웹캠' },
+  PROJECTOR: { id: 'projector', name: '프로젝터' },
 };
 
 const collectAllFieldKeys = <T extends Record<string, CategoryDefinition>>(

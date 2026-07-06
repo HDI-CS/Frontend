@@ -1,19 +1,13 @@
 import empty from '@/public/data/EmptyIMg.svg';
-// import {
-//   CATEGORY_FIELD_CONFIG,
-//   INDUSTRY_DYNAMIC_COLUMN_MAP,
-//   VISUAL_DYNAMIC_COLUMN_MAP,
-// } from '@/src/config/categoryFieldConfig';
 
 import {
+  CATEGORY_FIELD_CONFIG,
   DISPLAY_META_BY_CATEGORY,
+  INDUSTRY_DYNAMIC_COLUMN_MAP,
   VISUAL_CATEGORY_CONFIG,
   VisualCategory,
 } from '@/src/config/adminCategoryConfig';
-import {
-  CATEGORY_FIELD_CONFIG,
-  INDUSTRY_DYNAMIC_COLUMN_MAP,
-} from '@/src/config/categoryFieldConfig';
+
 import { UserType } from '@/src/schemas/auth';
 import {
   IndustryCategory,
@@ -62,7 +56,7 @@ const buildIndustryDynamicColumns = (category: IndustryCategory) => {
   if (!category) return [];
 
   const keySet = new Set<string>();
-  CATEGORY_FIELD_CONFIG.industry?.[category].forEach((field) => {
+  CATEGORY_FIELD_CONFIG.industry?.[category]?.forEach((field) => {
     keySet.add(field.key);
   });
 

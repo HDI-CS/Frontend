@@ -37,7 +37,14 @@ export const CATEGORY_MAP: Record<
   },
   '2026 2차': {
     VISUAL: ['PACKAGE'],
-    INDUSTRY: [],
+    INDUSTRY: [
+      'WIRELESS_MOUSE',
+      'UMPC',
+      'CAMERA',
+      'WEBCAM',
+      'PROJECTOR',
+      'BLUETOOTH_SPEAKER',
+    ], 
   },
 } as const;
 
