@@ -9,6 +9,10 @@ import WeightEvaluationSuccess from '@/components/weight-evaluation/WeightEvalua
 import WeightEvaluationTable from '@/components/weight-evaluation/WeightEvaluationTable';
 
 import {
+  ACTIVE_WEIGHT_EVALUATION_CATEGORIES,
+  WEIGHT_CATEGORY_META,
+} from '@/config/categoryConfig';
+import {
   useSubmitWeightedScores,
   useWeightedScores,
 } from '@/hooks/useSurveyProducts';
@@ -91,7 +95,6 @@ const getWeightEvaluationFactors = (type: 'visual' | 'industry') => {
   return baseFactors;
 };
 
-// 타입별 카테고리 데이터 정의
 const getWeightEvaluationCategories = (
   type: 'visual' | 'industry'
 ): Array<{
@@ -100,184 +103,38 @@ const getWeightEvaluationCategories = (
   weights: Record<string, number>;
   responseId?: number;
 }> => {
-  const categoryMap: Record<
-    string,
-    Array<{
-      id: string;
-      name: string;
-      weights: Record<string, number>;
-      responseId?: number;
-    }>
-  > = {
-    visual: [
-      {
-        id: 'package',
-        name: '패키지',
-        weights: {
-          aesthetics: 0,
-          formative: 0,
-          originality: 0,
-          usability: 0,
-          functionality: 0,
-          ethics: 0,
-          economy: 0,
-          purpose: 0,
-        },
-      },
-      // {
-      //   id: 'poster',
-      //   name: '포스터',
-      //   weights: {
-      //     aesthetics: 0,
-      //     formative: 0,
-      //     originality: 0,
-      //     usability: 0,
-      //     functionality: 0,
-      //     ethics: 0,
-      //     economy: 0,
-      //     purpose: 0,
-      //   },s
-      // },
-      // {
-      //   id: 'fnb',
-      //   name: 'F&B',
-      //   weights: {
-      //     aesthetics: 0,
-      //     formative: 0,
-      //     originality: 0,
-      //     usability: 0,
-      //     functionality: 0,
-      //     ethics: 0,
-      //     economy: 0,
-      //     purpose: 0,
-      //   },
-      // },
-    ],
-    industry: [
-      // {
-      //   id: 'vacuum',
-      //   name: '핸디스틱청소기',
-      //   weights: {
-      //     aesthetics: 0,
-      //     formative: 0,
-      //     originality: 0,
-      //     usability: 0,
-      //     functionality: 0,
-      //     ethics: 0,
-      //     economy: 0,
-      //     purpose: 0,
-      //   },
-      // },
-      // {
-      //   id: 'airpurifier',
-      //   name: '공기청정기/가습기',
-      //   weights: {
-      //     aesthetics: 0,
-      //     formative: 0,
-      //     originality: 0,
-      //     usability: 0,
-      //     functionality: 0,
-      //     ethics: 0,
-      //     economy: 0,
-      //     purpose: 0,
-      //   },
-      // },
-      // {
-      //   id: 'hairdryer',
-      //   name: '헤어드라이기',
-      //   weights: {
-      //     aesthetics: 0,
-      //     formative: 0,
-      //     originality: 0,
-      //     usability: 0,
-      //     functionality: 0,
-      //     ethics: 0,
-      //     economy: 0,
-      //     purpose: 0,
-      //   },
-      // },
-      {
-        id: 'bluetooth_speaker',
-        name: '블루투스 스피커',
-        weights: {
-          aesthetics: 0,
-          formative: 0,
-          originality: 0,
-          usability: 0,
-          functionality: 0,
-          ethics: 0,
-          economy: 0,
-          purpose: 0,
-        },
-      },
-      {
-        id: 'headphone',
-        name: '헤드폰',
-        weights: {
-          aesthetics: 0,
-          formative: 0,
-          originality: 0,
-          usability: 0,
-          functionality: 0,
-          ethics: 0,
-          economy: 0,
-          purpose: 0,
-        },
-      },
-      {
-        id: 'earphone',
-        name: '이어폰',
-        weights: {
-          aesthetics: 0,
-          formative: 0,
-          originality: 0,
-          usability: 0,
-          functionality: 0,
-          ethics: 0,
-          economy: 0,
-          purpose: 0,
-        },
-      },
-    ],
+  const domain = type === 'visual' ? 'VISUAL' : 'INDUSTRY';
+
+  const emptyWeights: Record<string, number> = {
+    aesthetics: 0,
+    formative: 0,
+    originality: 0,
+    usability: 0,
+    functionality: 0,
+    ethics: 0,
+    economy: 0,
+    purpose: 0,
   };
 
-  return categoryMap[type] ?? categoryMap.brand!;
+  return ACTIVE_WEIGHT_EVALUATION_CATEGORIES[domain].map((apiCategory) => {
+    const meta = WEIGHT_CATEGORY_META[apiCategory]!; // 우리가 두 맵을 항상 같이 관리하니 안전
+    return {
+      id: meta.id,
+      name: meta.name,
+      weights: { ...emptyWeights },
+    };
+  });
 };
 
-// 카테고리 ID를 API 카테고리로 매핑하는 함수
 const mapCategoryToApiCategory = (categoryId: string): ApiCategory => {
-  console.log(categoryId);
-  const categoryMap: Record<string, ApiCategory> = {
-    cosmetics: 'COSMETIC',
-    fnb: 'FB',
-    vacuum: 'VACUUM_CLEANER',
-    airpurifier: 'AIR_PURIFIER',
-    hairdryer: 'HAIR_DRYER',
-    poster: 'POSTER',
-    headphone: 'HEADPHONE',
-    earphone: 'EARPHONE',
-    bluetooth_speaker: 'BLUETOOTH_SPEAKER',
-  };
-
-  return categoryMap[categoryId] || 'COSMETIC';
+  const entry = Object.entries(WEIGHT_CATEGORY_META).find(
+    ([, meta]) => meta.id === categoryId
+  );
+  return (entry?.[0] as ApiCategory) ?? 'COSMETIC';
 };
 
-// API 카테고리를 카테고리 ID로 역매핑하는 함수
 const mapApiCategoryToCategoryId = (apiCategory: ApiCategory): string => {
-  const categoryMap: Record<ApiCategory, string> = {
-    COSMETIC: 'cosmetics',
-    FB: 'fnb',
-    VACUUM_CLEANER: 'vacuum',
-    AIR_PURIFIER: 'airpurifier',
-    HAIR_DRYER: 'hairdryer',
-    POSTER: 'poster',
-    PACKAGE: 'package',
-    HEADPHONE: 'headphone',
-    EARPHONE: 'earphone',
-    BLUETOOTH_SPEAKER: 'bluetooth_speaker',
-  };
-
-  return categoryMap[apiCategory] || 'cosmetics';
+  return WEIGHT_CATEGORY_META[apiCategory]?.id ?? 'cosmetics';
 };
 
 // API 응답 데이터를 페이지 형식으로 변환하는 함수

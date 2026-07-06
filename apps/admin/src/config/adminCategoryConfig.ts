@@ -1,8 +1,6 @@
 import z from 'zod';
-import {
-  CreateIndustrialDatasetRequest,
-  IndustryCategorySchema,
-} from '../schemas/industry-data';
+
+import type { CreateIndustrialDatasetRequest } from '../schemas/industry-data';
 import { CreateVisualDatasetRequest } from '../schemas/visual-data';
 
 export type VisualDatasetDefaults = Omit<
@@ -14,6 +12,14 @@ export type IndustryDatasetDefaults = Omit<
   CreateIndustrialDatasetRequest,
   'industryDataCategory'
 >;
+
+type IndustryColumnDef = {
+  key: string;
+  header: string;
+  thClassName: string;
+  className: string;
+  maxLength: number;
+};
 
 export type AdminFieldMeta = {
   key: string;
@@ -210,6 +216,11 @@ export const VISUAL_CATEGORY_CONFIG = {
 export type VisualCategory = keyof typeof VISUAL_CATEGORY_CONFIG;
 
 // ── INDUSTRY_CATEGORY_CONFIG도 동일 원칙 적용 ──────────────
+const ELECTRONICS_COMMON_FIELDS = [
+  { key: 'productTypeName', label: '유형' },
+  { key: 'usage', label: '용도' },
+] as const;
+
 export const INDUSTRY_CATEGORY_CONFIG = {
   VACUUM_CLEANER: [
     { key: 'modelName', label: '모델명' },
@@ -245,6 +256,10 @@ export const INDUSTRY_CATEGORY_CONFIG = {
     { key: 'chargeTime', label: '충전 시간' },
     { key: 'waterproof', label: '방수 기능' },
   ],
+
+  // ⚠️ BLUETOOTH_SPEAKER는 2026 2차에서 재사용되는데, 이번 배치는 완전히 다른 속성
+  // (soundOutput/codec 등이 아니라 productTypeName/usage)을 채우므로 추가만 함.
+  // 1차 데이터는 새 필드가 null로, 2차 데이터는 기존 필드가 null로 자연스럽게 안 보임.
   BLUETOOTH_SPEAKER: [
     { key: 'soundOutput', label: '사운드 출력' },
     { key: 'codec', label: '코덱' },
@@ -252,10 +267,41 @@ export const INDUSTRY_CATEGORY_CONFIG = {
     { key: 'maxPlayTime', label: '최대 재생시간' },
     { key: 'chargeTime', label: '충전 시간' },
     { key: 'connectivity', label: '입출력' },
+    // ...ELECTRONICS_COMMON_FIELDS,
   ],
+
+  // 2026 2차 신규
+  WIRELESS_MOUSE: ELECTRONICS_COMMON_FIELDS,
+  UMPC: ELECTRONICS_COMMON_FIELDS,
+  CAMERA: ELECTRONICS_COMMON_FIELDS,
+  WEBCAM: ELECTRONICS_COMMON_FIELDS,
+  PROJECTOR: ELECTRONICS_COMMON_FIELDS,
 } as const satisfies Record<string, readonly AdminFieldMeta[]>;
 
 export type IndustryCategory = keyof typeof INDUSTRY_CATEGORY_CONFIG;
+
+// ⚠️ 같은 카테고리 enum이 회차마다 다른 속성을 채울 때만 쓰는 오버라이드.
+// (BLUETOOTH_SPEAKER처럼 카테고리가 재사용되지만 실제 채우는 필드가 완전히 바뀐 경우)
+export const INDUSTRY_FIELD_OVERRIDES_BY_YEAR: Record<
+  string,
+  Partial<Record<string, readonly AdminFieldMeta[]>>
+> = {
+  '2026 2차': {
+    BLUETOOTH_SPEAKER: ELECTRONICS_COMMON_FIELDS,
+  },
+};
+
+export const getIndustryFieldsForYear = (
+  yearName: string | undefined,
+  category: string
+): readonly AdminFieldMeta[] => {
+  const override = yearName
+    ? INDUSTRY_FIELD_OVERRIDES_BY_YEAR[yearName]?.[category]
+    : undefined;
+  return (
+    override ?? INDUSTRY_CATEGORY_CONFIG[category as IndustryCategory] ?? []
+  );
+};
 
 // ── 도메인 전체에서 항상 필요한 core 필드 ──────
 export const VISUAL_CORE_FIELDS = [
@@ -321,8 +367,6 @@ export const VISUAL_ITEM_NULLABLE_KEYS = [
   ...VISUAL_CORE_FIELDS.filter((k) => k !== 'code'),
   ...VISUAL_OPTIONAL_FIELD_KEYS,
 ] as const;
-
-
 
 // ── 파생: schema에 필요한 전체 nullable 필드 키 (code 제외) ──
 export const INDUSTRY_ITEM_NULLABLE_KEYS = [
@@ -404,20 +448,6 @@ export const EMPTY_INDUSTRY_DATASET = {
   originalSideImagePath: null,
 } as IndustryDatasetDefaults;
 
-// ── zod 스키마 ──
-export const UpdateIndustrialDatasetRequestSchema = z
-  .object({
-    ...buildNullableShape(INDUSTRY_CORE_FIELDS),
-    ...buildNullableShape(INDUSTRY_OPTIONAL_FIELD_KEYS),
-    originalDetailImagePath: z.string().nullable(),
-    originalFrontImagePath: z.string().nullable(),
-    originalSideImagePath: z.string().nullable(),
-    originalSide2ImagePath: z.string().nullable(),
-    originalSide3ImagePath: z.string().nullable(),
-    industryDataCategory: IndustryCategorySchema,
-  })
-  .partial();
-
 export const VISUAL_CATEGORY_KEYS = Object.keys(
   VISUAL_CATEGORY_CONFIG
 ) as VisualCategory[];
@@ -425,3 +455,104 @@ export const VISUAL_CATEGORY_KEYS = Object.keys(
 export const INDUSTRY_CATEGORY_KEYS = Object.keys(
   INDUSTRY_CATEGORY_CONFIG
 ) as IndustryCategory[];
+
+export const INDUSTRY_DYNAMIC_COLUMN_MAP: Record<string, IndustryColumnDef> = {
+  material: {
+    key: 'material',
+    header: '재질',
+    thClassName: 'w-[120px]',
+    className: 'w-[120px]',
+    maxLength: 7,
+  },
+  productTypeName: {
+    key: 'productTypeName',
+    header: '제품 유형',
+    thClassName: 'w-[120px]',
+    className: 'w-[120px]',
+    maxLength: 12,
+  },
+  usage: {
+    key: 'usage',
+    header: '용도',
+    thClassName: 'w-[120px]',
+    className: 'w-[120px]',
+    maxLength: 10,
+  },
+  size: {
+    key: 'size',
+    header: '크기',
+    thClassName: 'w-[120px]',
+    className: 'w-[120px]',
+    maxLength: 6,
+  },
+  soundOutput: {
+    key: 'soundOutput',
+    header: '사운드 출력',
+    thClassName: 'w-[120px]',
+    className: 'w-[120px]',
+    maxLength: 10,
+  },
+  noiseCancelling: {
+    key: 'noiseCancelling',
+    header: '노이즈캔슬링',
+    thClassName: 'w-[140px]',
+    className: 'w-[140px]',
+    maxLength: 10,
+  },
+  codec: {
+    key: 'codec',
+    header: '코덱',
+    thClassName: 'w-[120px]',
+    className: 'w-[120px]',
+    maxLength: 8,
+  },
+  extraFeatures: {
+    key: 'extraFeatures',
+    header: '부가기능',
+    thClassName: 'w-[160px]',
+    className: 'w-[160px]',
+    maxLength: 12,
+  },
+  controlType: {
+    key: 'controlType',
+    header: '컨트롤',
+    thClassName: 'w-[120px]',
+    className: 'w-[120px]',
+    maxLength: 10,
+  },
+  waterproof: {
+    key: 'waterproof',
+    header: '방수기능',
+    thClassName: 'w-[120px]',
+    className: 'w-[120px]',
+    maxLength: 10,
+  },
+  connectivity: {
+    key: 'connectivity',
+    header: '입출력',
+    thClassName: 'w-[120px]',
+    className: 'w-[120px]',
+    maxLength: 10,
+  },
+  maxPlayTime: {
+    key: 'maxPlayTime',
+    header: '최대재생시간',
+    thClassName: 'w-[140px]',
+    className: 'w-[140px]',
+    maxLength: 10,
+  },
+  chargeTime: {
+    key: 'chargeTime',
+    header: '충전시간',
+    thClassName: 'w-[120px]',
+    className: 'w-[120px]',
+    maxLength: 10,
+  },
+  shoppingUrl: {
+    key: 'shoppingUrl',
+    header: '쇼핑몰 링크',
+    thClassName: 'min-w-[180px]',
+    className: 'min-w-[180px]',
+    maxLength: 20,
+  },
+};

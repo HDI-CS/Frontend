@@ -66,23 +66,23 @@ export const PROGRESS_GUIDELINES = {
           '[평가 제출]: 평가 완료 시 (제출 후에도 수정 가능, 수정시 다시 저장 필요)',
         ],
       },
+      // {
+      //   number: 3,
+      //   content:
+      //     '누락된 평가 항목이 없는지 확인한 후 ‘전체 평가 제출’ 버튼을 클릭하여 제출해주세요.',
+      // },
       {
         number: 3,
-        content:
-          '누락된 평가 항목이 없는지 확인한 후 ‘전체 평가 제출’ 버튼을 클릭하여 제출해주세요.',
-      },
-      {
-        number: 4,
         content:
           "좌측 상단 '홍익대학교' 로고를 클릭하면 첫 화면으로 이동 가능합니다.",
         image: HongikUnivLogo,
       },
       {
-        number: 5,
+        number: 4,
         content: '총 50개 평가가 완료되면 ‘가중치 평가 설문’을 진행해 주세요.',
       },
       {
-        number: 6,
+        number: 5,
         content: "'최종 제출하기' 버튼을 클릭하여 제출을 완료해주세요.",
       },
     ] as ProgressStep[],

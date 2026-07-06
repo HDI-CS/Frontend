@@ -1,19 +1,13 @@
 import empty from '@/public/data/EmptyIMg.svg';
-// import {
-//   CATEGORY_FIELD_CONFIG,
-//   INDUSTRY_DYNAMIC_COLUMN_MAP,
-//   VISUAL_DYNAMIC_COLUMN_MAP,
-// } from '@/src/config/categoryFieldConfig';
 
 import {
   DISPLAY_META_BY_CATEGORY,
+  getIndustryFieldsForYear,
+  INDUSTRY_DYNAMIC_COLUMN_MAP,
   VISUAL_CATEGORY_CONFIG,
   VisualCategory,
 } from '@/src/config/adminCategoryConfig';
-import {
-  CATEGORY_FIELD_CONFIG,
-  INDUSTRY_DYNAMIC_COLUMN_MAP,
-} from '@/src/config/categoryFieldConfig';
+
 import { UserType } from '@/src/schemas/auth';
 import {
   IndustryCategory,
@@ -42,33 +36,32 @@ const toHttpUrl = (url?: string) => {
   return url.startsWith('http') ? url : `https://${url}`;
 };
 
-type IndustryDynamicFieldKey =
-  | 'productTypeName'
-  | 'size'
-  | 'material'
-  | 'noiseCancelling'
-  | 'codec'
-  | 'extraFeatures'
-  | 'controlType'
-  | 'waterproof'
-  | 'maxPlayTime'
-  | 'chargeTime'
-  | 'usage'
-  | 'shoppingUrl'
-  | 'connectivity'
-  | 'soundOutput';
+// type IndustryDynamicFieldKey =
+//   | 'productTypeName'
+//   | 'size'
+//   | 'material'
+//   | 'noiseCancelling'
+//   | 'codec'
+//   | 'extraFeatures'
+//   | 'controlType'
+//   | 'waterproof'
+//   | 'maxPlayTime'
+//   | 'chargeTime'
+//   | 'usage'
+//   | 'shoppingUrl'
+//   | 'connectivity'
+//   | 'soundOutput';
 
-const buildIndustryDynamicColumns = (category: IndustryCategory) => {
+const buildIndustryDynamicColumns = (
+  category: IndustryCategory,
+  yearName: Years | undefined // 파라미터 추가
+) => {
   if (!category) return [];
 
-  const keySet = new Set<string>();
-  CATEGORY_FIELD_CONFIG.industry?.[category].forEach((field) => {
-    keySet.add(field.key);
-  });
+  const fields = getIndustryFieldsForYear(yearName, category); // 변경
 
-  return Array.from(keySet).map((key) => {
-    const meta = INDUSTRY_DYNAMIC_COLUMN_MAP[key as IndustryDynamicFieldKey];
-
+  return fields.map(({ key }) => {
+    const meta = INDUSTRY_DYNAMIC_COLUMN_MAP[key];
     return {
       key,
       header: meta?.header || key,
@@ -78,10 +71,7 @@ const buildIndustryDynamicColumns = (category: IndustryCategory) => {
         renderCellText(
           String(row[key as keyof IndustrialRow] ?? ''),
           getKeyword(),
-          {
-            active: isActiveRow,
-            maxLength: meta?.maxLength || 10,
-          }
+          { active: isActiveRow, maxLength: meta?.maxLength || 10 }
         ),
     };
   });
@@ -261,7 +251,7 @@ export const getRowMeta = (
           }),
       },
 
-      ...buildIndustryDynamicColumns(activeCategory as IndustryCategory),
+      ...buildIndustryDynamicColumns(activeCategory as IndustryCategory, year),
 
       {
         key: 'weight',

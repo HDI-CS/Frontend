@@ -64,6 +64,7 @@ const buildNullableStringShape = <K extends readonly string[]>(keys: K) =>
 export const ProductDataSetResponseSchema = z.object({
   // 백엔드가 숫자 혹은 문자열을 반환할 수 있어 유연하게 수용 후 문자열로 정규화
   id: z.string(),
+  productName: z.string(),
   industryDataCategory: IndustryCategorySchema.nullable(),
 
   // 이미지 필드는 fields 레지스트리에 없는 "구조적" 필드라 별도 명시
