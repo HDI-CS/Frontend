@@ -111,7 +111,7 @@ const ELECTRONICS_SURVEY_META = (title: string) => ({
 });
 
 const ELECTRONICS_FIELDS: FieldMeta[] = [
-  { key: 'companyName', label: '회사명' },
+  // { key: 'companyName', label: '회사명' },
   { key: 'productPath', label: '카테고리' },
   { key: 'productTypeName', label: '유형' },
   { key: 'usage', label: '용도' },
