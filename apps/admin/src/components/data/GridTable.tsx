@@ -5,7 +5,9 @@ import { IndustryCategory } from '@/src/schemas/industry-data';
 import { VisualCategory } from '@/src/schemas/visual-data';
 import { useSearchStore } from '@/src/store/searchStore';
 import { ColumnDef, VisualRow, WithIndex } from '@/src/types/data/visual-data';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import clsx from 'clsx';
+import { useRef } from 'react';
 import FieldActionMenu from '../FieldActionMenu';
 import CheckBox from './CheckBox';
 import DataDetailModal, { FieldDef } from './DataDetailModal';
@@ -75,6 +77,13 @@ const GridTable = <T extends { id: number }, TType extends UserType>({
     setRowMenu,
     getFieldMenuItems,
   } = useGridManager(type!);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const rowVirtualizer = useVirtualizer({
+    count: rows.length,
+    getScrollElement: () => scrollRef.current,
+    estimateSize: () => 66, // h-[66px]와 동일
+    overscan: 8, // 화면 밖으로 위아래 8행씩 미리 렌더 (스크롤 튐 방지)
+  });
 
   const handleCheckBox = (isAllCheck: boolean, id?: number) => {
     // 전체 체크 토글
@@ -122,7 +131,7 @@ const GridTable = <T extends { id: number }, TType extends UserType>({
     <>
       <div className="border border-t-0 border-[#E5E5E5] bg-white p-2">
         {/* 테이블 스크롤 영역 */}
-        <div className="max-h-[750px] overflow-auto">
+        <div ref={scrollRef} className="max-h-[750px] overflow-auto">
           <table className="min-w-max border-separate border-spacing-0 whitespace-nowrap">
             {/* 헤더 */}
             <thead className="sticky top-0 z-10 bg-white">
@@ -154,7 +163,12 @@ const GridTable = <T extends { id: number }, TType extends UserType>({
             </thead>
 
             {/* 바디 */}
-            <tbody>
+            <tbody
+              style={{
+                height: `${rowVirtualizer.getTotalSize()}px`,
+                position: 'relative',
+              }}
+            >
               {rows.map((row, idx) => {
                 const isActiveRow = idx + 1 === activeIndex;
 

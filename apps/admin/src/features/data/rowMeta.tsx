@@ -300,15 +300,16 @@ export const getRowMeta = (
         thClassName: 'w-[120px]',
         className: 'w-[120px] text-center',
         cell: (row: IndustrialRow) => (
-          <Image
-            src={row.detailImagePath ? row.detailImagePath : empty}
-            alt={`${row.modelName} logo`}
-            className="mx-auto h-[44px] w-[44px] rounded object-cover"
-            width={44}
-            height={44}
-            loading="lazy"
-            unoptimized
-          />
+          <div className="mx-auto h-[44px] w-[44px] overflow-hidden rounded bg-gray-100">
+            <Image
+              src={row.detailImagePath ? row.detailImagePath : empty}
+              alt={`${row.modelName} logo`}
+              className="mx-auto h-[44px] w-[44px] rounded object-cover"
+              width={44}
+              height={44}
+              unoptimized
+            />
+          </div>
         ),
       },
       {
@@ -317,15 +318,16 @@ export const getRowMeta = (
         thClassName: 'w-[120px]',
         className: 'w-[120px] text-center',
         cell: (row: IndustrialRow) => (
-          <Image
-            src={row.frontImagePath ? row.frontImagePath : empty}
-            alt={`${row.modelName} logo`}
-            className="mx-auto h-[44px] w-[44px] rounded object-cover"
-            width={44}
-            height={44}
-            loading="lazy"
-            sizes="9"
-          />
+          <div className="mx-auto h-[44px] w-[44px]  overflow-hidden rounded bg-gray-100">
+            <Image
+              src={row.frontImagePath ? row.frontImagePath : empty}
+              alt={`${row.modelName} logo`}
+              className="mx-auto h-[44px] w-[44px] rounded object-cover"
+              width={44}
+              height={44}
+              unoptimized
+            />
+          </div>
         ),
       },
       {
@@ -334,14 +336,16 @@ export const getRowMeta = (
         thClassName: 'w-[120px]',
         className: 'w-[120px] text-center',
         cell: (row: IndustrialRow) => (
-          <Image
-            src={row.sideImagePath ? row.sideImagePath : empty}
-            alt={`${row.modelName} logo`}
-            className="mx-auto h-[44px] w-[44px] rounded object-cover"
-            width={44}
-            height={44}
-            loading="lazy"
-          />
+          <div className="mx-auto h-[44px] w-[44px] overflow-hidden rounded bg-gray-100">
+            <Image
+              src={row.sideImagePath ? row.sideImagePath : empty}
+              alt={`${row.modelName} logo`}
+              className="mx-auto h-[44px] w-[44px] rounded object-cover"
+              width={44}
+              height={44}
+              unoptimized
+            />
+          </div>
         ),
       },
       {
@@ -350,14 +354,16 @@ export const getRowMeta = (
         thClassName: 'w-[120px]',
         className: 'w-[120px] text-center',
         cell: (row: IndustrialRow) => (
-          <Image
-            src={row.side2ImagePath ? row.side2ImagePath : empty}
-            alt={`${row.modelName} logo`}
-            className="mx-auto h-[44px] w-[44px] rounded object-cover"
-            width={44}
-            height={44}
-            loading="lazy"
-          />
+          <div className="mx-auto h-[44px] w-[44px] overflow-hidden rounded bg-gray-100">
+            <Image
+              src={row.side2ImagePath ? row.side2ImagePath : empty}
+              alt={`${row.modelName} logo`}
+              className="mx-auto h-[44px] w-[44px] rounded object-cover"
+              width={44}
+              height={44}
+              unoptimized
+            />
+          </div>
         ),
       },
       {
@@ -366,14 +372,16 @@ export const getRowMeta = (
         thClassName: 'w-[120px]',
         className: 'w-[120px] text-center',
         cell: (row: IndustrialRow) => (
-          <Image
-            src={row.side3ImagePath ? row.side3ImagePath : empty}
-            alt={`${row.modelName} logo`}
-            className="mx-auto h-[44px] w-[44px] rounded object-cover"
-            width={44}
-            height={44}
-            loading="lazy"
-          />
+          <div className="mx-auto h-[44px] w-[44px] overflow-hidden rounded bg-gray-100">
+            <Image
+              src={row.side3ImagePath ? row.side3ImagePath : empty}
+              alt={`${row.modelName} logo`}
+              className="mx-auto h-[44px] w-[44px] rounded object-cover"
+              width={44}
+              height={44}
+              unoptimized
+            />
+          </div>
         ),
       },
     ],
