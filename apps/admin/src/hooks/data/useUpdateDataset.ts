@@ -1,11 +1,13 @@
 import { datasetQueryKeys } from '@/src/queries/dataQuery';
 import { updateDataset } from '@/src/services/data/common';
+import { useImageVersionStore } from '@/src/store/imageVersionStore';
 import { UpdateMutationInput } from '@/src/types/data/visual-data';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export const useUpdateDataset = () => {
   const queryClient = useQueryClient();
+  const bumpImageVersion = useImageVersionStore((s) => s.bump);
 
   return useMutation({
     mutationFn: (input: UpdateMutationInput) => {
@@ -105,6 +107,7 @@ export const useUpdateDataset = () => {
               throw new Error(`S3 upload failed: ${res.status}`);
             }
           });
+          bumpImageVersion(variables.id);
         }
       } catch (e) {
         console.error('S3 upload failed after update', e);

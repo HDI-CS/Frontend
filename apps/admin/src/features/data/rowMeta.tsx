@@ -15,6 +15,7 @@ import {
 } from '@/src/schemas/industry-data';
 import { EvaluationYears, RoundsSchema } from '@/src/schemas/survey';
 import { YearFolderArray } from '@/src/schemas/visual-data';
+import { useImageVersionStore } from '@/src/store/imageVersionStore';
 import { useSearchStore } from '@/src/store/searchStore';
 import {
   ColumnDef,
@@ -27,6 +28,7 @@ import {
 import { EvaluationYearFolder } from '@/src/types/evaluation';
 import { renderCellText } from '@/src/utils/highlightText';
 import { truncateText } from '@/src/utils/truncateText';
+import { withCacheBust } from '@/src/utils/withCacheBust';
 import Image from 'next/image';
 import { CategoryByType } from './categoryMap';
 const getKeyword = () => useSearchStore.getState().keyword;
@@ -35,22 +37,6 @@ const toHttpUrl = (url?: string) => {
   if (!url) return '';
   return url.startsWith('http') ? url : `https://${url}`;
 };
-
-// type IndustryDynamicFieldKey =
-//   | 'productTypeName'
-//   | 'size'
-//   | 'material'
-//   | 'noiseCancelling'
-//   | 'codec'
-//   | 'extraFeatures'
-//   | 'controlType'
-//   | 'waterproof'
-//   | 'maxPlayTime'
-//   | 'chargeTime'
-//   | 'usage'
-//   | 'shoppingUrl'
-//   | 'connectivity'
-//   | 'soundOutput';
 
 const buildIndustryDynamicColumns = (
   category: IndustryCategory,
@@ -146,15 +132,20 @@ export const getRowMeta = (
           header: <span className="block text-center">이미지</span>,
           thClassName: 'w-[120px]',
           className: 'w-[120px] text-center',
-          cell: (row: VisualRow) => (
-            <Image
-              src={row.logoImage ? row.logoImage : empty}
-              alt={`${row.name} logo`}
-              className="mx-auto h-[44px] w-[44px] rounded object-cover"
-              width={44}
-              height={44}
-            />
-          ),
+          cell: (row: VisualRow) => {
+            const version = useImageVersionStore.getState().get(row.id);
+            return (
+              <Image
+                src={
+                  row.logoImage ? withCacheBust(row.logoImage, version) : empty
+                }
+                alt={`${row.name} logo`}
+                className="mx-auto h-[44px] w-[44px] rounded object-cover"
+                width={44}
+                height={44}
+              />
+            );
+          },
         },
       ],
 
@@ -299,90 +290,125 @@ export const getRowMeta = (
         header: <span className="block text-center">상세이미지</span>,
         thClassName: 'w-[120px]',
         className: 'w-[120px] text-center',
-        cell: (row: IndustrialRow) => (
-          <div className="mx-auto h-[44px] w-[44px] overflow-hidden rounded bg-gray-100">
-            <Image
-              src={row.detailImagePath ? row.detailImagePath : empty}
-              alt={`${row.modelName} logo`}
-              className="mx-auto h-[44px] w-[44px] rounded object-cover"
-              width={44}
-              height={44}
-              unoptimized
-            />
-          </div>
-        ),
+        cell: (row: IndustrialRow) => {
+          const version = useImageVersionStore.getState().get(row.id);
+          return (
+            <div className="mx-auto h-[44px] w-[44px] overflow-hidden rounded bg-gray-100">
+              <Image
+                src={
+                  row.detailImagePath
+                    ? withCacheBust(row.detailImagePath, version)
+                    : empty
+                }
+                alt={`${row.modelName} logo`}
+                className="mx-auto h-[44px] w-[44px] rounded object-cover"
+                width={44}
+                height={44}
+                unoptimized
+              />
+            </div>
+          );
+        },
       },
       {
         key: 'frontImagePath',
         header: <span className="block text-center">정면이미지</span>,
         thClassName: 'w-[120px]',
         className: 'w-[120px] text-center',
-        cell: (row: IndustrialRow) => (
-          <div className="mx-auto h-[44px] w-[44px]  overflow-hidden rounded bg-gray-100">
-            <Image
-              src={row.frontImagePath ? row.frontImagePath : empty}
-              alt={`${row.modelName} logo`}
-              className="mx-auto h-[44px] w-[44px] rounded object-cover"
-              width={44}
-              height={44}
-              unoptimized
-            />
-          </div>
-        ),
+        cell: (row: IndustrialRow) => {
+          const version = useImageVersionStore.getState().get(row.id);
+          return (
+            <div className="mx-auto h-[44px] w-[44px] overflow-hidden rounded bg-gray-100">
+              <Image
+                src={
+                  row.frontImagePath
+                    ? withCacheBust(row.frontImagePath, version)
+                    : empty
+                }
+                alt={`${row.modelName} logo`}
+                className="mx-auto h-[44px] w-[44px] rounded object-cover"
+                width={44}
+                height={44}
+                unoptimized
+              />
+            </div>
+          );
+        },
       },
       {
         key: 'sideImagePath',
         header: <span className="block text-center">서브이미지01</span>,
         thClassName: 'w-[120px]',
         className: 'w-[120px] text-center',
-        cell: (row: IndustrialRow) => (
-          <div className="mx-auto h-[44px] w-[44px] overflow-hidden rounded bg-gray-100">
-            <Image
-              src={row.sideImagePath ? row.sideImagePath : empty}
-              alt={`${row.modelName} logo`}
-              className="mx-auto h-[44px] w-[44px] rounded object-cover"
-              width={44}
-              height={44}
-              unoptimized
-            />
-          </div>
-        ),
+        cell: (row: IndustrialRow) => {
+          const version = useImageVersionStore.getState().get(row.id);
+          return (
+            <div className="mx-auto h-[44px] w-[44px] overflow-hidden rounded bg-gray-100">
+              <Image
+                src={
+                  row.sideImagePath
+                    ? withCacheBust(row.sideImagePath, version)
+                    : empty
+                }
+                alt={`${row.modelName} logo`}
+                className="mx-auto h-[44px] w-[44px] rounded object-cover"
+                width={44}
+                height={44}
+                unoptimized
+              />
+            </div>
+          );
+        },
       },
       {
         key: 'side2ImagePath',
         header: <span className="block text-center">서브이미지02</span>,
         thClassName: 'w-[120px]',
         className: 'w-[120px] text-center',
-        cell: (row: IndustrialRow) => (
-          <div className="mx-auto h-[44px] w-[44px] overflow-hidden rounded bg-gray-100">
-            <Image
-              src={row.side2ImagePath ? row.side2ImagePath : empty}
-              alt={`${row.modelName} logo`}
-              className="mx-auto h-[44px] w-[44px] rounded object-cover"
-              width={44}
-              height={44}
-              unoptimized
-            />
-          </div>
-        ),
+        cell: (row: IndustrialRow) => {
+          const version = useImageVersionStore.getState().get(row.id);
+          return (
+            <div className="mx-auto h-[44px] w-[44px] overflow-hidden rounded bg-gray-100">
+              <Image
+                src={
+                  row.side2ImagePath
+                    ? withCacheBust(row.side2ImagePath, version)
+                    : empty
+                }
+                alt={`${row.modelName} logo`}
+                className="mx-auto h-[44px] w-[44px] rounded object-cover"
+                width={44}
+                height={44}
+                unoptimized
+              />
+            </div>
+          );
+        },
       },
       {
         key: 'side3ImagePath',
         header: <span className="block text-center">서브이미지03</span>,
         thClassName: 'w-[120px]',
         className: 'w-[120px] text-center',
-        cell: (row: IndustrialRow) => (
-          <div className="mx-auto h-[44px] w-[44px] overflow-hidden rounded bg-gray-100">
-            <Image
-              src={row.side3ImagePath ? row.side3ImagePath : empty}
-              alt={`${row.modelName} logo`}
-              className="mx-auto h-[44px] w-[44px] rounded object-cover"
-              width={44}
-              height={44}
-              unoptimized
-            />
-          </div>
-        ),
+        cell: (row: IndustrialRow) => {
+          const version = useImageVersionStore.getState().get(row.id);
+          return (
+            <div className="mx-auto h-[44px] w-[44px] overflow-hidden rounded bg-gray-100">
+              <Image
+                src={
+                  row.side3ImagePath
+                    ? withCacheBust(row.side3ImagePath, version)
+                    : empty
+                }
+                alt={`${row.modelName} logo`}
+                className="mx-auto h-[44px] w-[44px] rounded object-cover"
+                width={44}
+                height={44}
+                unoptimized
+              />
+            </div>
+          );
+        },
       },
     ],
 

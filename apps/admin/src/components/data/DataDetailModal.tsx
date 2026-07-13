@@ -21,11 +21,13 @@ import {
   UpdateVisualDatasetRequest,
   VisualCategory,
 } from '@/src/schemas/visual-data';
+import { useImageVersionStore } from '@/src/store/imageVersionStore';
 import {
   GetDetailResponseByType,
   UpdateForm,
   WithIndex,
 } from '@/src/types/data/visual-data';
+import { withCacheBust } from '@/src/utils/withCacheBust';
 import clsx from 'clsx';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
@@ -157,6 +159,12 @@ const DataDetailModal = <TRow, TType extends UserType>({
   }, []);
   const { year } = useParams<{ year: string }>();
   const yearId = Number(year);
+
+  // 컴포넌트 상단, 다른 훅들 옆에 추가
+  const imageVersion = useImageVersionStore((s) =>
+    dataId ? s.get(dataId) : undefined
+  );
+
   /* ---------- upload loading states ---------- */
   // const [isUploading, setIsUploading] = useState(false);
 
@@ -245,40 +253,15 @@ const DataDetailModal = <TRow, TType extends UserType>({
     },
   ] as const;
 
-  /* ---------- image src ---------- */
-  // const imageSrc = (field: IndustryImageType) =>
-  //   useMemo(() => {
-  //     // 여기다가 field값을 넣을 수 있는 방안을 찾아야
-  //     // getImageSrcByType(type, data?.result, field) 이렇게 사용할 수 있음
-  //     if (previewUrl) return previewUrl; // 새로운 이미지의 preview
-  //     if (!logoFile && type === 'VISUAL') return empty; // 새로운 이미지도 없고, 기존 데이터의 이미지도 없을 때 빈 이미지
-  //     if (type === 'VISUAL' && logoFile) {
-  //       const src = getImageSrcByType(type, data?.result); // 기존 데이터의 이미지
-  //       return src ?? empty;
-  //     }
-  //     if (type === 'INDUSTRY') {
-  //       const src = getImageSrcByType(type, data?.result, field); // 기존 데이터의 이미지
-  //       return src ?? empty;
-  //     }
-  //   }, [
-  //     type,
-  //     data,
-  //     previewUrl,
-  //     logoFile,
-  //     field,
-  //     detailFile,
-  //     frontFile,
-  //     sideFile,
-  //     side2File,
-  //     side3File,
-  //   ]);
-
   const getImageSrc = (field?: IndustryImageType) => {
     // preview 우선
     if (type === 'VISUAL') {
       if (previewUrl) return previewUrl;
       if (!logoFile) return empty;
-      return getImageSrcByType(type, data?.result) ?? empty;
+      return (
+        withCacheBust(getImageSrcByType(type, data?.result), imageVersion) ??
+        empty
+      );
     }
 
     // INDUSTRY
@@ -287,35 +270,60 @@ const DataDetailModal = <TRow, TType extends UserType>({
         if (detailPreview) return detailPreview;
         if (!detailFile) return empty;
         return (
-          detailPreview ?? getImageSrcByType(type, data?.result, field) ?? empty
+          detailPreview ??
+          withCacheBust(
+            getImageSrcByType(type, data?.result, field),
+            imageVersion
+          ) ??
+          empty
         );
 
       case 'originalFrontImagePath':
         if (frontPreview) return frontPreview;
         if (!frontFile) return empty;
         return (
-          frontPreview ?? getImageSrcByType(type, data?.result, field) ?? empty
+          frontPreview ??
+          withCacheBust(
+            getImageSrcByType(type, data?.result, field),
+            imageVersion
+          ) ??
+          empty
         );
 
       case 'originalSideImagePath':
         if (sidePreview) return sidePreview;
         if (!sideFile) return empty;
         return (
-          sidePreview ?? getImageSrcByType(type, data?.result, field) ?? empty
+          sidePreview ??
+          withCacheBust(
+            getImageSrcByType(type, data?.result, field),
+            imageVersion
+          ) ??
+          empty
         );
 
       case 'originalSide2ImagePath':
         if (side2Preview) return side2Preview;
         if (!side2File) return empty;
         return (
-          side2Preview ?? getImageSrcByType(type, data?.result, field) ?? empty
+          side2Preview ??
+          withCacheBust(
+            getImageSrcByType(type, data?.result, field),
+            imageVersion
+          ) ??
+          empty
         );
 
       case 'originalSide3ImagePath':
         if (side3Preview) return side3Preview;
         if (!side3File) return empty;
         return (
-          side3Preview ?? getImageSrcByType(type, data?.result, field) ?? empty
+          side3Preview ??
+          withCacheBust(
+            getImageSrcByType(type, data?.result, field),
+            imageVersion
+          ) ??
+          empty
         );
 
       default:
