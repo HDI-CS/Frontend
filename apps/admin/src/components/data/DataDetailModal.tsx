@@ -177,24 +177,23 @@ const DataDetailModal = <TRow, TType extends UserType>({
 
   // VISUAL
   const [logoFile, setLogoFile] = useState<File | null>(
-    data?.result && 'originalLogoImage' in data.result ? null : empty
+    undefined as unknown as File | null
   );
 
   // INDUSTRY
   const [detailFile, setDetailFile] = useState<File | null | undefined>(
-    data?.result && 'originalDetailImagePath' in data.result ? null : empty
+    undefined
   );
+
   const [frontFile, setFrontFile] = useState<File | null | undefined>(
-    data?.result && 'originalFrontImagePath' in data.result ? null : empty
+    undefined
   );
-  const [sideFile, setSideFile] = useState<File | null | undefined>(
-    data?.result && 'originalSideImagePath' in data.result ? null : empty
-  );
+  const [sideFile, setSideFile] = useState<File | null | undefined>(undefined);
   const [side2File, setSide2File] = useState<File | null | undefined>(
-    data?.result && 'originalSide2ImagePath' in data.result ? null : empty
+    undefined
   );
   const [side3File, setSide3File] = useState<File | null | undefined>(
-    data?.result && 'originalSide3ImagePath' in data.result ? null : empty
+    undefined
   );
 
   /* ---------- mutation ---------- */
@@ -268,19 +267,19 @@ const DataDetailModal = <TRow, TType extends UserType>({
     switch (field) {
       case 'originalDetailImagePath':
         if (detailPreview) return detailPreview;
-        if (!detailFile) return empty;
+        if (detailFile === null) return empty;
         return (
           detailPreview ??
           withCacheBust(
             getImageSrcByType(type, data?.result, field),
             imageVersion
           ) ??
-          empty
+          empty // undefined(안 건드림) → 서버에 있는 실제 이미지 URL, 없으면 empty
         );
 
       case 'originalFrontImagePath':
         if (frontPreview) return frontPreview;
-        if (!frontFile) return empty;
+        if (frontFile === null) return empty;
         return (
           frontPreview ??
           withCacheBust(
@@ -292,7 +291,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
 
       case 'originalSideImagePath':
         if (sidePreview) return sidePreview;
-        if (!sideFile) return empty;
+        if (sideFile === null) return empty;
         return (
           sidePreview ??
           withCacheBust(
@@ -304,7 +303,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
 
       case 'originalSide2ImagePath':
         if (side2Preview) return side2Preview;
-        if (!side2File) return empty;
+        if (side2File === null) return empty;
         return (
           side2Preview ??
           withCacheBust(
@@ -316,7 +315,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
 
       case 'originalSide3ImagePath':
         if (side3Preview) return side3Preview;
-        if (!side3File) return empty;
+        if (side3File === null) return empty;
         return (
           side3Preview ??
           withCacheBust(
@@ -591,10 +590,6 @@ const DataDetailModal = <TRow, TType extends UserType>({
                   disabled={!isEdit}
                   onFileDrop={(file) => {
                     setLogoFile(file);
-                    console.log(
-                      'filefilefilefilefilefilefilefilefilefilefilefile',
-                      file
-                    );
                     setPreviewUrl(URL.createObjectURL(file));
                     setValue('originalLogoImage', file.name, {
                       shouldDirty: true,
@@ -640,7 +635,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
                   }}
                   src={close}
                   alt="close"
-                  className="right-45 absolute top-0 cursor-pointer"
+                  className="absolute right-2 top-0 cursor-pointer"
                 />
               )}
             </LinedField>
@@ -686,23 +681,15 @@ const DataDetailModal = <TRow, TType extends UserType>({
                     }}
                   >
                     <label htmlFor={isEdit ? field : undefined}>
-                      <div className="w-100 h-120 relative flex items-start">
+                      <div className="w-100 h-100 relative flex items-start">
                         <Image
-                          src={
-                            // preview ??
-                            // (isEdit && file === null
-                            //   ? empty
-                            //   : (getImageSrcByType(type, data?.result, field) ??
-                            //     empty))
-                            getImageSrc(field)
-                          }
+                          src={getImageSrc(field)}
                           fill
                           alt={label}
                           className="rounded border"
                           style={{
                             objectFit: 'contain',
                           }}
-                          loading="lazy"
                         />
                       </div>
                     </label>
@@ -726,8 +713,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
                       }}
                       src={close}
                       alt="close"
-                      className="absolute left-60 top-0 cursor-pointer"
-                      loading="lazy"
+                      className="absolute right-2 top-0 cursor-pointer"
                     />
                   )}
                 </LinedField>

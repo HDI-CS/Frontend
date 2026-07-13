@@ -23,7 +23,7 @@ const LinedField = ({
       )}
     >
       {isImg ? (
-        <div className="flex h-full w-full flex-col">
+        <div className="relative flex h-full w-full flex-col">
           {children}
           <span
             className={clsx(
