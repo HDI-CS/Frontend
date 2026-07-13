@@ -262,70 +262,19 @@ const DataDetailModal = <TRow, TType extends UserType>({
     }
 
     // INDUSTRY
-    switch (field) {
-      case 'originalDetailImagePath':
-        if (detailPreview) return detailPreview;
-        if (detailFile === null) return empty;
-        return (
-          detailPreview ??
-          withCacheBust(
-            getImageSrcByType(type, data?.result, field),
-            imageVersion
-          ) ??
-          empty // undefined(안 건드림) → 서버에 있는 실제 이미지 URL, 없으면 empty
-        );
+    const target = INDUSTRY_IMAGE_FIELDS.find((f) => f.field === field);
+    if (!target) return empty;
 
-      case 'originalFrontImagePath':
-        if (frontPreview) return frontPreview;
-        if (frontFile === null) return empty;
-        return (
-          frontPreview ??
-          withCacheBust(
-            getImageSrcByType(type, data?.result, field),
-            imageVersion
-          ) ??
-          empty
-        );
+    const { file, preview } = target;
+    if (preview) return preview;
+    if (file === null) return empty;
 
-      case 'originalSideImagePath':
-        if (sidePreview) return sidePreview;
-        if (sideFile === null) return empty;
-        return (
-          sidePreview ??
-          withCacheBust(
-            getImageSrcByType(type, data?.result, field),
-            imageVersion
-          ) ??
-          empty
-        );
-
-      case 'originalSide2ImagePath':
-        if (side2Preview) return side2Preview;
-        if (side2File === null) return empty;
-        return (
-          side2Preview ??
-          withCacheBust(
-            getImageSrcByType(type, data?.result, field),
-            imageVersion
-          ) ??
-          empty
-        );
-
-      case 'originalSide3ImagePath':
-        if (side3Preview) return side3Preview;
-        if (side3File === null) return empty;
-        return (
-          side3Preview ??
-          withCacheBust(
-            getImageSrcByType(type, data?.result, field),
-            imageVersion
-          ) ??
-          empty
-        );
-
-      default:
-        return empty;
-    }
+    return (
+      withCacheBust(
+        getImageSrcByType(type, data?.result, field),
+        imageVersion
+      ) ?? empty
+    );
   };
 
   const item = useMemo(() => {
