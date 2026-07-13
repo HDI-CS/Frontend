@@ -176,9 +176,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
   /* ---------- file states ---------- */
 
   // VISUAL
-  const [logoFile, setLogoFile] = useState<File | null>(
-    undefined as unknown as File | null
-  );
+  const [logoFile, setLogoFile] = useState<File | null | undefined>(undefined);
 
   // INDUSTRY
   const [detailFile, setDetailFile] = useState<File | null | undefined>(
@@ -256,7 +254,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
     // preview 우선
     if (type === 'VISUAL') {
       if (previewUrl) return previewUrl;
-      if (!logoFile) return empty;
+      if (logoFile === null) return empty;
       return (
         withCacheBust(getImageSrcByType(type, data?.result), imageVersion) ??
         empty
