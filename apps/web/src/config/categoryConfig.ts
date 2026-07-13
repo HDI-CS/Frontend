@@ -52,10 +52,11 @@ export const VISUAL_CATEGORY_CONFIG = {
   PACKAGE: {
     survey: {
       title: '패키지 정보',
-      subTitle: '패키지 상세 정보',
-      surveyTitle: '패키지 평가 설문',
+      subTitle:
+        '웹사이트는 디자인을 이해하기 위한 참고 자료로 활용하되, 실제 평가는 제시된 이미지를 기준으로 진행합니다.',
+      surveyTitle: '패키지 내 그래픽 평가 설문',
       surveyDescription:
-        '웹사이트에 있는 내용을 참고하되, 평가는 제시된 이미지만을 기준으로 평가해주세요.',
+        '패키지의 3D 형태나 구조가 아닌, 패키지 표면에 적용된 그래픽 요소와 시각적 표현을 중심으로 평가해 주세요.',
     },
     fields: [
       { key: 'sectorCategory', label: '부문·카테고리' },

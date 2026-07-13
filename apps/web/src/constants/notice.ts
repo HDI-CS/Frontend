@@ -142,7 +142,7 @@ export const SURVEY_INTRODUCTION = {
     ] as ContentItem[],
     FOOTER: {
       RESEARCH_INSTITUTION: '연구책임기관: 홍익대학교 HDI LAB',
-      CONTACT_EMAIL: '문의 메일: hdilab01@gmail.com',
+      CONTACT_EMAIL: '문의 메일: hdilab_01@naver.com',
     },
   },
   industry: {
