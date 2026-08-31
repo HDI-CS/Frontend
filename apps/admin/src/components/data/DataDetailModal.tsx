@@ -518,12 +518,12 @@ const DataDetailModal = <TRow, TType extends UserType>({
           )}
         </div>
 
-        <div
-          className={clsx(
-            'scrollbar-hidden relative mt-4 space-y-6 overflow-y-auto pr-2',
-            type === 'INDUSTRY' ? 'h-200' : 'h-100'
-          )}
-        >
+        {/*
+          스크롤은 ModalComponent의 Body(overflow-y-auto)에서 한 곳에서만 처리한다.
+          여기서 별도로 overflow/고정 높이를 주면 스크롤 컨테이너가 중첩되어
+          휠 스크롤이 끊기거나 튀는 현상이 생긴다.
+        */}
+        <div className="relative mt-4 space-y-6 pr-2">
           {/* ---------- VISUAL image ---------- */}
           {type === 'VISUAL' && (
             <LinedField
