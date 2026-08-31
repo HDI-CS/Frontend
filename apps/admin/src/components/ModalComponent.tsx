@@ -74,7 +74,7 @@ const ModalComponent = ({
           )}
         >
           {/* Header */}
-          <div className="border-b-1 flex items-start justify-between border-[#E9E9E7] py-3">
+          <div className="border-b-1 flex shrink-0 items-start justify-between border-[#E9E9E7] py-3">
             <div className="flex flex-col gap-1">
               {subtitle && (
                 <span className="text-base font-normal">{subtitle}</span>
@@ -91,10 +91,10 @@ const ModalComponent = ({
             />
           </div>
 
-          {/* Body */}
-          <div className="overflow-y-auto">{children}</div>
+          {/* Body: 모달 내 유일한 스크롤 컨테이너 */}
+          <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
           {button && (
-            <div onClick={onSubmit} className="flex justify-center">
+            <div onClick={onSubmit} className="flex shrink-0 justify-center">
               {/* button */}
               <span className="cursor-pointer rounded bg-[#4676FB] px-7 py-2 text-[#ffffff] hover:opacity-80">
                 {button}

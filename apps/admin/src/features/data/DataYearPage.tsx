@@ -182,9 +182,17 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
     <div className="min-h-screen bg-[#F4F7FF] px-2 pt-1.5">
       <div className="">
         {/* 상단 */}
-        <div className="relative flex items-center justify-between border-b border-[#E5E5E5]">
+        {/*
+          카테고리 탭 / Grid-Gallery 토글 / 우측 버튼을 grid 3열로 배치한다.
+          예전엔 토글을 absolute + left-1/2 로 중앙에 "얹어놓는" 방식이라
+          화면이 좁아져 카테고리 탭 영역이 중앙까지 넓어지면 토글과 겹쳤다.
+          좌우 열을 동일한 1fr로 맞춰 가운데 열(토글)이 바 전체의
+          정확한 중앙에 오도록 하면서도, grid 트랙이 실제 공간을
+          점유하므로 구조적으로 겹칠 수 없게 한다.
+        */}
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 border-b border-[#E5E5E5]">
           {/* 탭 영역: 넘치면 스크롤, 남은 공간만 차지 */}
-          <div className="scrollbar-hidden min-w-0 max-w-[600px] flex-1 overflow-x-auto overflow-y-hidden">
+          <div className="scrollbar-hidden min-w-0 max-w-[600px] overflow-x-auto overflow-y-hidden">
             <CategoryTab
               type={type}
               categories={categorieItem}
@@ -194,18 +202,11 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
           </div>
 
           {/* Grid / Gallery */}
-          {/* md 이상에서만 중앙 고정 */}
-
-          <div className="hidden md:absolute md:left-1/2 md:block md:-translate-x-1/2">
+          <div className="justify-self-center">
             <ViewToggle activeTab={activeTab} setActiveTab={setActiveTab} />
           </div>
 
-          {/* 모바일용 위치 */}
-          <div className="ml-auto md:hidden">
-            <ViewToggle activeTab={activeTab} setActiveTab={setActiveTab} />
-          </div>
-
-          <div className="flex gap-3">
+          <div className="flex gap-3 justify-self-end">
             {/* 정렬 버튼 & 모달 */}
             <button
               className={clsx(
