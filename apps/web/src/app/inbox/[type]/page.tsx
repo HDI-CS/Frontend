@@ -2,6 +2,8 @@
 
 import { Button } from '@/components/Button';
 import SurveyCard from '@/components/SurveyCard';
+import { ACTIVE_WEIGHT_EVALUATION_CATEGORIES } from '@/config/categoryConfig';
+import { EvaluationDomainType } from '@/config/productInfoConfig';
 import {
   SURVEY_STATUS_BUTTON_STYLES,
   SURVEY_STATUS_LABELS,
@@ -11,8 +13,9 @@ import {
   useSurveyProducts,
   useWeightedScores,
 } from '@/hooks/useSurveyProducts';
-import { SurveyProduct, SurveyProductResponseStatus } from '@/schemas/survey';
+import { SurveyProductResponseStatus, SurveyResult } from '@/schemas/survey';
 import { WeightedScoreResponse } from '@/schemas/weight-evaluation';
+import { clearSurveyProgressStorage } from '@/utils/survey';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
@@ -25,7 +28,7 @@ export default function InboxPage() {
     error: meError,
     refetch: refetchMe,
   } = useMe();
-  const { userType, surveyDone } = userInfo?.data || {};
+  const { userType, surveyDone } = userInfo?.result || {};
   const {
     data,
     isLoading,
@@ -36,7 +39,12 @@ export default function InboxPage() {
     type: userType,
   });
   const { data: weightedScoresData, isFetching: isWeightedScoresFetching } =
-    useWeightedScores();
+    useWeightedScores(userType ?? 'VISUAL');
+
+  // 정성 평가 로컬스토리지 응답 데이터 제거
+  useEffect(() => {
+    clearSurveyProgressStorage();
+  }, []);
 
   // 페이지 포커스 시 데이터 refetch
   useEffect(() => {
@@ -58,8 +66,8 @@ export default function InboxPage() {
 
   // 모든 설문이 완료 상태인지 확인하는 로직
   const areAllSurveysCompleted = (() => {
-    if (!data?.data || !Array.isArray(data.data)) return false;
-    const surveys = data.data as SurveyProduct[];
+    if (!data?.result || !Array.isArray(data.result)) return false;
+    const surveys = data.result as SurveyResult[];
     return (
       surveys.length > 0 &&
       surveys.every((survey) => survey.responseStatus === 'DONE')
@@ -210,7 +218,7 @@ export default function InboxPage() {
   }
 
   // 설문 데이터가 없는 경우
-  if (!data?.data || (data.data as SurveyProduct[]).length === 0) {
+  if (!data?.result || (data.result as SurveyResult[]).length === 0) {
     return (
       <div className="space-y-6 p-8">
         {/* 페이지 헤더와 설문 진행 상황 섹션을 같은 줄에 배치 */}
@@ -251,27 +259,27 @@ export default function InboxPage() {
   }
 
   // 설문 개수 계산
-  const surveys = data.data as SurveyProduct[];
+  const surveys = data.result as SurveyResult[];
   const completedSurveysCount = surveys.filter(
     (survey) => survey.responseStatus === 'DONE'
   ).length;
   const totalSurveysCount = surveys.length;
-  const weightEvaluationCategoriesByType: Record<
-    string,
-    Array<WeightedScoreResponse['category']>
-  > = {
-    PRODUCT: ['VACUUM_CLEANER', 'AIR_PURIFIER', 'HAIR_DRYER'],
-    BRAND: ['COSMETIC', 'FB'],
-  };
-  const normalizedUserType = userType?.toUpperCase() ?? '';
-  const requiredWeightCategories =
-    weightEvaluationCategoriesByType[normalizedUserType] ?? [];
-  const weightEvaluationData = (weightedScoresData?.data ??
+
+  const normalizedUserType = (
+    userType === 'VISUAL' || userType === 'INDUSTRY' ? userType : 'VISUAL'
+  ) as EvaluationDomainType;
+
+  const requiredWeightCategories: string[] = [
+    ...(ACTIVE_WEIGHT_EVALUATION_CATEGORIES[normalizedUserType] ?? []),
+  ];
+
+  const weightEvaluationData = (weightedScoresData?.result ??
     []) as WeightedScoreResponse[];
-  const fallbackCategories = Array.from(
+
+  const fallbackCategories: string[] = Array.from(
     new Set(weightEvaluationData.map((score) => score.category))
   );
-  const categoriesToConsider =
+  const categoriesToConsider: string[] =
     requiredWeightCategories.length > 0
       ? requiredWeightCategories
       : fallbackCategories;
@@ -310,7 +318,6 @@ export default function InboxPage() {
       categoryStatusMap[score.category] = 'IN_PROGRESS';
     }
   });
-
   const categoryStatuses = Object.values(categoryStatusMap);
   const hasAnyWeightInput = categoryStatuses.some(
     (status) => status !== 'NOT_STARTED'
@@ -318,6 +325,7 @@ export default function InboxPage() {
   const isWeightEvaluationCompleted =
     categoryStatuses.length > 0 &&
     categoryStatuses.every((status) => status === 'DONE');
+
   const weightEvaluationStatus: SurveyProductResponseStatus =
     isWeightEvaluationCompleted
       ? 'DONE'
@@ -330,7 +338,7 @@ export default function InboxPage() {
   const isStatusLoading =
     isMeFetching || isSurveyFetching || isWeightedScoresFetching;
   const headerStatus = (() => {
-    if (surveyDone && weightEvaluationStatus === 'DONE') {
+    if (weightEvaluationStatus === 'DONE') {
       return {
         wrapper: 'bg-green-50',
         dot: 'bg-green-500',
@@ -435,9 +443,9 @@ export default function InboxPage() {
 
       {/* 그리드 뷰 */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
-        {(data.data as SurveyProduct[]).map(
-          (item: SurveyProduct, index: number) => (
-            <SurveyCard key={item.responseId} item={item} index={index} />
+        {(data?.result as SurveyResult[]).map(
+          (item: SurveyResult, index: number) => (
+            <SurveyCard key={item.dataId} item={item} index={index} />
           )
         )}
         <div className="rounded-xl border border-gray-200 bg-white p-4 transition-shadow duration-300 ease-out hover:shadow-md">
@@ -450,7 +458,7 @@ export default function InboxPage() {
                 가중치 평가 설문
               </span>
             ) : (
-              <span className="text-sm font-medium text-gray-500">
+              <span className="px-4 text-sm font-medium text-gray-500">
                 다른 설문을 모두 완료하면 진행할 수 있어요.
               </span>
             )}

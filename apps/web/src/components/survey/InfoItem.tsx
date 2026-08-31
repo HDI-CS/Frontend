@@ -2,11 +2,19 @@ import { clsx } from 'clsx';
 
 interface InfoItemProps {
   label: string;
+  name: string;
   value: string | React.ReactNode;
   className?: string;
 }
 
-export default function InfoItem({ label, value, className }: InfoItemProps) {
+export default function InfoItem({
+  label,
+  name,
+  value,
+  className,
+}: InfoItemProps) {
+  const isLink = name === 'referenceUrl' && typeof value === 'string';
+
   return (
     <div className={clsx('flex min-w-0 gap-3', className)}>
       {/* Vertical bar */}
@@ -17,7 +25,18 @@ export default function InfoItem({ label, value, className }: InfoItemProps) {
           {label}
         </span>
         <div className="min-w-0 flex-1 overflow-hidden text-gray-900">
-          {value}
+          {isLink ? (
+            <a
+              href={value}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="break-all text-blue-400 underline"
+            >
+              {value}
+            </a>
+          ) : (
+            value
+          )}
         </div>
       </div>
     </div>

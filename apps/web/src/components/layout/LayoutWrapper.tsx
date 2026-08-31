@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+import { DirtyGuardProvider } from '@/context/DirtyGuardContext';
 import clsx from 'clsx';
 import Header from './Header';
 
@@ -43,10 +44,12 @@ export default function LayoutWrapper({
 
   return (
     <>
-      {!shouldHideHeader && <Header />}
-      <main className={clsx(shouldHideHeader ? 'p-0' : 'pt-19 pb-4')}>
-        {children}
-      </main>
+      <DirtyGuardProvider>
+        {!shouldHideHeader && <Header />}
+        <main className={clsx(shouldHideHeader ? 'p-0' : 'pt-19 pb-4')}>
+          {children}
+        </main>
+      </DirtyGuardProvider>
     </>
   );
 }

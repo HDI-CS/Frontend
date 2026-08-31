@@ -6,21 +6,21 @@ import { HDILabBrandOpenChatQR, HDILabProductOpenChatQR } from '@hdi/ui';
 
 interface EmergencyContactProps {
   className?: string;
-  type?: 'brand' | 'product';
+  type?: 'visual' | 'industry';
 }
 
 export default function EmergencyContact({
   className = '',
-  type = 'brand',
+  type = 'visual',
 }: EmergencyContactProps) {
   const { TITLE, EMAIL, EMAIL_LABEL } = EMERGENCY_CONTACT[type];
 
   // 타입별 QR 코드 이미지 설정
   const getQRCodeImage = () => {
     switch (type) {
-      case 'brand':
+      case 'visual':
         return HDILabBrandOpenChatQR; // 기존 브랜드용 QR 코드
-      case 'product':
+      case 'industry':
         return HDILabProductOpenChatQR; // TODO: 제품용 QR 코드 이미지로 교체 필요
       default:
         return HDILabBrandOpenChatQR;
@@ -42,7 +42,7 @@ export default function EmergencyContact({
           <div className="relative h-full w-full">
             <Image
               src={getQRCodeImage()}
-              alt={`${type === 'brand' ? '브랜드' : '제품'} 설문 비상연락망 QR`}
+              alt={`${type === 'visual' ? '브랜드' : '제품'} 설문 비상연락망 QR`}
               fill
               sizes="(max-width: 1024px) 96px, 112px"
               priority

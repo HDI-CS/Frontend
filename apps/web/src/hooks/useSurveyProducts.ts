@@ -1,6 +1,6 @@
 import { UserType } from '@/schemas/auth';
 import { type SurveyResponseRequest } from '@/schemas/survey';
-import { type WeightedScoreRequestArray } from '@/schemas/weight-evaluation';
+import { WeightedScoreRequest } from '@/schemas/weight-evaluation';
 import { surveyService } from '@/services/survey';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -73,16 +73,10 @@ export const useSubmitSurvey = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      type,
-      responseId,
-    }: {
-      type: UserType;
-      responseId: number;
-    }) =>
+    mutationFn: ({ type, dataId }: { type: UserType; dataId: number }) =>
       surveyService.submitSurvey({
         type,
-        responseId,
+        dataId,
       }),
     onSuccess: (_, variables) => {
       // 설문함 데이터를 다시 fetch하여 최신 상태로 업데이트
@@ -92,7 +86,7 @@ export const useSubmitSurvey = () => {
 
       // 설문 상세 데이터도 invalidate하여 최신 상태로 업데이트
       queryClient.invalidateQueries({
-        queryKey: ['surveyDetail', variables.responseId],
+        queryKey: ['surveyDetail', variables.dataId],
       });
 
       console.log('설문 제출 성공:', variables);
@@ -103,21 +97,21 @@ export const useSubmitSurvey = () => {
   });
 };
 
-export const useWeightedScores = () => {
+export const useWeightedScores = (type: UserType) => {
   return useQuery({
     queryKey: ['weightedScores'],
-    queryFn: () => surveyService.getWeightedScores(),
+    queryFn: () => surveyService.getWeightedScores(type),
     staleTime: 5 * 60 * 1000, // 5분간 데이터를 fresh로 유지
     gcTime: 10 * 60 * 1000, // 10분간 캐시 유지
   });
 };
 
-export const useSubmitWeightedScores = () => {
+export const useSubmitWeightedScores = (type: UserType) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (requestData: WeightedScoreRequestArray) =>
-      surveyService.submitWeightedScores(requestData),
+    mutationFn: (requestData: WeightedScoreRequest) =>
+      surveyService.submitWeightedScores(requestData, type),
     onSuccess: () => {
       // 가중치 평가 제출 성공 시 weightedScores 데이터를 다시 fetch하여 최신 상태로 업데이트
       queryClient.invalidateQueries({
@@ -133,6 +127,62 @@ export const useSubmitWeightedScores = () => {
     },
     onError: (error) => {
       console.error('가중치 평가 제출 실패:', error);
+    },
+  });
+};
+
+// 임시저장 훅
+export const useSaveAllSurveyResponses = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      type,
+      dataId,
+      requestData,
+    }: {
+      type: UserType;
+      dataId: number;
+      requestData: SurveyResponseRequest[];
+    }) => surveyService.saveAllSurveyResponses({ type, dataId, requestData }),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ['surveyDetail', variables.dataId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['surveyProducts', variables.type],
+      });
+    },
+    onError: (error) => {
+      console.error('임시저장 실패:', error);
+    },
+  });
+};
+
+// 최종제출 훅
+export const useSubmitAllSurveyResponses = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      type,
+      dataId,
+      requestData,
+    }: {
+      type: UserType;
+      dataId: number;
+      requestData: SurveyResponseRequest[];
+    }) => surveyService.submitAllSurveyResponses({ type, dataId, requestData }),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ['surveyDetail', variables.dataId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['surveyProducts', variables.type],
+      });
+    },
+    onError: (error) => {
+      console.error('최종제출 실패:', error);
     },
   });
 };
