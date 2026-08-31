@@ -1,11 +1,13 @@
 import { datasetQueryKeys } from '@/src/queries/dataQuery';
 import { updateDataset } from '@/src/services/data/common';
+import { useImageVersionStore } from '@/src/store/imageVersionStore';
 import { UpdateMutationInput } from '@/src/types/data/visual-data';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export const useUpdateDataset = () => {
   const queryClient = useQueryClient();
+  const bumpImageVersion = useImageVersionStore((s) => s.bump);
 
   return useMutation({
     mutationFn: (input: UpdateMutationInput) => {
@@ -57,43 +59,19 @@ export const useUpdateDataset = () => {
 
       /** INDUSTRY */
       if (type === 'INDUSTRY') {
-        const {
-          detailUploadUrl,
-          frontUploadUrl,
-          sideUploadUrl,
-          side2UploadUrl,
-          side3UploadUrl,
-        } = data.result ?? {};
+        const uploads = [
+          { file: detailFile, url: data.result?.detailUploadUrl },
+          { file: frontFile, url: data.result?.frontUploadUrl },
+          { file: sideFile, url: data.result?.sideUploadUrl },
+          { file: side2File, url: data.result?.side2UploadUrl },
+          { file: side3File, url: data.result?.side3UploadUrl },
+        ];
 
-        if (detailFile && detailUploadUrl) {
-          uploadTasks.push(
-            fetch(detailUploadUrl, { method: 'PUT', body: detailFile })
-          );
-        }
-
-        if (frontFile && frontUploadUrl) {
-          uploadTasks.push(
-            fetch(frontUploadUrl, { method: 'PUT', body: frontFile })
-          );
-        }
-
-        if (sideFile && sideUploadUrl) {
-          uploadTasks.push(
-            fetch(sideUploadUrl, { method: 'PUT', body: sideFile })
-          );
-        }
-
-        if (side2File && side2UploadUrl) {
-          uploadTasks.push(
-            fetch(side2UploadUrl, { method: 'PUT', body: side2File })
-          );
-        }
-
-        if (side3File && side3UploadUrl) {
-          uploadTasks.push(
-            fetch(side3UploadUrl, { method: 'PUT', body: side3File })
-          );
-        }
+        uploads.forEach(({ file, url }) => {
+          if (file && url) {
+            uploadTasks.push(fetch(url, { method: 'PUT', body: file }));
+          }
+        });
       }
 
       try {
@@ -105,6 +83,7 @@ export const useUpdateDataset = () => {
               throw new Error(`S3 upload failed: ${res.status}`);
             }
           });
+          bumpImageVersion(variables.id);
         }
       } catch (e) {
         console.error('S3 upload failed after update', e);

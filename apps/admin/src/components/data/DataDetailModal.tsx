@@ -21,11 +21,13 @@ import {
   UpdateVisualDatasetRequest,
   VisualCategory,
 } from '@/src/schemas/visual-data';
+import { useImageVersionStore } from '@/src/store/imageVersionStore';
 import {
   GetDetailResponseByType,
   UpdateForm,
   WithIndex,
 } from '@/src/types/data/visual-data';
+import { withCacheBust } from '@/src/utils/withCacheBust';
 import clsx from 'clsx';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
@@ -157,6 +159,12 @@ const DataDetailModal = <TRow, TType extends UserType>({
   }, []);
   const { year } = useParams<{ year: string }>();
   const yearId = Number(year);
+
+  // 컴포넌트 상단, 다른 훅들 옆에 추가
+  const imageVersion = useImageVersionStore((s) =>
+    dataId ? s.get(dataId) : undefined
+  );
+
   /* ---------- upload loading states ---------- */
   // const [isUploading, setIsUploading] = useState(false);
 
@@ -168,25 +176,22 @@ const DataDetailModal = <TRow, TType extends UserType>({
   /* ---------- file states ---------- */
 
   // VISUAL
-  const [logoFile, setLogoFile] = useState<File | null>(
-    data?.result && 'originalLogoImage' in data.result ? null : empty
-  );
+  const [logoFile, setLogoFile] = useState<File | null | undefined>(undefined);
 
   // INDUSTRY
   const [detailFile, setDetailFile] = useState<File | null | undefined>(
-    data?.result && 'originalDetailImagePath' in data.result ? null : empty
+    undefined
   );
+
   const [frontFile, setFrontFile] = useState<File | null | undefined>(
-    data?.result && 'originalFrontImagePath' in data.result ? null : empty
+    undefined
   );
-  const [sideFile, setSideFile] = useState<File | null | undefined>(
-    data?.result && 'originalSideImagePath' in data.result ? null : empty
-  );
+  const [sideFile, setSideFile] = useState<File | null | undefined>(undefined);
   const [side2File, setSide2File] = useState<File | null | undefined>(
-    data?.result && 'originalSide2ImagePath' in data.result ? null : empty
+    undefined
   );
   const [side3File, setSide3File] = useState<File | null | undefined>(
-    data?.result && 'originalSide3ImagePath' in data.result ? null : empty
+    undefined
   );
 
   /* ---------- mutation ---------- */
@@ -245,82 +250,31 @@ const DataDetailModal = <TRow, TType extends UserType>({
     },
   ] as const;
 
-  /* ---------- image src ---------- */
-  // const imageSrc = (field: IndustryImageType) =>
-  //   useMemo(() => {
-  //     // 여기다가 field값을 넣을 수 있는 방안을 찾아야
-  //     // getImageSrcByType(type, data?.result, field) 이렇게 사용할 수 있음
-  //     if (previewUrl) return previewUrl; // 새로운 이미지의 preview
-  //     if (!logoFile && type === 'VISUAL') return empty; // 새로운 이미지도 없고, 기존 데이터의 이미지도 없을 때 빈 이미지
-  //     if (type === 'VISUAL' && logoFile) {
-  //       const src = getImageSrcByType(type, data?.result); // 기존 데이터의 이미지
-  //       return src ?? empty;
-  //     }
-  //     if (type === 'INDUSTRY') {
-  //       const src = getImageSrcByType(type, data?.result, field); // 기존 데이터의 이미지
-  //       return src ?? empty;
-  //     }
-  //   }, [
-  //     type,
-  //     data,
-  //     previewUrl,
-  //     logoFile,
-  //     field,
-  //     detailFile,
-  //     frontFile,
-  //     sideFile,
-  //     side2File,
-  //     side3File,
-  //   ]);
-
   const getImageSrc = (field?: IndustryImageType) => {
     // preview 우선
     if (type === 'VISUAL') {
       if (previewUrl) return previewUrl;
-      if (!logoFile) return empty;
-      return getImageSrcByType(type, data?.result) ?? empty;
+      if (logoFile === null) return empty;
+      return (
+        withCacheBust(getImageSrcByType(type, data?.result), imageVersion) ??
+        empty
+      );
     }
 
     // INDUSTRY
-    switch (field) {
-      case 'originalDetailImagePath':
-        if (detailPreview) return detailPreview;
-        if (!detailFile) return empty;
-        return (
-          detailPreview ?? getImageSrcByType(type, data?.result, field) ?? empty
-        );
+    const target = INDUSTRY_IMAGE_FIELDS.find((f) => f.field === field);
+    if (!target) return empty;
 
-      case 'originalFrontImagePath':
-        if (frontPreview) return frontPreview;
-        if (!frontFile) return empty;
-        return (
-          frontPreview ?? getImageSrcByType(type, data?.result, field) ?? empty
-        );
+    const { file, preview } = target;
+    if (preview) return preview;
+    if (file === null) return empty;
 
-      case 'originalSideImagePath':
-        if (sidePreview) return sidePreview;
-        if (!sideFile) return empty;
-        return (
-          sidePreview ?? getImageSrcByType(type, data?.result, field) ?? empty
-        );
-
-      case 'originalSide2ImagePath':
-        if (side2Preview) return side2Preview;
-        if (!side2File) return empty;
-        return (
-          side2Preview ?? getImageSrcByType(type, data?.result, field) ?? empty
-        );
-
-      case 'originalSide3ImagePath':
-        if (side3Preview) return side3Preview;
-        if (!side3File) return empty;
-        return (
-          side3Preview ?? getImageSrcByType(type, data?.result, field) ?? empty
-        );
-
-      default:
-        return empty;
-    }
+    return (
+      withCacheBust(
+        getImageSrcByType(type, data?.result, field),
+        imageVersion
+      ) ?? empty
+    );
   };
 
   const item = useMemo(() => {
@@ -583,10 +537,6 @@ const DataDetailModal = <TRow, TType extends UserType>({
                   disabled={!isEdit}
                   onFileDrop={(file) => {
                     setLogoFile(file);
-                    console.log(
-                      'filefilefilefilefilefilefilefilefilefilefilefile',
-                      file
-                    );
                     setPreviewUrl(URL.createObjectURL(file));
                     setValue('originalLogoImage', file.name, {
                       shouldDirty: true,
@@ -632,7 +582,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
                   }}
                   src={close}
                   alt="close"
-                  className="right-45 absolute top-0 cursor-pointer"
+                  className="absolute right-2 top-0 cursor-pointer"
                 />
               )}
             </LinedField>
@@ -678,23 +628,15 @@ const DataDetailModal = <TRow, TType extends UserType>({
                     }}
                   >
                     <label htmlFor={isEdit ? field : undefined}>
-                      <div className="w-100 h-120 relative flex items-start">
+                      <div className="w-100 h-100 relative flex items-start">
                         <Image
-                          src={
-                            // preview ??
-                            // (isEdit && file === null
-                            //   ? empty
-                            //   : (getImageSrcByType(type, data?.result, field) ??
-                            //     empty))
-                            getImageSrc(field)
-                          }
+                          src={getImageSrc(field)}
                           fill
                           alt={label}
                           className="rounded border"
                           style={{
                             objectFit: 'contain',
                           }}
-                          loading="lazy"
                         />
                       </div>
                     </label>
@@ -718,8 +660,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
                       }}
                       src={close}
                       alt="close"
-                      className="absolute left-60 top-0 cursor-pointer"
-                      loading="lazy"
+                      className="absolute right-2 top-0 cursor-pointer"
                     />
                   )}
                 </LinedField>

@@ -5,8 +5,10 @@ import useGridManager from '@/src/hooks/useGridManager';
 import { UserType } from '@/src/schemas/auth';
 import { IndustryCategory } from '@/src/schemas/industry-data';
 import { VisualCategory } from '@/src/schemas/visual-data';
+import { useImageVersionStore } from '@/src/store/imageVersionStore';
 import { BaseRow, VisualRow, WithIndex } from '@/src/types/data/visual-data';
 import { truncateText } from '@/src/utils/truncateText';
+import { withCacheBust } from '@/src/utils/withCacheBust';
 import clsx from 'clsx';
 import Image from 'next/image';
 import FieldActionMenu from '../FieldActionMenu';
@@ -90,6 +92,8 @@ const GalleryView = <T extends BaseRow>({
   return (
     <div className="grid grid-cols-5 gap-4">
       {rows.map((row, index) => {
+        const version = useImageVersionStore.getState().get(row.id);
+
         return (
           <div
             key={row.id}
@@ -122,7 +126,11 @@ const GalleryView = <T extends BaseRow>({
                   <span className="w-[3.18px] rounded-full bg-[#E5E5E5]" />
 
                   <Image
-                    src={g.value(row) ? g.value(row) : empty}
+                    src={
+                      g.value(row)
+                        ? withCacheBust(g.value(row), version)
+                        : empty
+                    }
                     alt="로고 이미지"
                     width={200}
                     height={100}
