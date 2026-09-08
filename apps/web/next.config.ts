@@ -1,16 +1,8 @@
+import { getApiOrigin } from '@hdi/next-config';
 import type { NextConfig } from 'next';
 const ADMIN_APP_URL = process.env.ADMIN_APP_URL;
 
 console.log('ADMIN_APP_URL=', process.env.ADMIN_APP_URL);
-
-// 로컬 개발(next dev)에서는 NODE_ENV가 자동으로 'development'가 되므로
-// 로컬 백엔드로, 배포 빌드('next build')에서는 운영 API로 자동 전환된다.
-// 예전처럼 destination을 손으로 주석 처리/해제하다가 운영 설정이
-// 로컬용으로 그대로 커밋되는 사고를 막기 위함.
-const API_ORIGIN =
-  process.env.NODE_ENV === 'production'
-    ? 'https://api.hdi.ai.kr'
-    : 'http://localhost:8080';
 
 const nextConfig: NextConfig = {
   typescript: {
@@ -31,6 +23,8 @@ const nextConfig: NextConfig = {
     ];
   },
   // 개발 환경에서 API 프록시 설정 - 크로스 오리진 쿠키 문제 해결
+  // destination은 @hdi/next-config가 NODE_ENV 기준으로 로컬/운영을
+  // 자동 전환해준다 (admin/web에서 손으로 값을 바꾸다 사고 나는 걸 방지).
   async rewrites() {
     if (!ADMIN_APP_URL) {
       console.warn('⚠️ ADMIN_APP_URL is not set');
@@ -39,7 +33,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: `${API_ORIGIN}/:path*`,
+        destination: `${getApiOrigin()}/:path*`,
       },
       // admin API proxy
       {
