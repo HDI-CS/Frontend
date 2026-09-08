@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@hdi/fonts": "workspace:*",
+    "@hdi/next-config": "workspace:*",
     "@hdi/ui": "workspace:*",
     "@tanstack/react-query": "^5.90.2",
     "@tanstack/react-virtual": "^3.13.23",

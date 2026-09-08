@@ -348,125 +348,108 @@ const DataDetailModal = <TRow, TType extends UserType>({
     );
   };
 
-  {
-    /* ---------- create 생성 ---------- */
-  }
+  // 모든 mutate 호출이 동일하게 "성공하면 모달 닫기"만 하므로 한 곳에서 관리
+  const closeOnSuccess = { onSuccess: () => onClose() };
+
+  // dirtyFields에 있는 키만 뽑아 requestData에 옮기는 반복 로직 통합.
+  // - fallbackToEmptyString: 생성(create) 폼은 비어있는 값을 ''로 채움
+  // - 그 외(수정/update)는 null·undefined 값을 아예 제외
+  const pickDirtyValues = <T extends Record<string, unknown>>(
+    data: UpdateForm,
+    options: { skipKeys?: string[]; fallbackToEmptyString?: boolean } = {}
+  ): Partial<T> => {
+    const { skipKeys = [], fallbackToEmptyString = false } = options;
+    const result: Partial<T> = {};
+
+    (Object.keys(dirtyFields) as (keyof UpdateForm)[])
+      .filter((key) => !skipKeys.includes(key as string))
+      .forEach((key) => {
+        const value = data[key];
+        if (fallbackToEmptyString) {
+          (result as Record<string, unknown>)[key as string] = value ?? '';
+        } else if (value != null) {
+          (result as Record<string, unknown>)[key as string] = value;
+        }
+      });
+
+    return result;
+  };
+
+  /* ---------- create 생성 ---------- */
   const onCreateSubmit = (data: UpdateForm) => {
     if (!activeCategory) return;
 
     if (type === 'VISUAL') {
       const requestData: CreateVisualDatasetRequest = {
         ...EMPTY_VISUAL_DATASET,
+        ...pickDirtyValues<CreateVisualDatasetRequest>(data, {
+          fallbackToEmptyString: true,
+        }),
         visualDataCategory: activeCategory as VisualCategory,
       };
 
-      (Object.keys(dirtyFields) as (keyof UpdateForm)[]).forEach((key) => {
-        const value = data[key];
-        requestData[key] = value ?? '';
-      });
-      // 수정 api
       createDataset(
-        {
-          type: type,
-          yearId,
-          requestData,
-          logoFile,
-        },
-        {
-          onSuccess: () => {
-            onClose();
-          },
-        }
+        { type, yearId, requestData, logoFile },
+        closeOnSuccess
       );
     }
 
     if (type === 'INDUSTRY') {
       const requestData: CreateIndustrialDatasetRequest = {
         ...EMPTY_INDUSTRY_DATASET,
+        ...pickDirtyValues<CreateIndustrialDatasetRequest>(data, {
+          skipKeys: ['industryDataCategory'],
+          fallbackToEmptyString: true,
+        }),
         industryDataCategory: activeCategory as IndustryCategory,
       };
 
-      (Object.keys(dirtyFields) as (keyof CreateIndustrialDatasetRequest)[])
-        .filter((key) => key !== 'industryDataCategory')
-        .forEach((key) => {
-          const value = data[key as keyof UpdateForm];
-          if (value !== undefined) {
-            requestData[key] = value ?? '';
-          }
-        });
-
-      requestData.industryDataCategory = activeCategory as IndustryCategory;
-
-      // 생성 api
       createDataset(
         {
           type,
           yearId,
           requestData,
-          detailFile: detailFile === undefined ? undefined : detailFile,
-          frontFile: frontFile === undefined ? undefined : frontFile,
-          sideFile: sideFile === undefined ? undefined : sideFile,
-          side2File: side2File === undefined ? undefined : side2File,
-          side3File: side3File === undefined ? undefined : side3File,
+          detailFile,
+          frontFile,
+          sideFile,
+          side2File,
+          side3File,
         },
-        {
-          onSuccess: () => {
-            onClose();
-          },
-        }
+        closeOnSuccess
       );
     }
   };
 
-  {
-    /* ---------- update 수정 ---------- */
-  }
-
+  /* ---------- update 수정 ---------- */
   const onUpdateSubmit = (data: UpdateForm) => {
     if (!dataId) return;
-    const requestData: Partial<UpdateForm> = {};
-
-    (Object.keys(dirtyFields) as (keyof UpdateForm)[]).forEach((key) => {
-      const value = data[key];
-      if (value == null) return;
-      requestData[key] = value;
-    });
+    const requestData = pickDirtyValues<UpdateForm>(data);
 
     if (type === 'VISUAL') {
-      // 수정 api
       updateDataset(
         {
-          type: type,
+          type,
           id: dataId,
           requestData: requestData as UpdateVisualDatasetRequest,
-          logoFile: logoFile,
+          logoFile,
         },
-        {
-          onSuccess: () => {
-            onClose();
-          },
-        }
+        closeOnSuccess
       );
     }
 
     if (type === 'INDUSTRY') {
-      // 수정 api
       updateDataset(
         {
           type,
           id: dataId,
           requestData,
-          detailFile: detailFile === undefined ? undefined : detailFile,
-          frontFile: frontFile === undefined ? undefined : frontFile,
-          sideFile: sideFile === undefined ? undefined : sideFile,
-          side2File: side2File === undefined ? undefined : side2File,
-          side3File: side3File === undefined ? undefined : side3File,
+          detailFile,
+          frontFile,
+          sideFile,
+          side2File,
+          side3File,
         },
-        {
-          onSuccess: () => {
-            onClose();
-          },
-        }
+        closeOnSuccess
       );
     }
   };

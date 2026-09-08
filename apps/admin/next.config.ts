@@ -1,3 +1,4 @@
+import { getApiOrigin } from '@hdi/next-config';
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
@@ -21,15 +22,20 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  // 개발 환경에서 API 프록시 설정 - 크로스 오리진 쿠키 문제 해결
+  // basePath('/admin')가 설정된 상태라 Next.js가 rewrite의 source에
+  // 자동으로 '/admin'을 붙인다(공식 동작). 그래서 여기 source를
+  // '/admin/api/:path*'라고 쓰면 실제로는 '/admin/admin/api/:path*'를
+  // 매칭하게 되어, 브라우저가 실제로 보내는 '/admin/api/...' 요청과
+  // 매칭되지 않고 404가 난다. source는 basePath 없이 '/api/:path*'로
+  // 써야 한다.
+  //
+  // destination은 @hdi/next-config가 NODE_ENV 기준으로 로컬/운영을
+  // 자동 전환해준다 (admin/web에서 손으로 값을 바꾸다 사고 나는 걸 방지).
   async rewrites() {
     return [
       {
-        source: '/admin/api/:path*',
-        destination: 'https://api.h di.ai.kr/:path*',
-
-        // source: '/api/:path*',
-        // destination: 'http://localhost:8080/:path*',
+        source: '/api/:path*',
+        destination: `${getApiOrigin()}/:path*`,
       },
     ];
   },
