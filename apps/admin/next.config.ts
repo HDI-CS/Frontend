@@ -1,6 +1,15 @@
 import { getApiOrigin } from '@hdi/next-config';
 import type { NextConfig } from 'next';
 
+// 로컬 개발(next dev)에서는 NODE_ENV가 자동으로 'development'가 되므로
+// 로컬 백엔드로, 배포 빌드('next build')에서는 운영 API로 자동 전환된다.
+// 예전처럼 destination을 손으로 주석 처리/해제하다가 운영 설정이
+// 로컬용으로 그대로 커밋되는 사고를 막기 위함.
+const API_ORIGIN =
+  process.env.NODE_ENV === 'production'
+    ? 'https://api.hdi.ai.kr'
+    : 'http://localhost:8080';
+
 const nextConfig: NextConfig = {
   basePath: '/admin',
   assetPrefix: '/admin', // asset 경로가 깨지는 걸 방지

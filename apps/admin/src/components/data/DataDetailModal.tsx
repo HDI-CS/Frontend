@@ -302,6 +302,25 @@ const DataDetailModal = <TRow, TType extends UserType>({
     formState: { dirtyFields },
   } = useForm<UpdateForm>();
 
+  // 레코드(dataId)가 바뀔 때 이전 레코드에서 남은 이미지 파일/미리보기/삭제 의도가
+  // 새 레코드로 새어나가지 않도록 로컬 이미지 state를 모두 초기화한다.
+  useEffect(() => {
+    setLogoFile(undefined);
+    setPreviewUrl(null);
+
+    setDetailFile(undefined);
+    setFrontFile(undefined);
+    setSideFile(undefined);
+    setSide2File(undefined);
+    setSide3File(undefined);
+
+    setDetailPreview(null);
+    setFrontPreview(null);
+    setSidePreview(null);
+    setSide2Preview(null);
+    setSide3Preview(null);
+  }, [dataId]);
+
   useEffect(() => {
     if (type === 'VISUAL') {
       reset(item as UpdateVisualDatasetRequest);
@@ -482,12 +501,12 @@ const DataDetailModal = <TRow, TType extends UserType>({
           )}
         </div>
 
-        <div
-          className={clsx(
-            'scrollbar-hidden relative mt-4 space-y-6 overflow-y-auto pr-2',
-            type === 'INDUSTRY' ? 'h-200' : 'h-100'
-          )}
-        >
+        {/*
+          스크롤은 ModalComponent의 Body(overflow-y-auto)에서 한 곳에서만 처리한다.
+          여기서 별도로 overflow/고정 높이를 주면 스크롤 컨테이너가 중첩되어
+          휠 스크롤이 끊기거나 튀는 현상이 생긴다.
+        */}
+        <div className="relative mt-4 space-y-6 pr-2">
           {/* ---------- VISUAL image ---------- */}
           {type === 'VISUAL' && (
             <LinedField
