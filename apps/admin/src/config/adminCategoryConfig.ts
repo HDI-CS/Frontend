@@ -159,7 +159,7 @@ const PACKAGE_FIELDS = {
     },
     {
       key: 'title',
-      label: '이름',
+      label: '제목',
       thClassName: 'w-[80px]',
       className: 'w-[80px]',
       maxLength: 10,
