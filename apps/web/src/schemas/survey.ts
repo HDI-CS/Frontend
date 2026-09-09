@@ -157,7 +157,7 @@ export const BrandSurveyDataSchema = z.object({
     dataCode: z.string(),
     isSubmitted: z.boolean(),
     response: z.array(BrandSurveyQuestionSchema),
-    textResponse: BrandTextSurveyResponseSchema,
+    textResponse: BrandTextSurveyResponseSchema.nullable(),
   }),
 });
 

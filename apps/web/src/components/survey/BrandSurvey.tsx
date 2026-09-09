@@ -109,7 +109,8 @@ export default function BrandSurvey({
     return detail.result.brandSurveyResponse?.response ?? [];
   }, [detail]);
 
-  const textSurveyId = detail.result.brandSurveyResponse.textResponse.surveyId;
+  const textSurveyId =
+    detail.result.brandSurveyResponse?.textResponse?.surveyId ?? null;
 
   // 서버에서 받아온 데이터를 클라이언트 상태에 반영
   useEffect(() => {

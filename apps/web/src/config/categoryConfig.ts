@@ -60,7 +60,7 @@ export const VISUAL_CATEGORY_CONFIG = {
     },
     fields: [
       { key: 'sectorCategory', label: '부문·카테고리' },
-      { key: 'title', label: '이름' },
+      { key: 'title', label: '제목' },
       { key: 'visualType', label: '분류' },
       { key: 'clientName', label: '주체' },
       { key: 'designDescription', label: '내용' },
