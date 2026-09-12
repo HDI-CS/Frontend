@@ -1,6 +1,7 @@
 import { apiClient } from '@/src/lib/axios';
 import { UserType } from '@/src/schemas/auth';
 import {
+  AssignmentImportResultResponseSchema,
   CreateExpertAssignmentRequest,
   CreateExpertAssignmentResponse,
   CreateExpertAssignmentResponseSchema,
@@ -75,6 +76,31 @@ export const searchExpertCandidate = async (type: UserType, search: string) => {
     },
   });
   return SearchExpertCandidateResponseSchema.parse(res.data);
+};
+
+// 엑셀 업로드 (전문가-데이터셋 매칭)
+export const importMappingExcel = async ({
+  type,
+  assessmentRoundId,
+  file,
+}: {
+  type: UserType;
+  assessmentRoundId: number;
+  file: File;
+}) => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const res = await apiClient.post(
+    `/api/v1/admin/${type}/assignment/assessment/${assessmentRoundId}/import`,
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
+  );
+  return AssignmentImportResultResponseSchema.parse(res.data);
 };
 
 // 엑셀 다운로드

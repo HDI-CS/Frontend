@@ -1,4 +1,4 @@
-import {  z } from 'zod';
+import { z } from 'zod';
 import { BasicResponseWithResultSchema } from './auth';
 
 // profile //
@@ -161,4 +161,27 @@ export type CreateExpertAssignmentRequest = z.infer<
 >;
 export type CreateExpertAssignmentResponse = z.infer<
   typeof CreateExpertAssignmentResponseSchema
+>;
+
+// 전문가-데이터셋 매칭 엑셀 업로드 //
+////////////////////////////////////////////////////////////////////////
+
+export const AssignmentImportResultSchema = z.object({
+  teamsProcessed: z.number(),
+  assignmentsAdded: z.number(),
+  assignmentsRemoved: z.number(),
+  warnings: z.array(z.string()),
+});
+
+export const AssignmentImportResultResponseSchema = z.object({
+  code: z.number(),
+  message: z.string(),
+  result: AssignmentImportResultSchema,
+});
+
+export type AssignmentImportResult = z.infer<
+  typeof AssignmentImportResultSchema
+>;
+export type AssignmentImportResultResponse = z.infer<
+  typeof AssignmentImportResultResponseSchema
 >;
