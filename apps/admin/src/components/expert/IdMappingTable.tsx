@@ -16,6 +16,7 @@ import BaseGridTable from '../evaluation/BaseGridTable';
 import IdAssignmentModal from './IdAssignmentModal';
 import IdNumberBtn from './IdNumberBtn';
 import MappingExcelDown from './MappingExcelDown';
+import MappingExcelUpload from './MappingExcelUpload';
 
 interface IdMappingTableProps {
   type: UserType;
@@ -211,7 +212,10 @@ const IdMappingTable = ({ type, round }: IdMappingTableProps) => {
 
   return (
     <div onClick={() => setActiveRowId(null)} className=" ">
-      <MappingExcelDown type={type} roundId={round} />
+      <div className="mb-1 flex w-full justify-end gap-2 px-1">
+        <MappingExcelUpload type={type} roundId={round} />
+        <MappingExcelDown type={type} roundId={round} />
+      </div>
       <BaseGridTable>
         <thead className="text-neutral-gray bg-white">
           <tr className="hover:bg-system-blueBg cursor-pointer">
