@@ -31,17 +31,8 @@ const MappingExcelUpload = ({ type, roundId }: MappingExcelUploadProps) => {
     e.target.value = '';
     if (!file) return;
 
-    // ⚠️ 이 업로드는 추가(append)가 아니라, 팀별로 파일에 적힌 목록을
-    // "최종 상태"로 보고 기존 매칭 중 파일에 없는 항목을 전부 삭제(치환)한다.
-    // 일부 팀만 담긴 파일을 실수로 올리면 나머지 팀의 기존 매칭이 조용히
-    // 사라질 수 있어, 실행 전 명시적으로 확인을 받는다.
-    const confirmed = window.confirm(
-      '엑셀 업로드는 추가가 아니라 전체 교체 방식입니다.\n' +
-        '파일에 없는 팀/데이터의 기존 매칭은 모두 삭제됩니다.\n\n' +
-        '계속하시겠습니까?'
-    );
-    if (!confirmed) return;
-
+    // 이 업로드는 전체 교체(치환)가 아니라 추가(append) 방식으로 동작하여
+    // 기존 매칭을 조용히 삭제하지 않으므로 별도 확인 없이 바로 진행한다.
     importExcel(file, {
       onSuccess: (res) => {
         setResult(res.result);

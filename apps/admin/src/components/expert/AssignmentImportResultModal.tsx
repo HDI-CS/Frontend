@@ -17,8 +17,7 @@ const AssignmentImportResultModal = ({
   result,
   onClose,
 }: AssignmentImportResultModalProps) => {
-  const { teamsProcessed, assignmentsAdded, assignmentsRemoved, warnings } =
-    result;
+  const { teamsProcessed, assignmentsAdded, warnings } = result;
 
   return (
     <ModalComponent
@@ -32,7 +31,6 @@ const AssignmentImportResultModal = ({
         <div className="border-system-lineGray flex flex-col divide-y divide-[#E9E9E7] rounded-lg border px-4">
           <SummaryRow label="처리된 팀" value={teamsProcessed} />
           <SummaryRow label="추가된 매칭" value={assignmentsAdded} />
-          <SummaryRow label="삭제된 매칭" value={assignmentsRemoved} />
         </div>
 
         {warnings.length > 0 && (
