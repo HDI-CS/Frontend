@@ -39,14 +39,12 @@ const MappingExcelDown = ({ type, roundId }: MappingExcelDownProps) => {
   };
 
   return (
-    <div className="mb-1 flex w-full justify-end">
-      <button
-        onClick={handleDownload}
-        className="flex h-[32px] w-[32px] cursor-pointer items-center justify-center rounded border border-[#E5E5E5] bg-white hover:opacity-50"
-      >
-        <Image src={excelIcon} alt="excel" width={16} height={16} />
-      </button>
-    </div>
+    <button
+      onClick={handleDownload}
+      className="flex h-[32px] w-[32px] cursor-pointer items-center justify-center rounded border border-[#E5E5E5] bg-white hover:opacity-50"
+    >
+      <Image src={excelIcon} alt="excel" width={16} height={16} />
+    </button>
   );
 };
 export default MappingExcelDown;
