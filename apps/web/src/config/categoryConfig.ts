@@ -244,6 +244,36 @@ export const INDUSTRY_CATEGORY_CONFIG = {
     survey: ELECTRONICS_SURVEY_META('프로젝터'),
     fields: ELECTRONICS_FIELDS,
   },
+
+  // 2026 3차 (전기전자제품)
+  COFFEE_MACHINE: {
+    survey: ELECTRONICS_SURVEY_META('커피/에스프레소 머신'),
+    fields: ELECTRONICS_FIELDS,
+  },
+  COFFEE_MAKER: {
+    survey: ELECTRONICS_SURVEY_META('커피메이커'),
+    fields: ELECTRONICS_FIELDS,
+  },
+  COFFEE_GRINDER: {
+    survey: ELECTRONICS_SURVEY_META('원두 전동 그라인더'),
+    fields: ELECTRONICS_FIELDS,
+  },
+  PRESSURE_RICE_COOKER: {
+    survey: ELECTRONICS_SURVEY_META('압력밥솥'),
+    fields: ELECTRONICS_FIELDS,
+  },
+  MULTI_COOKER: {
+    survey: ELECTRONICS_SURVEY_META('멀티쿠커'),
+    fields: ELECTRONICS_FIELDS,
+  },
+  AIR_FRYER: {
+    survey: ELECTRONICS_SURVEY_META('에어프라이어'),
+    fields: ELECTRONICS_FIELDS,
+  },
+  MIXER: {
+    survey: ELECTRONICS_SURVEY_META('믹서기'),
+    fields: ELECTRONICS_FIELDS,
+  },
 } as const satisfies Record<string, CategoryDefinition>;
 
 export const INDUSTRY_CORE_FIELDS = [
@@ -291,12 +321,13 @@ export const ALL_WEIGHT_CATEGORY_KEYS = [
 export const ACTIVE_WEIGHT_EVALUATION_CATEGORIES = {
   VISUAL: ['PACKAGE'] as const,
   INDUSTRY: [
-    'WIRELESS_MOUSE',
-    'UMPC',
-    'CAMERA',
-    'WEBCAM',
-    'PROJECTOR',
-    'BLUETOOTH_SPEAKER',
+    'COFFEE_MACHINE',
+    'COFFEE_MAKER',
+    'COFFEE_GRINDER',
+    'PRESSURE_RICE_COOKER',
+    'MULTI_COOKER',
+    'AIR_FRYER',
+    'MIXER',
   ] as const,
 };
 
@@ -322,6 +353,14 @@ export const WEIGHT_CATEGORY_META: Record<string, WeightCategoryMeta> = {
   CAMERA: { id: 'camera', name: '카메라' },
   WEBCAM: { id: 'webcam', name: '웹캠' },
   PROJECTOR: { id: 'projector', name: '프로젝터' },
+
+  COFFEE_MACHINE: { id: 'coffee_machine', name: '커피/에스프레소 머신' },
+  COFFEE_MAKER: { id: 'coffee_maker', name: '커피메이커' },
+  COFFEE_GRINDER: { id: 'coffee_grinder', name: '원두 전동 그라인더' },
+  PRESSURE_RICE_COOKER: { id: 'pressure_rice_cooker', name: '압력밥솥' },
+  MULTI_COOKER: { id: 'multi_cooker', name: '멀티쿠커' },
+  AIR_FRYER: { id: 'air_fryer', name: '에어프라이어' },
+  MIXER: { id: 'mixer', name: '믹서기' },
 };
 
 const collectAllFieldKeys = <T extends Record<string, CategoryDefinition>>(
