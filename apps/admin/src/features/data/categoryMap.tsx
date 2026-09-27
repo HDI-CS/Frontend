@@ -48,9 +48,15 @@ export const CATEGORY_MAP: Record<
   },
   '2026 3차': {
     VISUAL: ['PACKAGE'],
-    // 3차 산업디자인 카테고리는 아직 미정 — 확정되면 배열 채우고
-    // 필요 시 IndustryDataCategory enum(백엔드)에도 추가할 것.
-    INDUSTRY: [],
+    INDUSTRY: [
+      'COFFEE_MACHINE',
+      'COFFEE_MAKER',
+      'COFFEE_GRINDER',
+      'PRESSURE_RICE_COOKER',
+      'MULTI_COOKER',
+      'AIR_FRYER',
+      'MIXER',
+    ],
   },
 } as const;
 
