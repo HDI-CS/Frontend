@@ -33,7 +33,7 @@ import { compareDatasetRows } from '@/src/hooks/useDatasetSort';
 import useGridManager from '@/src/hooks/useGridManager';
 import clsx from 'clsx';
 import Image from 'next/image';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   CATEGORY_MAP,
   CategoryByType,
@@ -73,6 +73,25 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
   >(null);
   const [isAdd, setIsAdd] = useState(false);
   const [rowIds, setRowIds] = useState<number[]>([]);
+
+  // 카테고리 탭 가로 스크롤: 트랙패드는 가로 스와이프가 그대로 scrollLeft로
+  // 들어오지만, 마우스 휠은 세로(deltaY)만 발생시켜 무시된다.
+  // deltaY를 scrollLeft로 흘려보내 마우스 휠로도 탭을 넘길 수 있게 한다.
+  // (React 17+의 합성 onWheel은 passive라 preventDefault가 안 먹어 ref로 직접 등록)
+  const categoryTabScrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = categoryTabScrollRef.current;
+    if (!el) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      if (e.deltaY === 0) return;
+      el.scrollLeft += e.deltaY;
+      e.preventDefault();
+    };
+
+    el.addEventListener('wheel', handleWheel, { passive: false });
+    return () => el.removeEventListener('wheel', handleWheel);
+  }, []);
 
   // 카테고리 목록이 바뀌면(연도 변경 등) 활성 탭을 유효한 값으로 재조정
   useEffect(() => {
@@ -192,7 +211,10 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
         */}
         <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 border-b border-[#E5E5E5]">
           {/* 탭 영역: 넘치면 스크롤, 남은 공간만 차지 */}
-          <div className="scrollbar-hidden min-w-0 max-w-[600px] overflow-x-auto overflow-y-hidden">
+          <div
+            ref={categoryTabScrollRef}
+            className="scrollbar-hidden min-w-0 max-w-[600px] overflow-x-auto overflow-y-hidden"
+          >
             <CategoryTab
               type={type}
               categories={categorieItem}
