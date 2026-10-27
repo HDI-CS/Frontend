@@ -120,6 +120,8 @@ const EMPTY_INDUSTRY_DATASET: IndustryDatasetDefaults = {
   connectivity: null,
   soundOutput: null,
 
+  attributes: null,
+
   originalDetailImagePath: null,
   originalFrontImagePath: null,
   originalSideImagePath: null,
@@ -294,6 +296,56 @@ const DataDetailModal = <TRow, TType extends UserType>({
     return updateRequestMapper.INDUSTRY(industryDetail);
   }, [type, data, activeCategory]);
 
+  /* ---------- INDUSTRY: 카테고리마다 달라지는 스펙(attributes) ----------
+     고정 컬럼으로 못 따라가는 필드(커피머신 "추출 압력", 카메라 "화소수" 등)를
+     key-value로 자유롭게 추가할 수 있게 한다. 삭제는 일부러 지원 안 함(아래 참고).
+     react-hook-form의 dirtyFields로는 추적하기 번거로워서(동적 키) 이미지 파일처럼
+     별도 state로 관리하고 제출 시 합친다. */
+  const [attributes, setAttributes] = useState<Record<string, string>>({});
+  const [attributesDirty, setAttributesDirty] = useState(false);
+
+  useEffect(() => {
+    if (type !== 'INDUSTRY') return;
+    setAttributes(
+      (item as IndustryDatasetDefaults).attributes ??
+        ({} as Record<string, string>)
+    );
+    setAttributesDirty(false);
+  }, [item, type]);
+
+  const updateAttributeKey = (oldKey: string, newKey: string) => {
+    setAttributes((prev) => {
+      const next: Record<string, string> = {};
+      Object.entries(prev).forEach(([k, v]) => {
+        next[k === oldKey ? newKey : k] = v;
+      });
+      return next;
+    });
+    setAttributesDirty(true);
+  };
+
+  const updateAttributeValue = (key: string, value: string) => {
+    setAttributes((prev) => ({ ...prev, [key]: value }));
+    setAttributesDirty(true);
+  };
+
+  const addAttributeRow = () => {
+    setAttributes((prev) => {
+      let key = '새 필드';
+      let i = 2;
+      while (key in prev) {
+        key = `새 필드${i++}`;
+      }
+      return { ...prev, [key]: '' };
+    });
+    setAttributesDirty(true);
+  };
+
+  // 삭제 기능은 일부러 안 둔다: 서버(IndustryData.updatePartial)가 attributes를
+  // putAll로 "병합"만 하지 "교체"를 안 해서, 삭제 버튼을 만들어도 화면에서만 사라지고
+  // 서버엔 그대로 남는 동작하는 척하는 버튼이 되어버린다. 카테고리 스펙은 한 번 정해지면
+  // 지울 일이 거의 없다는 전제로, 오타는 키 입력란을 고쳐 쓰는 것으로 충분하다고 보고 생략.
+
   const {
     register,
     handleSubmit,
@@ -360,7 +412,11 @@ const DataDetailModal = <TRow, TType extends UserType>({
           />
         ) : (
           <span className="mr-2 whitespace-pre-wrap break-all">
-            {value ?? '-'}
+            {value == null
+              ? '-'
+              : typeof value === 'string' || typeof value === 'number'
+                ? value
+                : JSON.stringify(value)}
           </span>
         )}
       </LinedField>
@@ -407,10 +463,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
         visualDataCategory: activeCategory as VisualCategory,
       };
 
-      createDataset(
-        { type, yearId, requestData, logoFile },
-        closeOnSuccess
-      );
+      createDataset({ type, yearId, requestData, logoFile }, closeOnSuccess);
     }
 
     if (type === 'INDUSTRY') {
@@ -421,6 +474,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
           fallbackToEmptyString: true,
         }),
         industryDataCategory: activeCategory as IndustryCategory,
+        attributes: Object.keys(attributes).length > 0 ? attributes : null,
       };
 
       createDataset(
@@ -461,7 +515,9 @@ const DataDetailModal = <TRow, TType extends UserType>({
         {
           type,
           id: dataId,
-          requestData,
+          requestData: attributesDirty
+            ? { ...requestData, attributes }
+            : requestData,
           detailFile,
           frontFile,
           sideFile,
@@ -500,6 +556,58 @@ const DataDetailModal = <TRow, TType extends UserType>({
             renderField(label, field as keyof UpdateForm)
           )}
         </div>
+
+        {/* ---------- INDUSTRY: 카테고리별 추가 스펙(attributes) ----------
+            정해진 fields 목록에 없는, 이 데이터셋만의 스펙을 자유롭게 추가한다. */}
+        {type === 'INDUSTRY' && (
+          <div className="mt-4 space-y-2 border-t border-[#E9E9E7] pt-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-[#8D8D8D]">
+                추가 스펙
+              </span>
+              {isEdit && (
+                <button
+                  type="button"
+                  onClick={addAttributeRow}
+                  className="text-sm text-[#4676FB] hover:underline"
+                >
+                  + 필드 추가
+                </button>
+              )}
+            </div>
+
+            {Object.keys(attributes).length === 0 && !isEdit && (
+              <span className="text-sm text-[#8D8D8D]">-</span>
+            )}
+
+            {Object.entries(attributes).map(([key, value]) => (
+              <div key={key} className="flex items-center gap-2">
+                {isEdit ? (
+                  <>
+                    <input
+                      defaultValue={key}
+                      onBlur={(e) => updateAttributeKey(key, e.target.value)}
+                      placeholder="필드명 (예: 추출 압력)"
+                      className="w-40 rounded border border-[#E9E9E7] px-2 py-1.5 text-sm outline-[#4676FB]"
+                    />
+                    <input
+                      value={value}
+                      onChange={(e) =>
+                        updateAttributeValue(key, e.target.value)
+                      }
+                      placeholder="값 (예: 15bar)"
+                      className="flex-1 rounded border border-[#E9E9E7] px-2 py-1.5 text-sm outline-[#4676FB]"
+                    />
+                  </>
+                ) : (
+                  <span className="text-sm">
+                    <span className="text-[#8D8D8D]">{key}:</span> {value}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
 
         {/*
           스크롤은 ModalComponent의 Body(overflow-y-auto)에서 한 곳에서만 처리한다.

@@ -480,7 +480,10 @@ export default function ProductSurvey({
               {productImages.length > 0 && (
                 <div className="space-y-4">
                   {imageMap.map(({ key, label }) => {
-                    const imagePath = product[key as keyof typeof product];
+                    const imagePath =
+                      product[
+                        key as Exclude<keyof typeof product, 'attributes'>
+                      ];
                     if (!imagePath) return null;
                     return (
                       <ProductImage

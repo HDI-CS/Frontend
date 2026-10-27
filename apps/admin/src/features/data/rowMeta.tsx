@@ -476,6 +476,7 @@ export const updateRequestMapper = {
     chargeTime: detail.chargeTime ?? '',
     usage: detail.usage ?? '',
     connectivity: detail.connectivity ?? '',
+    attributes: detail.attributes ?? null,
 
     originalDetailImagePath: null,
     originalFrontImagePath: null,

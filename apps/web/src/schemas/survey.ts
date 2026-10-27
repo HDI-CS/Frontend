@@ -76,6 +76,9 @@ export const ProductDataSetResponseSchema = z.object({
 
   // 카테고리별 동적 필드는 레지스트리에서 자동 생성
   ...buildNullableStringShape(INDUSTRY_ITEM_NULLABLE_KEYS),
+
+  // 고정 필드 레지스트리에 없는, 이 제품만의 추가 스펙 (카테고리마다 다름)
+  attributes: z.record(z.string(), z.string()).nullable().optional(),
 });
 
 export const ProductSurveyQuestionSchema = z.object({

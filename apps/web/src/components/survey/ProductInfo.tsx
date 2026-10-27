@@ -102,7 +102,12 @@ export default function ProductInfo({
               {fields.map((field) => {
                 const value = formatValue(
                   field.key,
-                  data[field.key as keyof ProductDataSetResponse]
+                  data[
+                    field.key as Exclude<
+                      keyof ProductDataSetResponse,
+                      'attributes'
+                    >
+                  ]
                 );
 
                 return (
@@ -114,6 +119,13 @@ export default function ProductInfo({
                   />
                 );
               })}
+
+              {/* 고정 필드 레지스트리에 없는, 이 제품만의 추가 스펙 */}
+              {isProductData(data) &&
+                data.attributes &&
+                Object.entries(data.attributes).map(([key, value]) => (
+                  <InfoItem key={key} name={key} label={key} value={value} />
+                ))}
             </div>
           </>
         )}

@@ -40,8 +40,8 @@ export default function SurveyCard({
           <div className="absolute inset-0 animate-pulse rounded bg-gray-200"></div>
         )}
 
-        {/* 이미지 로딩 실패 시 대체 텍스트 표시 */}
-        {imageError && (
+        {/* 이미지 로딩 실패 시 대체 텍스트 표시 (이미지 경로가 아예 없는 경우도 동일 처리) */}
+        {(imageError || !image) && (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-50">
             <div className="px-2 text-center text-xs font-bold text-gray-500">
               {name}
@@ -50,23 +50,25 @@ export default function SurveyCard({
         )}
 
         {/* 실제 이미지 */}
-        <Image
-          src={image}
-          alt={name}
-          fill
-          sizes="100vw"
-          className={`object-contain transition-opacity duration-300 ${
-            imageLoading ? 'opacity-0' : 'opacity-100'
-          }`}
-          onLoad={() => {
-            setImageLoading(false);
-            setImageError(false);
-          }}
-          onError={() => {
-            setImageLoading(false);
-            setImageError(true);
-          }}
-        />
+        {image && (
+          <Image
+            src={image}
+            alt={name}
+            fill
+            sizes="100vw"
+            className={`object-contain transition-opacity duration-300 ${
+              imageLoading ? 'opacity-0' : 'opacity-100'
+            }`}
+            onLoad={() => {
+              setImageLoading(false);
+              setImageError(false);
+            }}
+            onError={() => {
+              setImageLoading(false);
+              setImageError(true);
+            }}
+          />
+        )}
       </div>
 
       {/* 브랜드명 */}
