@@ -103,11 +103,12 @@ export const mapIndustrialDatasetItem = (
 ): BaseDatasetItem & {
   productName: string;
   companyName: string;
-  modelName: string;
   productTypeName: string;
   detailImagePath: string;
   frontImagePath: string;
   sideImagePath: string;
+  side2ImagePath: string;
+  side3ImagePath: string;
 } => ({
   id: input.id,
   code: input.code ?? '',
@@ -116,11 +117,12 @@ export const mapIndustrialDatasetItem = (
   // UI에서 당장 필요한 필드만
   productName: input.productName ?? '',
   companyName: input.companyName ?? '',
-  modelName: input.modelName ?? '',
   productTypeName: input.productTypeName ?? '',
   detailImagePath: input.originalDetailImagePath ?? '',
   frontImagePath: input.originalFrontImagePath ?? '',
   sideImagePath: input.originalSideImagePath ?? '',
+  side2ImagePath: input.originalSide2ImagePath ?? '',
+  side3ImagePath: input.originalSide3ImagePath ?? '',
 });
 
 export interface DatasetCategory<TItem> {
@@ -240,10 +242,7 @@ export type VisualRow = BaseRow & {
 export type IndustrialRow = BaseRow & {
   productName: string;
   companyName: string;
-  modelName: string;
   price: string;
-  material: string;
-  size: string;
   weight: string;
   registeredAt: string;
   productPath: string;
@@ -267,6 +266,9 @@ export type IndustrialRow = BaseRow & {
   sideImagePath: string;
   side2ImagePath: string;
   side3ImagePath: string;
+
+  // 카테고리마다 달라지는 추가 스펙 (예: 커피머신 "추출 압력")
+  attributes?: Record<string, string> | null;
 };
 
 // UI용 (번호 붙여서 쓰는 경우)

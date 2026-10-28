@@ -57,6 +57,25 @@ const buildNullableStringShape = <K extends readonly string[]>(keys: K) =>
   ) as { [P in K[number]]: z.ZodNullable<z.ZodString> };
 
 // ========================
+// 카테고리별 추가 스펙(attributes) 필드 정의 — 라벨 표시용 (읽기 전용)
+// ========================
+
+export const IndustryCategoryFieldSpecSchema = z.object({
+  id: z.number(),
+  fieldKey: z.string(),
+  fieldLabel: z.string(),
+  displayOrder: z.number(),
+});
+
+export const IndustryCategoryFieldSpecListSchema = z.array(
+  IndustryCategoryFieldSpecSchema
+);
+
+export type IndustryCategoryFieldSpec = z.infer<
+  typeof IndustryCategoryFieldSpecSchema
+>;
+
+// ========================
 // 상품 설문 상세 스키마
 // ========================
 

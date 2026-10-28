@@ -22,6 +22,23 @@ export const IndustryImageTypeSchema = z.enum([
 
 export type IndustryCategory = z.infer<typeof IndustryCategorySchema>;
 
+// 카테고리별 "추가 스펙(attributes)" 필드 정의. 값은 각 제품의 attributes에 들어가고,
+// 여긴 "이 카테고리는 이런 키/라벨을 가진다"만 카테고리당 한 번 정의해두는 메타데이터.
+export const IndustryCategoryFieldSpecSchema = z.object({
+  id: z.number(),
+  fieldKey: z.string(),
+  fieldLabel: z.string(),
+  displayOrder: z.number(),
+});
+
+export const IndustryCategoryFieldSpecListSchema = z.array(
+  IndustryCategoryFieldSpecSchema
+);
+
+export type IndustryCategoryFieldSpec = z.infer<
+  typeof IndustryCategoryFieldSpecSchema
+>;
+
 // 산디 데이터 셋 기본 스키마
 export const IndustrialDataItemSchema = z.object({
   id: z.number(),

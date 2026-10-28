@@ -32,7 +32,11 @@ export const compareDatasetRows = (
           orderBy
         );
       case 'MODEL':
-        return sortByString(industryA.modelName, industryB.modelName, orderBy);
+        return sortByString(
+          industryA.attributes?.modelName,
+          industryB.attributes?.modelName,
+          orderBy
+        );
       case 'PRODUCT':
         return sortByString(
           industryA.productName,

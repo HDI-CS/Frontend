@@ -19,7 +19,7 @@ export default function NotFound() {
   const handleGoHome = () => {
     // React Query 데이터를 기준으로 라우팅
     if (meData?.result?.userType) {
-      window.location.href = `/inbox/${meData.result.userType.toLowerCase()}`;
+      window.location.href = `/${meData.result.userType.toLowerCase()}`;
     } else {
       window.location.href = '/';
     }

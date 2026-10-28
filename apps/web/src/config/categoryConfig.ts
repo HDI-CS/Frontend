@@ -130,12 +130,8 @@ export const INDUSTRY_CATEGORY_CONFIG = {
       surveyTitle: '진공청소기 평가 설문',
       surveyDescription: '진공청소기 디자인에 대한 평가를 진행해주세요.',
     },
-    fields: [
-      { key: 'modelName', label: '모델명' },
-      { key: 'material', label: '재질' },
-      { key: 'size', label: '사이즈' },
-      { key: 'referenceUrl', label: '링크', type: 'link' },
-    ],
+    // 2026-10-28: modelName/material/size는 attributes 스펙으로 마이그레이션해서 비움.
+    fields: [{ key: 'referenceUrl', label: '링크', type: 'link' }],
   },
 
   AIR_PURIFIER: {
@@ -145,12 +141,7 @@ export const INDUSTRY_CATEGORY_CONFIG = {
       surveyTitle: '공기청정기 평가 설문',
       surveyDescription: '공기청정기 디자인에 대한 평가를 진행해주세요.',
     },
-    fields: [
-      { key: 'modelName', label: '모델명' },
-      { key: 'material', label: '재질' },
-      { key: 'size', label: '사이즈' },
-      { key: 'referenceUrl', label: '링크', type: 'link' },
-    ],
+    fields: [{ key: 'referenceUrl', label: '링크', type: 'link' }],
   },
 
   HAIR_DRYER: {
@@ -160,11 +151,7 @@ export const INDUSTRY_CATEGORY_CONFIG = {
       surveyTitle: '헤어드라이기 평가 설문',
       surveyDescription: '헤어드라이기 디자인에 대한 평가를 진행해주세요.',
     },
-    fields: [
-      { key: 'modelName', label: '모델명' },
-      { key: 'material', label: '재질' },
-      { key: 'size', label: '사이즈' },
-    ],
+    fields: [],
   },
 
   HEADPHONE: {
@@ -174,14 +161,9 @@ export const INDUSTRY_CATEGORY_CONFIG = {
       surveyTitle: '헤드폰 평가 설문',
       surveyDescription: '헤드폰 디자인에 대한 평가를 진행해주세요.',
     },
-    fields: [
-      { key: 'noiseCancelling', label: '노이즈 캔슬링' },
-      { key: 'codec', label: '코덱' },
-      { key: 'extraFeatures', label: '부가기능' },
-      { key: 'controlType', label: '컨트롤 방식' },
-      { key: 'maxPlayTime', label: '최대 재생시간' },
-      { key: 'chargeTime', label: '충전 시간' },
-    ],
+    // 2026-10-28: 고정 필드 6개를 attributes 스펙으로 마이그레이션해서 비움.
+    // ProductInfo가 attributes를 스펙 라벨로 자동 표시하니 fields에 안 남겨도 됨.
+    fields: [],
   },
 
   EARPHONE: {
@@ -191,15 +173,8 @@ export const INDUSTRY_CATEGORY_CONFIG = {
       surveyTitle: '이어폰 평가 설문',
       surveyDescription: '이어폰 디자인에 대한 평가를 진행해주세요.',
     },
-    fields: [
-      { key: 'noiseCancelling', label: '노이즈 캔슬링' },
-      { key: 'codec', label: '코덱' },
-      { key: 'extraFeatures', label: '부가기능' },
-      { key: 'controlType', label: '컨트롤 방식' },
-      { key: 'maxPlayTime', label: '최대 재생시간' },
-      { key: 'chargeTime', label: '충전 시간' },
-      { key: 'waterproof', label: '방수 기능' },
-    ],
+    // 2026-10-28: 고정 필드 7개를 attributes 스펙으로 마이그레이션해서 비움.
+    fields: [],
   },
 
   BLUETOOTH_SPEAKER: {
@@ -280,10 +255,7 @@ export const INDUSTRY_CORE_FIELDS = [
   'code',
   'productName',
   'companyName',
-  'modelName',
   'price',
-  'material',
-  'size',
   'weight',
   'referenceUrl',
   'registeredAt',

@@ -16,7 +16,7 @@ export const VisualCategorySchema = z.enum(
 // 연도 스키마
 export const YearFolderSchema = z.object({
   yearId: z.number(),
-  folderName: z.string().nullable,
+  folderName: z.string().nullable(),
   updatedAt: z.string(),
   createdAt: z.string(),
 });

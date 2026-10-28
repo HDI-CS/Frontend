@@ -8,6 +8,10 @@ import {
 } from '@/src/features/data/rowMeta';
 import { useCreateDataset } from '@/src/hooks/data/useCreateVisualDataset';
 import { useDataByDatasetId } from '@/src/hooks/data/useDatasetsByYear';
+import {
+  useCreateIndustryCategoryFieldSpec,
+  useIndustryCategoryFieldSpecs,
+} from '@/src/hooks/data/useIndustryCategoryFieldSpecs';
 import { useUpdateDataset } from '@/src/hooks/data/useUpdateDataset';
 import { UserType } from '@/src/schemas/auth';
 import {
@@ -97,10 +101,7 @@ const EMPTY_INDUSTRY_DATASET: IndustryDatasetDefaults = {
   code: '',
   productName: '',
   companyName: '',
-  modelName: '',
   price: '',
-  material: '',
-  size: '',
   weight: '',
   referenceUrl: '',
   registeredAt: '',
@@ -108,17 +109,8 @@ const EMPTY_INDUSTRY_DATASET: IndustryDatasetDefaults = {
   productTypeName: '',
 
   // 2026
-  noiseCancelling: null,
-  codec: null,
-  extraFeatures: null,
-  controlType: null,
-  waterproof: null,
-  maxPlayTime: null,
-  chargeTime: null,
   usage: null,
   shoppingUrl: null,
-  connectivity: null,
-  soundOutput: null,
 
   attributes: null,
 
@@ -346,6 +338,53 @@ const DataDetailModal = <TRow, TType extends UserType>({
   // 서버엔 그대로 남는 동작하는 척하는 버튼이 되어버린다. 카테고리 스펙은 한 번 정해지면
   // 지울 일이 거의 없다는 전제로, 오타는 키 입력란을 고쳐 쓰는 것으로 충분하다고 보고 생략.
 
+  /* ---------- INDUSTRY: 카테고리별 스펙 "정의" ----------
+     attributes는 값 저장소일 뿐이고, "이 카테고리는 이런 키/라벨을 가진다"는
+     카테고리당 한 번만 정의해두면(= 스펙) 제품마다는 값만 입력하면 되게 만든다.
+     한 번도 정의 안 된 채로 값만 있는 레거시 키(기존에 자유 입력으로 넣은 것)는
+     "기타"로 따로 보여주고 예전처럼 키/값 둘 다 수정 가능하게 둔다. */
+  const industryCategory =
+    type === 'INDUSTRY' ? (activeCategory as IndustryCategory | null) : null;
+
+  const { data: specData } = useIndustryCategoryFieldSpecs({
+    category: industryCategory,
+    yearId,
+  });
+  const specs = useMemo(() => specData ?? [], [specData]);
+  const specKeySet = useMemo(
+    () => new Set(specs.map((s) => s.fieldKey)),
+    [specs]
+  );
+  const legacyAttributeEntries = Object.entries(attributes).filter(
+    ([key]) => !specKeySet.has(key)
+  );
+
+  const { mutate: createSpec, isPending: isCreatingSpec } =
+    useCreateIndustryCategoryFieldSpec();
+
+  const [isAddingSpec, setIsAddingSpec] = useState(false);
+  const [newSpecLabel, setNewSpecLabel] = useState('');
+
+  const submitNewSpec = () => {
+    const label = newSpecLabel.trim();
+    if (!label || !industryCategory) return;
+
+    // 사람이 읽는 라벨과 별개로, 서버/다른 코드에서 다루기 쉬운 key를 라벨에서 생성.
+    // (영문 변환 없이 라벨 그대로 key로 써도 attributes는 그냥 문자열 맵이라 문제없음)
+    const key = label;
+
+    createSpec(
+      { category: industryCategory, yearId, fieldKey: key, fieldLabel: label },
+      {
+        onSuccess: () => {
+          updateAttributeValue(key, '');
+          setNewSpecLabel('');
+          setIsAddingSpec(false);
+        },
+      }
+    );
+  };
+
   const {
     register,
     handleSubmit,
@@ -555,35 +594,69 @@ const DataDetailModal = <TRow, TType extends UserType>({
           {fields.map(({ label, field }) =>
             renderField(label, field as keyof UpdateForm)
           )}
+
+          {/* ---------- INDUSTRY: 카테고리별 스펙(attributes, 보기 모드) ----------
+              이 카테고리에 정의된 스펙(라벨 있음)을 먼저, 정의 안 된 레거시 키는
+              그 다음에 보여준다. 다른 고정 필드들과 똑같은 LinedField로 섞는다. */}
+          {type === 'INDUSTRY' &&
+            !isEdit &&
+            specs.map((spec) => (
+              <LinedField
+                key={spec.fieldKey}
+                label={spec.fieldLabel}
+                activeField={activeField}
+              >
+                <span className="mr-2 whitespace-pre-wrap break-all">
+                  {attributes[spec.fieldKey] || '-'}
+                </span>
+              </LinedField>
+            ))}
+          {type === 'INDUSTRY' &&
+            !isEdit &&
+            legacyAttributeEntries.map(([key, value]) => (
+              <LinedField key={key} label={key} activeField={activeField}>
+                <span className="mr-2 whitespace-pre-wrap break-all">
+                  {value || '-'}
+                </span>
+              </LinedField>
+            ))}
         </div>
 
-        {/* ---------- INDUSTRY: 카테고리별 추가 스펙(attributes) ----------
-            정해진 fields 목록에 없는, 이 데이터셋만의 스펙을 자유롭게 추가한다. */}
-        {type === 'INDUSTRY' && (
-          <div className="mt-4 space-y-2 border-t border-[#E9E9E7] pt-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-[#8D8D8D]">
-                추가 스펙
-              </span>
-              {isEdit && (
-                <button
-                  type="button"
-                  onClick={addAttributeRow}
-                  className="text-sm text-[#4676FB] hover:underline"
-                >
-                  + 필드 추가
-                </button>
-              )}
-            </div>
-
-            {Object.keys(attributes).length === 0 && !isEdit && (
-              <span className="text-sm text-[#8D8D8D]">-</span>
+        {/* ---------- INDUSTRY: 추가 스펙 수정 ----------
+            카테고리에 이미 정의된 스펙은 라벨 붙은 입력칸(값만 입력)으로,
+            아직 정의 안 된 레거시 키는 예전처럼 키/값 둘 다 수정 가능하게 둔다. */}
+        {type === 'INDUSTRY' && isEdit && (
+          <div className="mt-4 space-y-4 border-t border-[#E9E9E7] pt-4">
+            {specs.length > 0 && (
+              <div className="space-y-2">
+                <span className="text-sm font-medium text-[#8D8D8D]">
+                  추가 스펙
+                </span>
+                {specs.map((spec) => (
+                  <div key={spec.fieldKey} className="flex items-center gap-2">
+                    <span className="w-40 shrink-0 text-sm text-[#8D8D8D]">
+                      {spec.fieldLabel}
+                    </span>
+                    <input
+                      value={attributes[spec.fieldKey] ?? ''}
+                      onChange={(e) =>
+                        updateAttributeValue(spec.fieldKey, e.target.value)
+                      }
+                      placeholder="값 (예: 15bar)"
+                      className="flex-1 rounded border border-[#E9E9E7] px-2 py-1.5 text-sm outline-[#4676FB]"
+                    />
+                  </div>
+                ))}
+              </div>
             )}
 
-            {Object.entries(attributes).map(([key, value]) => (
-              <div key={key} className="flex items-center gap-2">
-                {isEdit ? (
-                  <>
+            {legacyAttributeEntries.length > 0 && (
+              <div className="space-y-2">
+                <span className="text-sm font-medium text-[#8D8D8D]">
+                  기타 (카테고리 스펙으로 정의 안 됨)
+                </span>
+                {legacyAttributeEntries.map(([key, value]) => (
+                  <div key={key} className="flex items-center gap-2">
                     <input
                       defaultValue={key}
                       onBlur={(e) => updateAttributeKey(key, e.target.value)}
@@ -598,14 +671,64 @@ const DataDetailModal = <TRow, TType extends UserType>({
                       placeholder="값 (예: 15bar)"
                       className="flex-1 rounded border border-[#E9E9E7] px-2 py-1.5 text-sm outline-[#4676FB]"
                     />
-                  </>
-                ) : (
-                  <span className="text-sm">
-                    <span className="text-[#8D8D8D]">{key}:</span> {value}
-                  </span>
-                )}
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={addAttributeRow}
+                className="text-sm text-[#8D8D8D] hover:underline"
+              >
+                + 기타 필드로 추가
+              </button>
+              <span className="text-[#E9E9E7]">|</span>
+              {isAddingSpec ? (
+                <div className="flex flex-1 items-center gap-2">
+                  <input
+                    autoFocus
+                    value={newSpecLabel}
+                    onChange={(e) => setNewSpecLabel(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        submitNewSpec();
+                      }
+                    }}
+                    placeholder="새 스펙 이름 (예: 추출 압력) — 이 카테고리 전체에 적용됨"
+                    className="flex-1 rounded border border-[#E9E9E7] px-2 py-1.5 text-sm outline-[#4676FB]"
+                  />
+                  <button
+                    type="button"
+                    disabled={isCreatingSpec || !newSpecLabel.trim()}
+                    onClick={submitNewSpec}
+                    className="text-sm text-[#4676FB] hover:underline disabled:opacity-40"
+                  >
+                    정의 추가
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsAddingSpec(false);
+                      setNewSpecLabel('');
+                    }}
+                    className="text-sm text-[#8D8D8D] hover:underline"
+                  >
+                    취소
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setIsAddingSpec(true)}
+                  className="text-sm text-[#4676FB] hover:underline"
+                >
+                  + 새 스펙 정의 (카테고리 전체 적용)
+                </button>
+              )}
+            </div>
           </div>
         )}
 

@@ -6,6 +6,9 @@ import {
   GetDetailIndustrialDataByCategoryResponseSchema,
   GetIndustrialDataByCategoryResponseSchema,
   GetIndustrialDataByKeywordyResponseSchema,
+  IndustryCategoryFieldSpec,
+  IndustryCategoryFieldSpecListSchema,
+  IndustryCategoryFieldSpecSchema,
   UpdateIndustrialDatasetRequest,
   UpdateIndustrialDatasetRequestSchema,
 } from '@/src/schemas/industry-data';
@@ -126,6 +129,43 @@ export const updateIndustrialDataset = async ({
    */
 
   return res.data;
+};
+
+// 카테고리별 스펙 필드 정의 조회 (attributes의 "어떤 키가 있는지")
+export const getIndustryCategoryFieldSpecs = async ({
+  category,
+  yearId,
+}: {
+  category: string;
+  yearId?: number;
+}) => {
+  const res = await apiClient.get(
+    `/api/v1/admin/industry/category-field-specs`,
+    {
+      params: { category, yearId },
+    }
+  );
+  return IndustryCategoryFieldSpecListSchema.parse(res.data);
+};
+
+// 카테고리에 스펙 필드 정의 추가 (yearId 생략 시 해당 카테고리 전체 연도 공통)
+export const createIndustryCategoryFieldSpec = async ({
+  category,
+  yearId,
+  fieldKey,
+  fieldLabel,
+}: {
+  category: string;
+  yearId?: number;
+  fieldKey: string;
+  fieldLabel: string;
+}): Promise<IndustryCategoryFieldSpec> => {
+  const res = await apiClient.post(
+    `/api/v1/admin/industry/category-field-specs`,
+    { fieldKey, fieldLabel },
+    { params: { category, yearId } }
+  );
+  return IndustryCategoryFieldSpecSchema.parse(res.data);
 };
 
 export const searchIndustrialDataset = async ({

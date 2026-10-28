@@ -222,53 +222,22 @@ const ELECTRONICS_COMMON_FIELDS = [
 ] as const;
 
 export const INDUSTRY_CATEGORY_CONFIG = {
-  VACUUM_CLEANER: [
-    { key: 'modelName', label: '모델명' },
-    { key: 'material', label: '재질' },
-    { key: 'size', label: '사이즈' },
-    { key: 'referenceUrl', label: '링크', type: 'link' },
-  ],
-  AIR_PURIFIER: [
-    { key: 'modelName', label: '모델명' },
-    { key: 'material', label: '재질' },
-    { key: 'size', label: '사이즈' },
-    { key: 'referenceUrl', label: '링크', type: 'link' },
-  ],
-  HAIR_DRYER: [
-    { key: 'modelName', label: '모델명' },
-    { key: 'material', label: '재질' },
-    { key: 'size', label: '사이즈' },
-  ],
-  HEADPHONE: [
-    { key: 'noiseCancelling', label: '노이즈 캔슬링' },
-    { key: 'codec', label: '코덱' },
-    { key: 'extraFeatures', label: '부가기능' },
-    { key: 'controlType', label: '컨트롤 방식' },
-    { key: 'maxPlayTime', label: '최대 재생시간' },
-    { key: 'chargeTime', label: '충전 시간' },
-  ],
-  EARPHONE: [
-    { key: 'noiseCancelling', label: '노이즈 캔슬링' },
-    { key: 'codec', label: '코덱' },
-    { key: 'extraFeatures', label: '부가기능' },
-    { key: 'controlType', label: '컨트롤 방식' },
-    { key: 'maxPlayTime', label: '최대 재생시간' },
-    { key: 'chargeTime', label: '충전 시간' },
-    { key: 'waterproof', label: '방수 기능' },
-  ],
+  // 2026-10-28: modelName/material/size는 청소기류 3개만 쓰는 필드라 industry_category_field_spec
+  // (연도2 전용 스펙)으로 마이그레이션해서 비움. referenceUrl은 전 카테고리 공통이라 그대로 둠.
+  VACUUM_CLEANER: [{ key: 'referenceUrl', label: '링크', type: 'link' }],
+  AIR_PURIFIER: [{ key: 'referenceUrl', label: '링크', type: 'link' }],
+  HAIR_DRYER: [],
+  // 2026-10-28: 고정 필드 6개를 industry_category_field_spec(attributes 스펙)으로
+  // 마이그레이션함. 여기 남겨두면 "추가 스펙" 섹션과 값이 중복 표시되어 비움.
+  // (DB 레거시 컬럼 noise_cancelling 등은 과거 조회용으로 그대로 남아있음)
+  HEADPHONE: [],
+  // 2026-10-28: 고정 필드 7개를 industry_category_field_spec(attributes 스펙)으로 마이그레이션함.
+  EARPHONE: [],
 
-  // ⚠️ BLUETOOTH_SPEAKER는 2026 2차에서 재사용되는데, 이번 배치는 완전히 다른 속성
-  // (soundOutput/codec 등이 아니라 productTypeName/usage)을 채우므로 추가만 함.
-  // 1차 데이터는 새 필드가 null로, 2차 데이터는 기존 필드가 null로 자연스럽게 안 보임.
-  BLUETOOTH_SPEAKER: [
-    { key: 'soundOutput', label: '사운드 출력' },
-    { key: 'codec', label: '코덱' },
-    { key: 'extraFeatures', label: '부가기능' },
-    { key: 'maxPlayTime', label: '최대 재생시간' },
-    { key: 'chargeTime', label: '충전 시간' },
-    { key: 'connectivity', label: '입출력' },
-    // ...ELECTRONICS_COMMON_FIELDS,
-  ],
+  // 2026-10-28: 2026(연도 10) 데이터의 고정 필드 6개를 industry_category_field_spec
+  // (연도 10 전용 스펙)으로 마이그레이션해서 비움. 2026 2차(연도 13)는 아래
+  // INDUSTRY_FIELD_OVERRIDES_BY_YEAR에서 ELECTRONICS_COMMON_FIELDS로 그대로 override.
+  BLUETOOTH_SPEAKER: [],
 
   // 2026 2차 신규
   WIRELESS_MOUSE: ELECTRONICS_COMMON_FIELDS,
@@ -330,10 +299,7 @@ export const INDUSTRY_CORE_FIELDS = [
   'code',
   'productName',
   'companyName',
-  'modelName',
   'price',
-  'material',
-  'size',
   'weight',
   'referenceUrl',
   'registeredAt',
@@ -442,21 +408,6 @@ export const DISPLAY_META_BY_CATEGORY = Object.fromEntries(
   ])
 ) as Record<VisualCategory, { field: string; label: string }>;
 
-// ── EMPTY dataset 기본값 ──
-export const EMPTY_VISUAL_DATASET = {
-  ...Object.fromEntries(VISUAL_CORE_FIELDS.map((k) => [k, ''])),
-  ...Object.fromEntries(VISUAL_OPTIONAL_FIELD_KEYS.map((k) => [k, null])),
-  originalLogoImage: null,
-} as VisualDatasetDefaults;
-
-export const EMPTY_INDUSTRY_DATASET = {
-  ...Object.fromEntries(INDUSTRY_CORE_FIELDS.map((k) => [k, ''])),
-  ...Object.fromEntries(INDUSTRY_OPTIONAL_FIELD_KEYS.map((k) => [k, null])),
-  originalDetailImagePath: null,
-  originalFrontImagePath: null,
-  originalSideImagePath: null,
-} as IndustryDatasetDefaults;
-
 export const VISUAL_CATEGORY_KEYS = Object.keys(
   VISUAL_CATEGORY_CONFIG
 ) as VisualCategory[];
@@ -466,6 +417,13 @@ export const INDUSTRY_CATEGORY_KEYS = Object.keys(
 ) as IndustryCategory[];
 
 export const INDUSTRY_DYNAMIC_COLUMN_MAP: Record<string, IndustryColumnDef> = {
+  modelName: {
+    key: 'modelName',
+    header: '모델명',
+    thClassName: 'w-[120px]',
+    className: 'w-[120px]',
+    maxLength: 12,
+  },
   material: {
     key: 'material',
     header: '재질',
