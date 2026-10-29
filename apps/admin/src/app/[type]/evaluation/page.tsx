@@ -3,12 +3,13 @@ import AddBtn from '@/src/components/common/AddBtn';
 import AddEvaluation from '@/src/components/evaluation/AddEvaluation';
 import Folder from '@/src/components/Folder';
 import FolderList from '@/src/components/FolderList';
+import FolderModals from '@/src/components/FolderModals';
 import FolderWrapper from '@/src/components/layout/FolderWrapper';
-import ModalComponent from '@/src/components/ModalComponent';
 import { mapEvaluationYearsToFolders } from '@/src/features/data/rowMeta';
 import { useEvaluationYears } from '@/src/hooks/evaluation/useEvaluationYears';
 import { useUpdateSurvey } from '@/src/hooks/evaluation/useUpdateSurvey';
 import { useFolderManager } from '@/src/hooks/useFolderManager';
+import { getUserTypeFromPathname } from '@/src/utils/getUserTypeFromPathname';
 import { usePathname, useRouter } from 'next/navigation';
 
 const IndexPage = () => {
@@ -18,7 +19,6 @@ const IndexPage = () => {
   const {
     pressedKey,
     openMenuKey,
-    add,
     addStep,
     editSurvey,
     editFolderName,
@@ -37,7 +37,7 @@ const IndexPage = () => {
     getFieldEvaluationMenuItems,
   } = useFolderManager();
 
-  const type = pathname.startsWith('/industry') ? 'INDUSTRY' : 'VISUAL';
+  const type = getUserTypeFromPathname(pathname);
   // 바꿀 로직
   // 폴더 이름 모달 -> 평가설문 모달 -> 폴더 생성 (+ 폴더 이름 수정 + 설문 문항 생성)
   // 년도 평가 등록
@@ -154,37 +154,16 @@ const IndexPage = () => {
           />
         )}
 
-        {editName && (
-          <ModalComponent
-            title="폴더 이름"
-            button={add ? '생성' : ' 저장'}
-            editBasicInfo={true}
-            onClose={() => setEditName(false)}
-            onSubmit={hanleEditName}
-          >
-            <input
-              value={editFolderName}
-              onChange={(e) => setEditFolderName(e.target.value)}
-              className="border-1 focus:outline-primary-blue w-full rounded border-[#E9E9E7] p-3 text-lg text-[#3A3A49]"
-            />
-          </ModalComponent>
-        )}
-
-        {addStep === 1 && (
-          <ModalComponent
-            title="폴더 이름"
-            button={'생성'}
-            editBasicInfo={true}
-            onClose={() => setAddStep(0)}
-            onSubmit={() => setAddStep(2)}
-          >
-            <input
-              value={editFolderName}
-              onChange={(e) => setEditFolderName(e.target.value)}
-              className="border-1 focus:outline-primary-blue w-full rounded border-[#E9E9E7] p-3 text-lg text-[#3A3A49]"
-            />
-          </ModalComponent>
-        )}
+        <FolderModals
+          add={addStep === 1}
+          editName={editName}
+          editFolderName={editFolderName}
+          setEditFolderName={setEditFolderName}
+          onCloseAdd={() => setAddStep(0)}
+          onCloseEdit={() => setEditName(false)}
+          onSubmit={() => setAddStep(2)}
+          onEdit={hanleEditName}
+        />
       </div>
     </FolderWrapper>
   );

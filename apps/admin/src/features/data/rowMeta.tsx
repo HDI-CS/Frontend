@@ -5,6 +5,7 @@ import {
   getIndustryFieldsForYear,
   INDUSTRY_DYNAMIC_COLUMN_MAP,
   VISUAL_CATEGORY_CONFIG,
+  VISUAL_DYNAMIC_ATTRIBUTE_LABEL_MAP,
   VisualCategory,
 } from '@/src/config/adminCategoryConfig';
 
@@ -38,19 +39,82 @@ const toHttpUrl = (url?: string) => {
   return url.startsWith('http') ? url : `https://${url}`;
 };
 
+// attributes(카테고리별 추가 스펙)는 키가 카테고리마다, 또 시간이 지나며
+// 계속 늘어난다. 고정 컬럼으로 하드코딩하는 대신, 현재 보여줄 행들에
+// 실제로 들어있는 키를 스캔해서 키 하나당 컬럼 하나씩 동적으로 만든다.
+// 새 스펙을 추가해도 코드 수정 없이 "출시일"처럼 바로 컬럼이 생긴다.
+const getAttributeKeys = (rows?: WithIndex<IndustrialRow>[]) => {
+  const keys = new Set<string>();
+  rows?.forEach((row) => {
+    Object.keys(row.attributes ?? {}).forEach((key) => keys.add(key));
+  });
+  return Array.from(keys);
+};
+
+// 컬럼/필드 key 충돌을 피하려고 prefix를 붙인다. (buildFieldsFromColumns에서
+// 이 prefix로 걸러내 모달의 범용 renderField 루프에 안 끼게 함)
+const ATTRIBUTE_COLUMN_PREFIX = 'attr:';
+
+// 백엔드 field spec(attributeLabelByKey)이 아직 없는 레거시 키들의 폴백 라벨.
+// HEADPHONE 등 2026 1차 카테고리가 고정 컬럼에서 attributes로 옮겨왔는데
+// DB에 아직 라벨이 안 채워진 경우 raw key 대신 이 한글 라벨을 보여준다.
+const getFallbackAttributeLabel = (key: string) =>
+  INDUSTRY_DYNAMIC_COLUMN_MAP[key]?.header;
+
+const buildIndustryAttributeColumns = (
+  rows?: WithIndex<IndustrialRow>[],
+  attributeLabelByKey?: Map<string, string>
+) =>
+  getAttributeKeys(rows).map((attrKey) => ({
+    key: `${ATTRIBUTE_COLUMN_PREFIX}${attrKey}`,
+    header:
+      attributeLabelByKey?.get(attrKey) ??
+      getFallbackAttributeLabel(attrKey) ??
+      attrKey,
+    thClassName: 'w-[140px]',
+    className: 'w-[140px]',
+    cell: (row: IndustrialRow, isActiveRow: boolean) =>
+      renderCellText(String(row.attributes?.[attrKey] ?? ''), getKeyword(), {
+        active: isActiveRow,
+        maxLength: 10,
+      }),
+  }));
+
+// INDUSTRY 그리드가 카테고리 무관하게 항상 고정으로 그리는 컬럼의 key.
+// 카테고리 설정(INDUSTRY_CATEGORY_CONFIG)에 같은 key로 필드를 또 정의해도
+// 중복 컬럼(= React key 중복)이 생기지 않게 여기서 걸러낸다.
+const FIXED_INDUSTRY_COLUMN_KEYS = new Set([
+  '_no',
+  'code',
+  'productName',
+  'productPath',
+  'companyName',
+  'price',
+  'weight',
+  'registeredAt',
+  'referenceUrl',
+  'detailImagePath',
+  'frontImagePath',
+  'sideImagePath',
+  'side2ImagePath',
+  'side3ImagePath',
+]);
+
 const buildIndustryDynamicColumns = (
   category: IndustryCategory,
   yearName: Years | undefined // 파라미터 추가
 ) => {
   if (!category) return [];
 
-  const fields = getIndustryFieldsForYear(yearName, category); // 변경
+  const fields = getIndustryFieldsForYear(yearName, category).filter(
+    ({ key }) => !FIXED_INDUSTRY_COLUMN_KEYS.has(key)
+  );
 
-  return fields.map(({ key }) => {
+  return fields.map(({ key, label }) => {
     const meta = INDUSTRY_DYNAMIC_COLUMN_MAP[key];
     return {
       key,
-      header: meta?.header || key,
+      header: meta?.header || label || key,
       thClassName: meta?.thClassName || 'w-[120px]',
       className: meta?.className || 'w-[120px]',
       cell: (row: WithIndex<IndustrialRow>, isActiveRow: boolean) =>
@@ -86,11 +150,40 @@ const buildVisualDynamicColumns = (category: VisualCategory) => {
   }));
 };
 
+// attributes(카테고리별 추가 스펙) 동적 컬럼. IndustryData와 동일한 패턴.
+const getVisualAttributeKeys = (rows?: WithIndex<VisualRow>[]) => {
+  const keys = new Set<string>();
+  rows?.forEach((row) => {
+    Object.keys(row.attributes ?? {}).forEach((key) => keys.add(key));
+  });
+  return Array.from(keys);
+};
+
+const buildVisualAttributeColumns = (
+  rows?: WithIndex<VisualRow>[],
+  attributeLabelByKey?: Map<string, string>
+) =>
+  getVisualAttributeKeys(rows).map((attrKey) => ({
+    key: `${ATTRIBUTE_COLUMN_PREFIX}${attrKey}`,
+    header:
+      attributeLabelByKey?.get(attrKey) ??
+      VISUAL_DYNAMIC_ATTRIBUTE_LABEL_MAP[attrKey] ??
+      attrKey,
+    thClassName: 'w-[140px]',
+    className: 'w-[140px]',
+    cell: (row: VisualRow, isActiveRow: boolean) =>
+      renderCellText(String(row.attributes?.[attrKey] ?? ''), getKeyword(), {
+        active: isActiveRow,
+        maxLength: 10,
+      }),
+  }));
+
 export const getRowMeta = (
   type: 'VISUAL' | 'INDUSTRY',
   year?: Years,
   rows?: WithIndex<IndustrialRow | VisualRow>[],
-  activeCategory?: VisualCategory | IndustryCategory
+  activeCategory?: VisualCategory | IndustryCategory,
+  attributeLabelByKey?: Map<string, string>
 ) => {
   if (type === 'VISUAL') {
     const displayMeta = activeCategory
@@ -126,6 +219,10 @@ export const getRowMeta = (
         ...buildVisualDynamicColumns(
           (activeCategory as VisualCategory) || 'POSTER'
         ),
+        ...buildVisualAttributeColumns(
+          rows as WithIndex<VisualRow>[],
+          attributeLabelByKey
+        ),
 
         {
           key: 'VisualImage',
@@ -159,12 +256,21 @@ export const getRowMeta = (
         {
           label: displayMeta?.label ?? '대표값',
           value: (row: VisualRow) =>
-            displayMeta?.field ? row[displayMeta.field as keyof VisualRow] : '',
+            displayMeta?.field
+              ? (row.attributes?.[displayMeta.field] ??
+                row[displayMeta.field as keyof VisualRow])
+              : '',
         },
         {
           label: '부문·카테고리',
           value: (row: VisualRow) => row.sectorCategory,
         },
+        ...getVisualAttributeKeys(rows as WithIndex<VisualRow>[]).map(
+          (attrKey) => ({
+            label: attributeLabelByKey?.get(attrKey) ?? attrKey,
+            value: (row: VisualRow) => row.attributes?.[attrKey] ?? '',
+          })
+        ),
       ],
     };
   }
@@ -285,6 +391,10 @@ export const getRowMeta = (
           );
         },
       },
+      ...buildIndustryAttributeColumns(
+        rows as WithIndex<IndustrialRow>[],
+        attributeLabelByKey
+      ),
       {
         key: 'detailImagePath',
         header: <span className="block text-center">상세이미지</span>,
@@ -300,7 +410,7 @@ export const getRowMeta = (
                     ? withCacheBust(row.detailImagePath, version)
                     : empty
                 }
-                alt={`${row.modelName} logo`}
+                alt={`${row.productName} logo`}
                 className="mx-auto h-[44px] w-[44px] rounded object-cover"
                 width={44}
                 height={44}
@@ -325,7 +435,7 @@ export const getRowMeta = (
                     ? withCacheBust(row.frontImagePath, version)
                     : empty
                 }
-                alt={`${row.modelName} logo`}
+                alt={`${row.productName} logo`}
                 className="mx-auto h-[44px] w-[44px] rounded object-cover"
                 width={44}
                 height={44}
@@ -350,7 +460,7 @@ export const getRowMeta = (
                     ? withCacheBust(row.sideImagePath, version)
                     : empty
                 }
-                alt={`${row.modelName} logo`}
+                alt={`${row.productName} logo`}
                 className="mx-auto h-[44px] w-[44px] rounded object-cover"
                 width={44}
                 height={44}
@@ -375,7 +485,7 @@ export const getRowMeta = (
                     ? withCacheBust(row.side2ImagePath, version)
                     : empty
                 }
-                alt={`${row.modelName} logo`}
+                alt={`${row.productName} logo`}
                 className="mx-auto h-[44px] w-[44px] rounded object-cover"
                 width={44}
                 height={44}
@@ -400,7 +510,7 @@ export const getRowMeta = (
                     ? withCacheBust(row.side3ImagePath, version)
                     : empty
                 }
-                alt={`${row.modelName} logo`}
+                alt={`${row.productName} logo`}
                 className="mx-auto h-[44px] w-[44px] rounded object-cover"
                 width={44}
                 height={44}
@@ -436,20 +546,9 @@ export const updateRequestMapper = {
     code: detail.code ?? '',
     name: detail.name ?? '',
     sectorCategory: detail.sectorCategory ?? '',
-    mainProductCategory: detail.mainProductCategory ?? '',
-    mainProduct: detail.mainProduct ?? '',
-    target: detail.target ?? '',
     referenceUrl: detail.referenceUrl ?? '',
     originalLogoImage: null,
-
-    title: detail.title ?? '',
-    country: detail.country ?? '',
-    clientName: detail.clientName ?? '',
-    contentType: detail.contentType ?? '',
-    visualType: detail.visualType ?? '',
-    designDescription: detail.designDescription ?? '',
-    originalDescription: detail.originalDescription ?? '',
-    releaseYear: detail.releaseYear ?? '',
+    attributes: detail.attributes ?? null,
 
     visualDataCategory: category,
   }),
@@ -458,28 +557,20 @@ export const updateRequestMapper = {
     code: detail.code ?? '',
     productName: detail.productName ?? '',
     companyName: detail.companyName ?? '',
-    modelName: detail.modelName ?? '',
     price: detail.price ?? '',
-    material: detail.material ?? '',
-    size: detail.size ?? '',
     weight: detail.weight ?? '',
     referenceUrl: detail.referenceUrl ?? '',
     registeredAt: detail.registeredAt ?? '',
     productPath: detail.productPath ?? '',
     productTypeName: detail.productTypeName ?? '',
-    noiseCancelling: detail.noiseCancelling ?? '',
-    codec: detail.codec ?? '',
-    extraFeatures: detail.extraFeatures ?? '',
-    controlType: detail.controlType ?? '',
-    waterproof: detail.waterproof ?? '',
-    maxPlayTime: detail.maxPlayTime ?? '',
-    chargeTime: detail.chargeTime ?? '',
     usage: detail.usage ?? '',
-    connectivity: detail.connectivity ?? '',
+    attributes: detail.attributes ?? null,
 
     originalDetailImagePath: null,
     originalFrontImagePath: null,
     originalSideImagePath: null,
+    originalSide2ImagePath: null,
+    originalSide3ImagePath: null,
   }),
 } as const;
 
@@ -582,9 +673,16 @@ export const buildFieldsFromColumns = (
     'sideImagePath',
     'side2ImagePath',
     'side3ImagePath',
+    // 모달에 이미 전용 key-value 입력 UI가 따로 있어 범용 renderField
+    // 루프에는 끼면 안 됨 (object라 text input으로 못 다룸)
+    'attributes',
   ];
   return columns
-    .filter((col) => !EXCLUDE_KEYS.includes(col.key))
+    .filter(
+      (col) =>
+        !EXCLUDE_KEYS.includes(col.key) &&
+        !col.key.startsWith(ATTRIBUTE_COLUMN_PREFIX)
+    )
     .map((col) => ({
       label: typeof col.header === 'string' ? col.header : col.key,
       field: col.key as keyof GetDetailResponseByType['VISUAL' | 'INDUSTRY'],

@@ -38,7 +38,7 @@ const nextConfig: NextConfig = {
       // admin API proxy
       {
         source: '/admin/api/:path*',
-        destination: 'https://api.hdi.ai.kr/:path*',
+        destination: `${getApiOrigin()}/:path*`,
       },
       {
         source: '/admin',

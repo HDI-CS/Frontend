@@ -1,3 +1,4 @@
+import { getApiOrigin } from '@hdi/next-config';
 import axios from 'axios';
 
 import { clearAuthCookies } from '@/utils/cookies';
@@ -8,13 +9,13 @@ const getBaseURL = () => {
     // 클라이언트 사이드에서는 프록시 사용 (같은 도메인으로 요청)
     console.log('🌐 클라이언트 사이드 - 프록시 사용: /api');
     console.log('🌐 현재 URL:', window.location.href);
-    console.log('🌐 프록시 대상: https://api.hdi.ai.kr');
     return '/api';
   }
-  // 서버 사이드에서는 직접 API 호출
-  console.log('🌐 서버 사이드 - 직접 호출: https://api.hdi.ai.kr');
+  // 서버 사이드에서는 직접 API 호출. destination은 @hdi/next-config가
+  // NODE_ENV 기준으로 로컬/운영을 자동 전환해준다.
+  console.log('🌐 서버 사이드 - 직접 호출:', getApiOrigin());
   console.log('⚠️ 서버 사이드에서는 프록시를 사용할 수 없습니다!');
-  return 'https://api.hdi.ai.kr';
+  return getApiOrigin();
 };
 
 export const apiClient = axios.create({

@@ -2,16 +2,14 @@
 import Folder from '@/src/components/Folder';
 import FolderWrapper from '@/src/components/layout/FolderWrapper';
 import { ADMIN_SECTIONS } from '@/src/constants/adminSection';
-import { UserType } from '@/src/schemas/auth';
+import { getUserTypeFromPathname } from '@/src/utils/getUserTypeFromPathname';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 const IndexPage = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const type: UserType = pathname.startsWith('/industry')
-    ? 'INDUSTRY'
-    : 'VISUAL';
+  const type = getUserTypeFromPathname(pathname);
 
   const [pressedKey, setPressedKey] = useState<string | null>(null);
 

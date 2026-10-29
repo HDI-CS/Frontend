@@ -44,7 +44,7 @@ const getWeightEvaluationFactors = (type: 'visual' | 'industry') => {
     },
     {
       id: 'originality',
-      name: '독창성',
+      name: type === 'visual' ? '독창성' : '혁신성',
       description:
         type === 'visual'
           ? '디자인이 새롭고 차별화된 시각적 표현을 지니는 정도'
@@ -362,8 +362,10 @@ export default function WeightEvaluationPage() {
   // 로딩 중일 때
   if (isLoadingWeightedScores) {
     const skeletonFactors = Array(8).fill(null);
-    const skeletonCategories =
-      evaluationType === 'visual' ? Array(2).fill(null) : Array(3).fill(null);
+    const activeDomain = evaluationType === 'visual' ? 'VISUAL' : 'INDUSTRY';
+    const skeletonCategories = Array(
+      ACTIVE_WEIGHT_EVALUATION_CATEGORIES[activeDomain].length
+    ).fill(null);
 
     return (
       <div className="mx-auto h-full px-4 py-4 sm:px-6 lg:px-8">

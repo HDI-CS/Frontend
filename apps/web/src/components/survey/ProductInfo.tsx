@@ -3,7 +3,9 @@ import type {
   BrandDataSetResponse,
   ProductDataSetResponse,
 } from '@/schemas/survey';
+import { surveyService } from '@/services/survey';
 import { formatValue } from '@/utils/formatValue';
+import { useQuery } from '@tanstack/react-query';
 import { clsx } from 'clsx';
 import InfoItem from './InfoItem';
 
@@ -60,6 +62,30 @@ export default function ProductInfo({
   }
   const fields = getFields(type, category);
 
+  // attributes(추가 스펙)의 key를 사람이 읽는 라벨로 바꿔 보여주기 위한 조회.
+  // 정의 안 된 키는 label이 없으니 key 그대로 쓴다.
+  const { data: industryFieldSpecs } = useQuery({
+    queryKey: ['industryCategoryFieldSpecs', category],
+    queryFn: () =>
+      surveyService.getIndustryCategoryFieldSpecs({
+        category: category as string,
+      }),
+    enabled: type === 'industry' && !!category,
+  });
+  const { data: visualFieldSpecs } = useQuery({
+    queryKey: ['visualCategoryFieldSpecs', category],
+    queryFn: () =>
+      surveyService.getVisualCategoryFieldSpecs({
+        category: category as string,
+      }),
+    enabled: type === 'visual' && !!category,
+  });
+  const fieldSpecs =
+    type === 'industry' ? industryFieldSpecs : visualFieldSpecs;
+  const specLabelByKey = new Map(
+    (fieldSpecs ?? []).map((spec) => [spec.fieldKey, spec.fieldLabel])
+  );
+
   return (
     <div className={clsx('space-y-6', className)}>
       <h1 className="border-b border-blue-100 pb-6 text-2xl font-bold text-gray-900">
@@ -79,7 +105,12 @@ export default function ProductInfo({
               {fields.map((field) => {
                 const value = formatValue(
                   field.key,
-                  data[field.key as keyof BrandDataSetResponse]
+                  data[
+                    field.key as Exclude<
+                      keyof BrandDataSetResponse,
+                      'attributes'
+                    >
+                  ]
                 );
 
                 return (
@@ -91,6 +122,17 @@ export default function ProductInfo({
                   />
                 );
               })}
+
+              {/* 고정 필드 레지스트리에 없는, 이 제품만의 추가 스펙 */}
+              {data.attributes &&
+                Object.entries(data.attributes).map(([key, value]) => (
+                  <InfoItem
+                    key={key}
+                    name={key}
+                    label={specLabelByKey.get(key) ?? key}
+                    value={value}
+                  />
+                ))}
             </div>
           </>
         ) : (
@@ -102,7 +144,12 @@ export default function ProductInfo({
               {fields.map((field) => {
                 const value = formatValue(
                   field.key,
-                  data[field.key as keyof ProductDataSetResponse]
+                  data[
+                    field.key as Exclude<
+                      keyof ProductDataSetResponse,
+                      'attributes'
+                    >
+                  ]
                 );
 
                 return (
@@ -114,6 +161,19 @@ export default function ProductInfo({
                   />
                 );
               })}
+
+              {/* 고정 필드 레지스트리에 없는, 이 제품만의 추가 스펙.
+                  카테고리에 정의된 스펙이면 라벨로, 아니면(레거시) key 그대로 보여준다. */}
+              {isProductData(data) &&
+                data.attributes &&
+                Object.entries(data.attributes).map(([key, value]) => (
+                  <InfoItem
+                    key={key}
+                    name={key}
+                    label={specLabelByKey.get(key) ?? key}
+                    value={value}
+                  />
+                ))}
             </div>
           </>
         )}

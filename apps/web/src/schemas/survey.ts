@@ -57,6 +57,40 @@ const buildNullableStringShape = <K extends readonly string[]>(keys: K) =>
   ) as { [P in K[number]]: z.ZodNullable<z.ZodString> };
 
 // ========================
+// 카테고리별 추가 스펙(attributes) 필드 정의 — 라벨 표시용 (읽기 전용)
+// ========================
+
+export const IndustryCategoryFieldSpecSchema = z.object({
+  id: z.number(),
+  fieldKey: z.string(),
+  fieldLabel: z.string(),
+  displayOrder: z.number(),
+});
+
+export const IndustryCategoryFieldSpecListSchema = z.array(
+  IndustryCategoryFieldSpecSchema
+);
+
+export type IndustryCategoryFieldSpec = z.infer<
+  typeof IndustryCategoryFieldSpecSchema
+>;
+
+export const VisualCategoryFieldSpecSchema = z.object({
+  id: z.number(),
+  fieldKey: z.string(),
+  fieldLabel: z.string(),
+  displayOrder: z.number(),
+});
+
+export const VisualCategoryFieldSpecListSchema = z.array(
+  VisualCategoryFieldSpecSchema
+);
+
+export type VisualCategoryFieldSpec = z.infer<
+  typeof VisualCategoryFieldSpecSchema
+>;
+
+// ========================
 // 상품 설문 상세 스키마
 // ========================
 
@@ -76,6 +110,9 @@ export const ProductDataSetResponseSchema = z.object({
 
   // 카테고리별 동적 필드는 레지스트리에서 자동 생성
   ...buildNullableStringShape(INDUSTRY_ITEM_NULLABLE_KEYS),
+
+  // 고정 필드 레지스트리에 없는, 이 제품만의 추가 스펙 (카테고리마다 다름)
+  attributes: z.record(z.string(), z.string()).nullable().optional(),
 });
 
 export const ProductSurveyQuestionSchema = z.object({
@@ -131,6 +168,7 @@ export const BrandDataSetResponseSchema = z.object({
   name: z.string().nullable(),
   image: z.string().nullable(),
   visualDataCategory: VisualCategorySchema.nullable(),
+  attributes: z.record(z.string(), z.string()).nullable().optional(),
 
   // 카테고리별 동적 필드는 레지스트리에서 자동 생성
   ...buildNullableStringShape(VISUAL_FIELD_KEYS),

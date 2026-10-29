@@ -82,18 +82,12 @@ export const mapVisualDatasetItem = (
 ): BaseDatasetItem & {
   name: string;
   sectorCategory: string;
-  mainProductCategory: string;
-  mainProduct: string;
-  target: string;
   logoImage: string | null;
 } => ({
   id: input.id,
   code: input.code ?? '',
   name: input.name ?? '',
   sectorCategory: input.sectorCategory ?? '',
-  mainProductCategory: input.mainProductCategory ?? '',
-  mainProduct: input.mainProduct ?? '',
-  target: input.target ?? '',
   referenceUrl: input.referenceUrl ?? '',
   logoImage: input.originalLogoImage ?? null, // 쿼리 매핑
 });
@@ -103,11 +97,12 @@ export const mapIndustrialDatasetItem = (
 ): BaseDatasetItem & {
   productName: string;
   companyName: string;
-  modelName: string;
   productTypeName: string;
   detailImagePath: string;
   frontImagePath: string;
   sideImagePath: string;
+  side2ImagePath: string;
+  side3ImagePath: string;
 } => ({
   id: input.id,
   code: input.code ?? '',
@@ -116,11 +111,12 @@ export const mapIndustrialDatasetItem = (
   // UI에서 당장 필요한 필드만
   productName: input.productName ?? '',
   companyName: input.companyName ?? '',
-  modelName: input.modelName ?? '',
   productTypeName: input.productTypeName ?? '',
   detailImagePath: input.originalDetailImagePath ?? '',
   frontImagePath: input.originalFrontImagePath ?? '',
   sideImagePath: input.originalSideImagePath ?? '',
+  side2ImagePath: input.originalSide2ImagePath ?? '',
+  side3ImagePath: input.originalSide3ImagePath ?? '',
 });
 
 export interface DatasetCategory<TItem> {
@@ -220,30 +216,18 @@ export type BaseRow = {
 export type VisualRow = BaseRow & {
   name: string;
   sectorCategory: string;
-  mainProductCategory: string;
-  mainProduct: string;
-  target: string;
-
-  // 2026
-  title: string;
-  country: string;
-  clientName: string;
-  contentType: string;
-  visualType: string;
-  designDescription: string;
-  releaseYear: string;
 
   logoImage: string | null;
+
+  // 카테고리마다 달라지는 추가 스펙 (예: 포스터 "제목", 코스메틱 "타겟")
+  attributes?: Record<string, string> | null;
 };
 
 // 산디
 export type IndustrialRow = BaseRow & {
   productName: string;
   companyName: string;
-  modelName: string;
   price: string;
-  material: string;
-  size: string;
   weight: string;
   registeredAt: string;
   productPath: string;
@@ -267,6 +251,9 @@ export type IndustrialRow = BaseRow & {
   sideImagePath: string;
   side2ImagePath: string;
   side3ImagePath: string;
+
+  // 카테고리마다 달라지는 추가 스펙 (예: 커피머신 "추출 압력")
+  attributes?: Record<string, string> | null;
 };
 
 // UI용 (번호 붙여서 쓰는 경우)

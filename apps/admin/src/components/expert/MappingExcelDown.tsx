@@ -1,4 +1,5 @@
 import excelIcon from '@/public/data/Excel.svg';
+import { downloadBlob } from '@/src/hooks/useDatasetDownload';
 import { UserType } from '@/src/schemas/auth';
 import { downloadMappingExcel } from '@/src/services/expert/mapping';
 import Image from 'next/image';
@@ -26,16 +27,7 @@ const MappingExcelDown = ({ type, roundId }: MappingExcelDownProps) => {
       ? decodeURIComponent(filenameMatch[1])
       : 'visual_data.xlsx';
 
-    const url = window.URL.createObjectURL(blob);
-
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-
-    a.remove();
-    window.URL.revokeObjectURL(url);
+    downloadBlob(blob, filename);
   };
 
   return (

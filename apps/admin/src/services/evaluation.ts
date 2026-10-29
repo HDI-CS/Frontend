@@ -12,9 +12,13 @@ import {
 } from '../schemas/survey';
 import { safeZodParse } from '../utils/zod';
 
+const surveyBase = (type: UserType) => `/api/v1/admin/${type}/survey`;
+const evaluationsBase = (type: UserType, assessmentRoundId: number) =>
+  `/api/v1/admin/${type}/evaluations/assessment/${assessmentRoundId}`;
+
 // 전체 평가 조회
 export const getEvaluationFolders = async (type: UserType) => {
-  const res = await apiClient.get(`/api/v1/admin/${type}/survey/all`);
+  const res = await apiClient.get(`${surveyBase(type)}/all`);
   try {
     return res.data;
   } catch (e) {
@@ -26,7 +30,7 @@ export const getEvaluationFolders = async (type: UserType) => {
 
 // 년도 평가 생성
 export const createEvaluation = async (type: UserType) => {
-  const res = await apiClient.post(`/api/v1/admin/${type}/survey`);
+  const res = await apiClient.post(surveyBase(type));
   return CreateEvaluationYearResponseSchema.parse(res.data);
 };
 
@@ -37,7 +41,7 @@ export const updateFolderName = async (
   folderName: FolderNameRequest
 ) => {
   const res = await apiClient.put(
-    `/api/v1/admin/${type}/survey/years/${yearId}`,
+    `${surveyBase(type)}/years/${yearId}`,
     folderName
   );
   return res.data; // 명세서랑 다른 응답 보냄
@@ -46,7 +50,7 @@ export const updateFolderName = async (
 // 년도별 평가 문항 조회
 export const getEvaluationQuestion = async (type: UserType, yearId: number) => {
   const res = await apiClient.get(
-    `/api/v1/admin/${type}/survey/years/${yearId}/questions`
+    `${surveyBase(type)}/years/${yearId}/questions`
   );
   return res.data; // 여기도 서버 응답 수정 필요 (아마 null떄문)
 };
@@ -66,7 +70,7 @@ export const createEvaluationQuestion = async (
   );
 
   const res = await apiClient.post(
-    `/api/v1/admin/${type}/survey/years/${yearId}/questions`,
+    `${surveyBase(type)}/years/${yearId}/questions`,
     validated
   );
   return res.data;
@@ -83,7 +87,7 @@ export const updateRoundFolderName = async (
   folderName: FolderNameRequest
 ) => {
   const res = await apiClient.put(
-    `/api/v1/admin/${type}/survey/assessment/${assessmentRoundId}`,
+    `${surveyBase(type)}/assessment/${assessmentRoundId}`,
     folderName
   );
   return res.data; // 명세서랑 다른 응답 보냄
@@ -92,7 +96,7 @@ export const updateRoundFolderName = async (
 // 차수 평가 생성
 export const createRoundEvaluation = async (type: UserType, yearId: number) => {
   const res = await apiClient.post(
-    `/api/v1/admin/${type}/survey/years/${yearId}/assessment`
+    `${surveyBase(type)}/years/${yearId}/assessment`
   );
   return res.data; // 명세서랑 다른 응답 보냄
 };
@@ -104,7 +108,7 @@ export const createAndUpdateRoundRange = async (
   body: DurationRequest
 ) => {
   const res = await apiClient.put(
-    `/api/v1/admin/${type}/survey/assessment/${assessmentRoundId}/duration`,
+    `${surveyBase(type)}/assessment/${assessmentRoundId}/duration`,
     body
   );
   return res.data; // 명세서랑 다른 응답 보냄
@@ -116,7 +120,7 @@ export const getEvaluationStatus = async (
   assessmentRoundId: number
 ) => {
   const res = await apiClient.get(
-    `/api/v1/admin/${type}/evaluations/assessment/${assessmentRoundId}/search`
+    `${evaluationsBase(type, assessmentRoundId)}/search`
   );
   return res.data; // 여기도 서버 응답 수정 필요 (아마 null떄문)
 };
@@ -128,7 +132,7 @@ export const getEvaluationStatusByKeyword = async (
   keyword: string
 ) => {
   const res = await apiClient.get(
-    `/api/v1/admin/${type}/evaluations/assessment/${assessmentRoundId}/search`,
+    `${evaluationsBase(type, assessmentRoundId)}/search`,
     {
       params: {
         q: keyword,
@@ -146,7 +150,7 @@ export const getOneExpert = async (
   memberId: number
 ) => {
   const res = await apiClient.get(
-    `/api/v1/admin/${type}/evaluations/assessment/${assessmentRoundId}/members/${memberId}`
+    `${evaluationsBase(type, assessmentRoundId)}/members/${memberId}`
   );
   return res.data;
 };
@@ -161,7 +165,7 @@ export const downloadEvaluationExcel = async ({
 }) => {
   try {
     const res = apiClient.get(
-      `/api/v1/admin/${type}/evaluations/assessment/${assessmentRoundId}/datasets/export`,
+      `${evaluationsBase(type, assessmentRoundId)}/datasets/export`,
 
       {
         responseType: 'blob', // 이건 JSON이 아니라 binary라서 파싱 대상 아님
@@ -186,9 +190,6 @@ export const updateOriginalSurvey = async (
   type: UserType,
   body: UpdateOriginalSurvey
 ) => {
-  const res = await apiClient.put(
-    `/api/v1/admin/${type}/survey/questions`,
-    body
-  );
+  const res = await apiClient.put(`${surveyBase(type)}/questions`, body);
   return res.data;
 };

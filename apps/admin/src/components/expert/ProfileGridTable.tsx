@@ -14,6 +14,7 @@ import {
   useExpertProfileByKeyword,
 } from '@/src/hooks/expert/useExpertProfile';
 import { useUpdateExpert } from '@/src/hooks/expert/useUpdateExpert';
+import { downloadBlob } from '@/src/hooks/useDatasetDownload';
 import {
   CreateExpertMember,
   ExpertMember,
@@ -21,6 +22,7 @@ import {
 } from '@/src/schemas/expert';
 import { downloadExpertExcel } from '@/src/services/expert/profile';
 import { useSearchStore } from '@/src/store/searchStore';
+import { getUserTypeFromPathname } from '@/src/utils/getUserTypeFromPathname';
 import { highlightText } from '@/src/utils/highlightText';
 import { truncateText } from '@/src/utils/truncateText';
 import clsx from 'clsx';
@@ -37,7 +39,7 @@ import ModalComponent from '../ModalComponent';
 const ProfileGridTable = () => {
   const pathname = usePathname();
 
-  const type = pathname.startsWith('/industry') ? 'INDUSTRY' : 'VISUAL';
+  const type = getUserTypeFromPathname(pathname);
   const { activeRowId } = useGridManager(type!);
   const {
     dataId,
@@ -265,16 +267,7 @@ const ProfileGridTable = () => {
       ? decodeURIComponent(filenameMatch[1])
       : 'visual_data.xlsx';
 
-    const url = window.URL.createObjectURL(blob);
-
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-
-    a.remove();
-    window.URL.revokeObjectURL(url);
+    downloadBlob(blob, filename);
   };
 
   const createFields = EXPERT_CREATE_FIELDS;
@@ -332,7 +325,7 @@ const ProfileGridTable = () => {
             <Th className="text-regular16 w-[151px] text-start">나이</Th>
             <Th className="text-regular16 w-[151px] text-start">경력</Th>
             <Th className="text-regular16 w-[151px] text-start">학계/실무계</Th>
-            <Th className="text-regular16 w-[151px] text-start">전문분야</Th>
+            <Th className="text-regular16 w-[151px] text-start">전문 분야</Th>
             <Th className="text-regular16 w-[151px] text-start">회사</Th>
             <Th className="text-regular16 w-[240px] text-start">비고</Th>
           </tr>

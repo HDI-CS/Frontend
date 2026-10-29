@@ -8,7 +8,9 @@ import GalleryView from '@/src/components/data/GallerlyView';
 import GridTable from '@/src/components/data/GridTable';
 import SortModal from '@/src/components/data/SortModal';
 import ViewToggle from '@/src/components/data/ViewToggle';
+import { useIndustryCategoryFieldSpecs } from '@/src/hooks/data/useIndustryCategoryFieldSpecs';
 import { useSearchDatasets } from '@/src/hooks/data/useSearchDatasets';
+import { useVisualCategoryFieldSpecs } from '@/src/hooks/data/useVisualCategoryFieldSpecs';
 import {
   IndustrialDataItem,
   IndustryCategory,
@@ -159,7 +161,7 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
             idx,
             item.productName ?? '',
             item.companyName ?? '',
-            item.modelName ?? ''
+            (item as ItemByType['INDUSTRY']).attributes?.modelName ?? ''
           )
     );
   }, [localData, activeCategory, orderBy, type, sortType]);
@@ -189,12 +191,27 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
     setIsAdd(true);
   };
 
+  // attributes(추가 스펙) key → 라벨. 그리드/갤러리 헤더에 key 그대로 안 뜨게.
+  const { data: industryFieldSpecs } = useIndustryCategoryFieldSpecs({
+    category: type === 'INDUSTRY' ? (activeCategory as string) : null,
+    yearId,
+  });
+  const { data: visualFieldSpecs } = useVisualCategoryFieldSpecs({
+    category: type === 'VISUAL' ? (activeCategory as string) : null,
+    yearId,
+  });
+  const attributeLabelByKey = useMemo(() => {
+    const specs = type === 'INDUSTRY' ? industryFieldSpecs : visualFieldSpecs;
+    return new Map((specs ?? []).map((s) => [s.fieldKey, s.fieldLabel]));
+  }, [type, industryFieldSpecs, visualFieldSpecs]);
+
   // 그리드/갤러리/생성모달이 공통으로 쓰는 컬럼 메타 + 상세 필드 목록
   const { rowMeta, fields } = getRowMetaAndFields(
     type,
     yearName,
     displayRows as WithIndex<VisualRow | IndustrialRow>[],
-    activeCategory as CategoryByType[T] | null
+    activeCategory as CategoryByType[T] | null,
+    attributeLabelByKey
   );
 
   return (
