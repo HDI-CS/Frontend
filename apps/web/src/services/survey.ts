@@ -6,6 +6,7 @@ import {
   ProductSurveyDataSchema,
   SurveyProductApiResponseSchema,
   SurveyResponseRequestSchema,
+  VisualCategoryFieldSpecListSchema,
   type BrandSurveyDetailResponse,
   type ProductSurveyDetailResponse,
   type SurveyProductApiResponse,
@@ -323,5 +324,22 @@ export const surveyService = {
       { params: { category, yearId } }
     );
     return IndustryCategoryFieldSpecListSchema.parse(response.data);
+  },
+
+  /**
+   * 시각디자인 카테고리의 "추가 스펙(attributes)" 필드 정의 조회 (라벨 표시용, 읽기 전용)
+   */
+  async getVisualCategoryFieldSpecs({
+    category,
+    yearId,
+  }: {
+    category: string;
+    yearId?: number;
+  }) {
+    const response = await apiClient.get(
+      '/api/v1/user/visual/category-field-specs',
+      { params: { category, yearId } }
+    );
+    return VisualCategoryFieldSpecListSchema.parse(response.data);
   },
 };

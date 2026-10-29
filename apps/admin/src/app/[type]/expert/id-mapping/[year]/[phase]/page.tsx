@@ -1,12 +1,13 @@
 'use client';
 import IdMappingTable from '@/src/components/expert/IdMappingTable';
+import { getUserTypeFromPathname } from '@/src/utils/getUserTypeFromPathname';
 import { usePathname } from 'next/navigation';
 import { useMemo } from 'react';
 
 const IndexPage = () => {
   const pathname = usePathname();
 
-  const type = pathname.startsWith('/industry') ? 'INDUSTRY' : 'VISUAL';
+  const type = getUserTypeFromPathname(pathname);
   const segments = pathname.split('/').filter(Boolean);
   const round = segments[4];
 

@@ -1,5 +1,6 @@
 'use client';
 import { useLogout } from '@/src/hooks/useLogout';
+import { getUserTypeFromPathname } from '@/src/utils/getUserTypeFromPathname';
 import { usePathname, useRouter } from 'next/navigation';
 import SearchInput from '../SearchInput';
 
@@ -13,7 +14,7 @@ const Header = ({ name, isInput }: HeaderProps) => {
   const router = useRouter();
 
   const pathname = usePathname();
-  const type = pathname.startsWith('/industry') ? 'INDUSTRY' : 'VISUAL';
+  const type = getUserTypeFromPathname(pathname);
 
   // 로그아웃 중일 때는 useMe 훅 비활성화하여 불필요한 API 호출 방지
   // const { data: meData, isLoading, error } = useMe(!logoutMutation.isPending);

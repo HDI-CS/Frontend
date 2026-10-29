@@ -37,14 +37,10 @@ export const VISUAL_CATEGORY_CONFIG = {
       surveyTitle: '포스터 평가 설문',
       surveyDescription: '포스터 디자인에 대한 평가를 진행해주세요.',
     },
+    // 2026-10-29: releaseYear/country/clientName/contentType/visualType/
+    // designDescription은 attributes 스펙으로 마이그레이션해서 비움.
     fields: [
       { key: 'sectorCategory', label: '부문·카테고리' },
-      { key: 'releaseYear', label: '년도' },
-      { key: 'country', label: '국가' },
-      { key: 'clientName', label: '클라이언트' },
-      { key: 'contentType', label: '내용 유형' },
-      { key: 'visualType', label: '시각 유형' },
-      { key: 'designDescription', label: '디자인 설명' },
       { key: 'referenceUrl', label: '웹사이트', type: 'link' },
     ],
   },
@@ -60,11 +56,6 @@ export const VISUAL_CATEGORY_CONFIG = {
     },
     fields: [
       { key: 'sectorCategory', label: '부문·카테고리' },
-      { key: 'title', label: '제목' },
-      { key: 'visualType', label: '분류' },
-      { key: 'clientName', label: '주체' },
-      { key: 'designDescription', label: '내용' },
-      // { key: 'originalDescription', label: '내용(원문)' },
       { key: 'referenceUrl', label: '웹사이트', type: 'link' },
     ],
   },
@@ -78,9 +69,6 @@ export const VISUAL_CATEGORY_CONFIG = {
     },
     fields: [
       { key: 'sectorCategory', label: '부문·카테고리' },
-      { key: 'mainProductCategory', label: '대표 제품 카테고리' },
-      { key: 'mainProduct', label: '대표 제품' },
-      { key: 'target', label: '타겟(성별/연령)' },
       { key: 'referenceUrl', label: '홈페이지', type: 'link' },
     ],
   },
@@ -94,9 +82,6 @@ export const VISUAL_CATEGORY_CONFIG = {
     },
     fields: [
       { key: 'sectorCategory', label: '부문·카테고리' },
-      { key: 'mainProductCategory', label: '대표 제품 카테고리' },
-      { key: 'mainProduct', label: '대표 제품' },
-      { key: 'target', label: '타겟(성별/연령)' },
       { key: 'referenceUrl', label: '홈페이지', type: 'link' },
     ],
   },

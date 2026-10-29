@@ -82,18 +82,12 @@ export const mapVisualDatasetItem = (
 ): BaseDatasetItem & {
   name: string;
   sectorCategory: string;
-  mainProductCategory: string;
-  mainProduct: string;
-  target: string;
   logoImage: string | null;
 } => ({
   id: input.id,
   code: input.code ?? '',
   name: input.name ?? '',
   sectorCategory: input.sectorCategory ?? '',
-  mainProductCategory: input.mainProductCategory ?? '',
-  mainProduct: input.mainProduct ?? '',
-  target: input.target ?? '',
   referenceUrl: input.referenceUrl ?? '',
   logoImage: input.originalLogoImage ?? null, // 쿼리 매핑
 });
@@ -222,20 +216,11 @@ export type BaseRow = {
 export type VisualRow = BaseRow & {
   name: string;
   sectorCategory: string;
-  mainProductCategory: string;
-  mainProduct: string;
-  target: string;
-
-  // 2026
-  title: string;
-  country: string;
-  clientName: string;
-  contentType: string;
-  visualType: string;
-  designDescription: string;
-  releaseYear: string;
 
   logoImage: string | null;
+
+  // 카테고리마다 달라지는 추가 스펙 (예: 포스터 "제목", 코스메틱 "타겟")
+  attributes?: Record<string, string> | null;
 };
 
 // 산디

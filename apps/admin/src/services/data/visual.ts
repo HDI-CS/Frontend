@@ -9,12 +9,51 @@ import {
   UpdateDatasetResponseSchema,
   UpdateVisualDatasetRequest,
   UpdateVisualDatasetRequestSchema,
+  VisualCategoryFieldSpec,
+  VisualCategoryFieldSpecListSchema,
+  VisualCategoryFieldSpecSchema,
 } from '@/src/schemas/visual-data';
 import { safeZodParse } from '@/src/utils/zod';
 
+const VISUAL_API_BASE = '/api/v1/admin/visual';
+
+// 카테고리별 스펙 필드 정의 조회 (attributes의 "어떤 키가 있는지")
+export const getVisualCategoryFieldSpecs = async ({
+  category,
+  yearId,
+}: {
+  category: string;
+  yearId?: number;
+}) => {
+  const res = await apiClient.get(`${VISUAL_API_BASE}/category-field-specs`, {
+    params: { category, yearId },
+  });
+  return VisualCategoryFieldSpecListSchema.parse(res.data);
+};
+
+// 카테고리에 스펙 필드 정의 추가 (yearId 생략 시 해당 카테고리 전체 연도 공통)
+export const createVisualCategoryFieldSpec = async ({
+  category,
+  yearId,
+  fieldKey,
+  fieldLabel,
+}: {
+  category: string;
+  yearId?: number;
+  fieldKey: string;
+  fieldLabel: string;
+}): Promise<VisualCategoryFieldSpec> => {
+  const res = await apiClient.post(
+    `${VISUAL_API_BASE}/category-field-specs`,
+    { fieldKey, fieldLabel },
+    { params: { category, yearId } }
+  );
+  return VisualCategoryFieldSpecSchema.parse(res.data);
+};
+
 export const getVisualDatasetsByYear = async (yearId: number) => {
   const res = await apiClient.get(
-    `/api/v1/admin/visual/data/years/${yearId}/datasets`
+    `${VISUAL_API_BASE}/data/years/${yearId}/datasets`
   );
   const parsed = GetVisualDataByCategoryResponseSchema.safeParse(res.data);
 
@@ -29,7 +68,7 @@ export const getVisualDatasetsByYear = async (yearId: number) => {
 
 export const getVisualDatasetDetail = async (datasetId: number) => {
   const res = await apiClient.get(
-    `/api/v1/admin/visual/data/datasets/${datasetId}`
+    `${VISUAL_API_BASE}/data/datasets/${datasetId}`
   );
   return GetDetailVisualDataByCategoryResponseSchema.parse(res.data);
 };
@@ -48,7 +87,7 @@ export const createVisualDataset = async ({
     { operation: 'CreateDataset request validation' }
   );
   const res = await apiClient.post(
-    `/api/v1/admin/visual/data/years/${yearId}/datasets`,
+    `${VISUAL_API_BASE}/data/years/${yearId}/datasets`,
     validated
   );
   return CreateVisualDatasetResponseSchema.parse(res.data);
@@ -63,7 +102,7 @@ export const searchVisualDataset = async ({
   category?: string;
 }) => {
   const response = await apiClient.get(
-    `/api/v1/admin/visual/data/datasets/search`,
+    `${VISUAL_API_BASE}/data/datasets/search`,
     {
       params: {
         q: keyword,
@@ -91,7 +130,7 @@ export const updateVisualDataset = async ({
   );
 
   const res = await apiClient.patch(
-    `/api/v1/admin/visual/data/datasets/${id}`,
+    `${VISUAL_API_BASE}/data/datasets/${id}`,
     validated,
     {
       params: logoFile === null ? { image: 'DELETE' } : {},

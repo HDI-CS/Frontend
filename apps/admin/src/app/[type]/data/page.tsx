@@ -12,13 +12,14 @@ import { useCreateEvaluationYear } from '@/src/hooks/evaluation/useCreateEvaluat
 import { useUpdateSurvey } from '@/src/hooks/evaluation/useUpdateSurvey';
 import { useFolderManager } from '@/src/hooks/useFolderManager';
 import { EvaluationYearFolder } from '@/src/types/evaluation';
+import { getUserTypeFromPathname } from '@/src/utils/getUserTypeFromPathname';
 import { usePathname, useRouter } from 'next/navigation';
 
 const IndexPage = () => {
   const router = useRouter();
   const pathname = usePathname();
 
-  const type = pathname.startsWith('/industry') ? 'INDUSTRY' : 'VISUAL';
+  const type = getUserTypeFromPathname(pathname);
 
   const {
     pressedKey,

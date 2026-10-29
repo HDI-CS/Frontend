@@ -64,7 +64,7 @@ export default function ProductInfo({
 
   // attributes(추가 스펙)의 key를 사람이 읽는 라벨로 바꿔 보여주기 위한 조회.
   // 정의 안 된 키는 label이 없으니 key 그대로 쓴다.
-  const { data: fieldSpecs } = useQuery({
+  const { data: industryFieldSpecs } = useQuery({
     queryKey: ['industryCategoryFieldSpecs', category],
     queryFn: () =>
       surveyService.getIndustryCategoryFieldSpecs({
@@ -72,6 +72,16 @@ export default function ProductInfo({
       }),
     enabled: type === 'industry' && !!category,
   });
+  const { data: visualFieldSpecs } = useQuery({
+    queryKey: ['visualCategoryFieldSpecs', category],
+    queryFn: () =>
+      surveyService.getVisualCategoryFieldSpecs({
+        category: category as string,
+      }),
+    enabled: type === 'visual' && !!category,
+  });
+  const fieldSpecs =
+    type === 'industry' ? industryFieldSpecs : visualFieldSpecs;
   const specLabelByKey = new Map(
     (fieldSpecs ?? []).map((spec) => [spec.fieldKey, spec.fieldLabel])
   );
@@ -95,7 +105,12 @@ export default function ProductInfo({
               {fields.map((field) => {
                 const value = formatValue(
                   field.key,
-                  data[field.key as keyof BrandDataSetResponse]
+                  data[
+                    field.key as Exclude<
+                      keyof BrandDataSetResponse,
+                      'attributes'
+                    >
+                  ]
                 );
 
                 return (
@@ -107,6 +122,17 @@ export default function ProductInfo({
                   />
                 );
               })}
+
+              {/* 고정 필드 레지스트리에 없는, 이 제품만의 추가 스펙 */}
+              {data.attributes &&
+                Object.entries(data.attributes).map(([key, value]) => (
+                  <InfoItem
+                    key={key}
+                    name={key}
+                    label={specLabelByKey.get(key) ?? key}
+                    value={value}
+                  />
+                ))}
             </div>
           </>
         ) : (

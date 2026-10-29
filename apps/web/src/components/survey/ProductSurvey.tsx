@@ -118,7 +118,7 @@ export default function ProductSurvey({
   }, [detail]);
 
   const textSurveyId =
-    detail.result.productSurveyResponse.textResponse?.surveyId;
+    detail.result.productSurveyResponse?.textResponse?.surveyId ?? null;
   // const isSubmitted = detail.result.productSurveyResponse.isSubmitted;
 
   // 서버에서 받아온 데이터를 클라이언트 상태에 반영

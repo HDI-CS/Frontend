@@ -39,6 +39,10 @@ export type VisualCategoryMeta = {
 
 // ── 카테고리별 필드 정의: 전부 as const satisfies로 선언 ──────
 
+// 2026-10-29: mainProductCategory/mainProduct/target/title/country/clientName/
+// contentType/visualType/designDescription/originalDescription/releaseYear는
+// 카테고리마다 쓰는 게 달라서 visual_category_field_spec(attributes 스펙)으로
+// 마이그레이션했음. sectorCategory/referenceUrl은 전 카테고리 공통이라 그대로 둠.
 const COSMETIC_FIELDS = {
   displayField: 'name',
   displayLabel: '브랜드명',
@@ -49,27 +53,6 @@ const COSMETIC_FIELDS = {
       thClassName: 'w-[140px]',
       className: 'w-[140px]',
       maxLength: 9,
-    },
-    {
-      key: 'mainProductCategory',
-      label: '대표 제품 카테고리',
-      thClassName: 'w-[260px]',
-      className: 'min-w-[260px]',
-      maxLength: 20,
-    },
-    {
-      key: 'mainProduct',
-      label: '대표 제품',
-      thClassName: 'min-w-[240px]',
-      className: 'min-w-[240px]',
-      maxLength: 16,
-    },
-    {
-      key: 'target',
-      label: '타겟(성별/연령)',
-      thClassName: 'w-[160px]',
-      className: 'w-[160px]',
-      maxLength: 6,
     },
     {
       key: 'referenceUrl',
@@ -94,48 +77,6 @@ const POSTER_FIELDS = {
       maxLength: 9,
     },
     {
-      key: 'releaseYear',
-      label: '년도',
-      thClassName: 'w-[120px]',
-      className: 'w-[120px]',
-      maxLength: 6,
-    },
-    {
-      key: 'country',
-      label: '국가',
-      thClassName: 'w-[120px]',
-      className: 'w-[120px]',
-      maxLength: 6,
-    },
-    {
-      key: 'clientName',
-      label: '클라이언트',
-      thClassName: 'w-[120px]',
-      className: 'w-[120px]',
-      maxLength: 8,
-    },
-    {
-      key: 'contentType',
-      label: '내용 유형',
-      thClassName: 'w-[140px]',
-      className: 'w-[140px]',
-      maxLength: 10,
-    },
-    {
-      key: 'visualType',
-      label: '시각 유형',
-      thClassName: 'w-[120px]',
-      className: 'w-[120px]',
-      maxLength: 10,
-    },
-    {
-      key: 'designDescription',
-      label: '디자인 설명',
-      thClassName: 'w-[200px]',
-      className: 'w-[200px]',
-      maxLength: 20,
-    },
-    {
       key: 'referenceUrl',
       label: '웹사이트',
       type: 'link',
@@ -156,41 +97,6 @@ const PACKAGE_FIELDS = {
       thClassName: 'w-[80px]',
       className: 'w-[80px]',
       maxLength: 6,
-    },
-    {
-      key: 'title',
-      label: '제목',
-      thClassName: 'w-[80px]',
-      className: 'w-[80px]',
-      maxLength: 10,
-    },
-    {
-      key: 'visualType',
-      label: '분류',
-      thClassName: 'w-[220px]',
-      className: 'w-[220px]',
-      maxLength: 24,
-    },
-    {
-      key: 'clientName',
-      label: '주체',
-      thClassName: 'w-[160px]',
-      className: 'w-[160px]',
-      maxLength: 14,
-    },
-    {
-      key: 'designDescription',
-      label: '내용(번역본)',
-      thClassName: 'w-[200px]',
-      className: 'w-[200px]',
-      maxLength: 20,
-    },
-    {
-      key: 'originalDescription',
-      label: '내용(원문)',
-      thClassName: 'w-[200px]',
-      className: 'w-[200px]',
-      maxLength: 20,
     },
     {
       key: 'referenceUrl',
@@ -214,6 +120,23 @@ export const VISUAL_CATEGORY_CONFIG = {
 } as const satisfies Record<string, VisualCategoryMeta>;
 
 export type VisualCategory = keyof typeof VISUAL_CATEGORY_CONFIG;
+
+// 백엔드 field spec(attributeLabelByKey)이 아직 없는 레거시 키들의 폴백 라벨.
+// mainProductCategory 등이 고정 필드에서 attributes로 옮겨왔는데
+// visual_category_field_spec에 아직 라벨이 안 채워진 경우 raw key 대신 보여준다.
+export const VISUAL_DYNAMIC_ATTRIBUTE_LABEL_MAP: Record<string, string> = {
+  mainProductCategory: '대표 제품 카테고리',
+  mainProduct: '대표 제품',
+  target: '타겟(성별/연령)',
+  title: '제목',
+  releaseYear: '년도',
+  country: '국가',
+  clientName: '클라이언트',
+  contentType: '내용 유형',
+  visualType: '시각 유형',
+  designDescription: '내용(국문)',
+  originalDescription: '내용(원문)',
+};
 
 // ── INDUSTRY_CATEGORY_CONFIG도 동일 원칙 적용 ──────────────
 const ELECTRONICS_COMMON_FIELDS = [
@@ -285,11 +208,7 @@ export const getIndustryFieldsForYear = (
 export const VISUAL_CORE_FIELDS = [
   'code',
   'name',
-  'title',
   'sectorCategory',
-  'mainProductCategory',
-  'mainProduct',
-  'target',
   'referenceUrl',
 ] as const;
 

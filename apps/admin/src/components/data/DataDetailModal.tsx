@@ -1,6 +1,10 @@
 'use client';
 import empty from '@/public/data/EmptyIMg.svg';
 import close from '@/public/data/close.svg';
+import {
+  INDUSTRY_DYNAMIC_COLUMN_MAP,
+  VISUAL_DYNAMIC_ATTRIBUTE_LABEL_MAP,
+} from '@/src/config/adminCategoryConfig';
 import { CategoryByType } from '@/src/features/data/categoryMap';
 import {
   getImageSrcByType,
@@ -13,6 +17,10 @@ import {
   useIndustryCategoryFieldSpecs,
 } from '@/src/hooks/data/useIndustryCategoryFieldSpecs';
 import { useUpdateDataset } from '@/src/hooks/data/useUpdateDataset';
+import {
+  useCreateVisualCategoryFieldSpec,
+  useVisualCategoryFieldSpecs,
+} from '@/src/hooks/data/useVisualCategoryFieldSpecs';
 import { UserType } from '@/src/schemas/auth';
 import {
   CreateIndustrialDatasetRequest,
@@ -79,20 +87,8 @@ const EMPTY_VISUAL_DATASET: VisualDatasetDefaults = {
   code: '',
   name: '',
   sectorCategory: '',
-  mainProductCategory: '',
-  mainProduct: '',
-  target: '',
   referenceUrl: '',
-
-  // 2026
-  title: null,
-  country: null,
-  clientName: null,
-  contentType: null,
-  visualType: null,
-  designDescription: null,
-  originalDescription: null,
-  releaseYear: null,
+  attributes: null,
 
   originalLogoImage: null,
 };
@@ -297,9 +293,8 @@ const DataDetailModal = <TRow, TType extends UserType>({
   const [attributesDirty, setAttributesDirty] = useState(false);
 
   useEffect(() => {
-    if (type !== 'INDUSTRY') return;
     setAttributes(
-      (item as IndustryDatasetDefaults).attributes ??
+      (item as IndustryDatasetDefaults | VisualDatasetDefaults).attributes ??
         ({} as Record<string, string>)
     );
     setAttributesDirty(false);
@@ -345,11 +340,21 @@ const DataDetailModal = <TRow, TType extends UserType>({
      "기타"로 따로 보여주고 예전처럼 키/값 둘 다 수정 가능하게 둔다. */
   const industryCategory =
     type === 'INDUSTRY' ? (activeCategory as IndustryCategory | null) : null;
-
-  const { data: specData } = useIndustryCategoryFieldSpecs({
+  const visualCategory =
+    type === 'VISUAL' ? (activeCategory as VisualCategory | null) : null;
+  // attributes 스펙은 타입에 따라 산업/시각 둘 중 하나만 쓰지만, 훅은 조건부로
+  // 호출할 수 없어서 둘 다 호출하고(비활성 쪽은 category가 null이라 요청 자체가 안 나감)
+  // 현재 type에 맞는 쪽 결과만 골라 쓴다.
+  const { data: industrySpecData } = useIndustryCategoryFieldSpecs({
     category: industryCategory,
     yearId,
   });
+  const { data: visualSpecData } = useVisualCategoryFieldSpecs({
+    category: visualCategory,
+    yearId,
+  });
+  const specData = type === 'INDUSTRY' ? industrySpecData : visualSpecData;
+  const category = type === 'INDUSTRY' ? industryCategory : visualCategory;
   const specs = useMemo(() => specData ?? [], [specData]);
   const specKeySet = useMemo(
     () => new Set(specs.map((s) => s.fieldKey)),
@@ -359,22 +364,35 @@ const DataDetailModal = <TRow, TType extends UserType>({
     ([key]) => !specKeySet.has(key)
   );
 
-  const { mutate: createSpec, isPending: isCreatingSpec } =
+  // 백엔드 field spec이 아직 안 채워진 레거시 키의 한글 폴백 라벨.
+  // 그리드(rowMeta.tsx)와 동일한 맵을 써서 raw key 노출을 막는다.
+  const getLegacyAttributeLabel = (key: string) =>
+    (type === 'INDUSTRY'
+      ? INDUSTRY_DYNAMIC_COLUMN_MAP[key]?.header
+      : VISUAL_DYNAMIC_ATTRIBUTE_LABEL_MAP[key]) ?? key;
+
+  const { mutate: createIndustrySpec, isPending: isCreatingIndustrySpec } =
     useCreateIndustryCategoryFieldSpec();
+  const { mutate: createVisualSpec, isPending: isCreatingVisualSpec } =
+    useCreateVisualCategoryFieldSpec();
+  const createSpec =
+    type === 'INDUSTRY' ? createIndustrySpec : createVisualSpec;
+  const isCreatingSpec =
+    type === 'INDUSTRY' ? isCreatingIndustrySpec : isCreatingVisualSpec;
 
   const [isAddingSpec, setIsAddingSpec] = useState(false);
   const [newSpecLabel, setNewSpecLabel] = useState('');
 
   const submitNewSpec = () => {
     const label = newSpecLabel.trim();
-    if (!label || !industryCategory) return;
+    if (!label || !category) return;
 
     // 사람이 읽는 라벨과 별개로, 서버/다른 코드에서 다루기 쉬운 key를 라벨에서 생성.
     // (영문 변환 없이 라벨 그대로 key로 써도 attributes는 그냥 문자열 맵이라 문제없음)
     const key = label;
 
     createSpec(
-      { category: industryCategory, yearId, fieldKey: key, fieldLabel: label },
+      { category, yearId, fieldKey: key, fieldLabel: label },
       {
         onSuccess: () => {
           updateAttributeValue(key, '');
@@ -598,8 +616,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
           {/* ---------- INDUSTRY: 카테고리별 스펙(attributes, 보기 모드) ----------
               이 카테고리에 정의된 스펙(라벨 있음)을 먼저, 정의 안 된 레거시 키는
               그 다음에 보여준다. 다른 고정 필드들과 똑같은 LinedField로 섞는다. */}
-          {type === 'INDUSTRY' &&
-            !isEdit &&
+          {!isEdit &&
             specs.map((spec) => (
               <LinedField
                 key={spec.fieldKey}
@@ -611,10 +628,13 @@ const DataDetailModal = <TRow, TType extends UserType>({
                 </span>
               </LinedField>
             ))}
-          {type === 'INDUSTRY' &&
-            !isEdit &&
+          {!isEdit &&
             legacyAttributeEntries.map(([key, value]) => (
-              <LinedField key={key} label={key} activeField={activeField}>
+              <LinedField
+                key={key}
+                label={getLegacyAttributeLabel(key)}
+                activeField={activeField}
+              >
                 <span className="mr-2 whitespace-pre-wrap break-all">
                   {value || '-'}
                 </span>
@@ -625,7 +645,7 @@ const DataDetailModal = <TRow, TType extends UserType>({
         {/* ---------- INDUSTRY: 추가 스펙 수정 ----------
             카테고리에 이미 정의된 스펙은 라벨 붙은 입력칸(값만 입력)으로,
             아직 정의 안 된 레거시 키는 예전처럼 키/값 둘 다 수정 가능하게 둔다. */}
-        {type === 'INDUSTRY' && isEdit && (
+        {isEdit && (
           <div className="mt-4 space-y-4 border-t border-[#E9E9E7] pt-4">
             {specs.length > 0 && (
               <div className="space-y-2">

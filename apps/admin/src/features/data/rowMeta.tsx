@@ -5,6 +5,7 @@ import {
   getIndustryFieldsForYear,
   INDUSTRY_DYNAMIC_COLUMN_MAP,
   VISUAL_CATEGORY_CONFIG,
+  VISUAL_DYNAMIC_ATTRIBUTE_LABEL_MAP,
   VisualCategory,
 } from '@/src/config/adminCategoryConfig';
 
@@ -149,6 +150,34 @@ const buildVisualDynamicColumns = (category: VisualCategory) => {
   }));
 };
 
+// attributes(카테고리별 추가 스펙) 동적 컬럼. IndustryData와 동일한 패턴.
+const getVisualAttributeKeys = (rows?: WithIndex<VisualRow>[]) => {
+  const keys = new Set<string>();
+  rows?.forEach((row) => {
+    Object.keys(row.attributes ?? {}).forEach((key) => keys.add(key));
+  });
+  return Array.from(keys);
+};
+
+const buildVisualAttributeColumns = (
+  rows?: WithIndex<VisualRow>[],
+  attributeLabelByKey?: Map<string, string>
+) =>
+  getVisualAttributeKeys(rows).map((attrKey) => ({
+    key: `${ATTRIBUTE_COLUMN_PREFIX}${attrKey}`,
+    header:
+      attributeLabelByKey?.get(attrKey) ??
+      VISUAL_DYNAMIC_ATTRIBUTE_LABEL_MAP[attrKey] ??
+      attrKey,
+    thClassName: 'w-[140px]',
+    className: 'w-[140px]',
+    cell: (row: VisualRow, isActiveRow: boolean) =>
+      renderCellText(String(row.attributes?.[attrKey] ?? ''), getKeyword(), {
+        active: isActiveRow,
+        maxLength: 10,
+      }),
+  }));
+
 export const getRowMeta = (
   type: 'VISUAL' | 'INDUSTRY',
   year?: Years,
@@ -190,6 +219,10 @@ export const getRowMeta = (
         ...buildVisualDynamicColumns(
           (activeCategory as VisualCategory) || 'POSTER'
         ),
+        ...buildVisualAttributeColumns(
+          rows as WithIndex<VisualRow>[],
+          attributeLabelByKey
+        ),
 
         {
           key: 'VisualImage',
@@ -223,12 +256,21 @@ export const getRowMeta = (
         {
           label: displayMeta?.label ?? '대표값',
           value: (row: VisualRow) =>
-            displayMeta?.field ? row[displayMeta.field as keyof VisualRow] : '',
+            displayMeta?.field
+              ? (row.attributes?.[displayMeta.field] ??
+                row[displayMeta.field as keyof VisualRow])
+              : '',
         },
         {
           label: '부문·카테고리',
           value: (row: VisualRow) => row.sectorCategory,
         },
+        ...getVisualAttributeKeys(rows as WithIndex<VisualRow>[]).map(
+          (attrKey) => ({
+            label: attributeLabelByKey?.get(attrKey) ?? attrKey,
+            value: (row: VisualRow) => row.attributes?.[attrKey] ?? '',
+          })
+        ),
       ],
     };
   }
@@ -504,20 +546,9 @@ export const updateRequestMapper = {
     code: detail.code ?? '',
     name: detail.name ?? '',
     sectorCategory: detail.sectorCategory ?? '',
-    mainProductCategory: detail.mainProductCategory ?? '',
-    mainProduct: detail.mainProduct ?? '',
-    target: detail.target ?? '',
     referenceUrl: detail.referenceUrl ?? '',
     originalLogoImage: null,
-
-    title: detail.title ?? '',
-    country: detail.country ?? '',
-    clientName: detail.clientName ?? '',
-    contentType: detail.contentType ?? '',
-    visualType: detail.visualType ?? '',
-    designDescription: detail.designDescription ?? '',
-    originalDescription: detail.originalDescription ?? '',
-    releaseYear: detail.releaseYear ?? '',
+    attributes: detail.attributes ?? null,
 
     visualDataCategory: category,
   }),

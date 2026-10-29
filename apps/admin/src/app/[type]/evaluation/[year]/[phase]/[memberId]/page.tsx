@@ -6,14 +6,16 @@ import BaseGridTable from '@/src/components/evaluation/BaseGridTable';
 import OneExpertGridTable from '@/src/components/evaluation/OneExpertGridTable';
 import ViewEvaluationsBtn from '@/src/components/evaluation/ViewEvaluationsBtn';
 import { useGetOneEvaluationStatus } from '@/src/hooks/evaluation/useGetEvaluationStatus';
+import { downloadBlob } from '@/src/hooks/useDatasetDownload';
 import { downloadEvaluationExcel } from '@/src/services/evaluation';
 import Image from 'next/image';
 
+import { getUserTypeFromPathname } from '@/src/utils/getUserTypeFromPathname';
 import { usePathname } from 'next/navigation';
 
 const MemberPage = () => {
   const pathname = usePathname();
-  const type = pathname.startsWith('/industry') ? 'INDUSTRY' : 'VISUAL';
+  const type = getUserTypeFromPathname(pathname);
 
   const segments = pathname.split('/').filter(Boolean);
   const roundId = segments[3];
@@ -91,16 +93,7 @@ const MemberPage = () => {
       ? decodeURIComponent(filenameMatch[1])
       : 'visual_data.xlsx';
 
-    const url = window.URL.createObjectURL(blob);
-
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-
-    a.remove();
-    window.URL.revokeObjectURL(url);
+    downloadBlob(blob, filename);
   };
 
   return (

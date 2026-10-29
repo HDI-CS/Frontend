@@ -75,6 +75,21 @@ export type IndustryCategoryFieldSpec = z.infer<
   typeof IndustryCategoryFieldSpecSchema
 >;
 
+export const VisualCategoryFieldSpecSchema = z.object({
+  id: z.number(),
+  fieldKey: z.string(),
+  fieldLabel: z.string(),
+  displayOrder: z.number(),
+});
+
+export const VisualCategoryFieldSpecListSchema = z.array(
+  VisualCategoryFieldSpecSchema
+);
+
+export type VisualCategoryFieldSpec = z.infer<
+  typeof VisualCategoryFieldSpecSchema
+>;
+
 // ========================
 // 상품 설문 상세 스키마
 // ========================
@@ -153,6 +168,7 @@ export const BrandDataSetResponseSchema = z.object({
   name: z.string().nullable(),
   image: z.string().nullable(),
   visualDataCategory: VisualCategorySchema.nullable(),
+  attributes: z.record(z.string(), z.string()).nullable().optional(),
 
   // 카테고리별 동적 필드는 레지스트리에서 자동 생성
   ...buildNullableStringShape(VISUAL_FIELD_KEYS),

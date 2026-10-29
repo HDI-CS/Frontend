@@ -10,12 +10,13 @@ import {
 } from '@/src/hooks/evaluation/useGetEvaluationStatus';
 import { MemberEvaluationStatus } from '@/src/schemas/evaluation';
 import { useSearchStore } from '@/src/store/searchStore';
+import { getUserTypeFromPathname } from '@/src/utils/getUserTypeFromPathname';
 import { usePathname } from 'next/navigation';
 import { useMemo, useState } from 'react';
 
 const PhasePage = () => {
   const pathname = usePathname();
-  const type = pathname.startsWith('/industry') ? 'INDUSTRY' : 'VISUAL';
+  const type = getUserTypeFromPathname(pathname);
   const keyword = useSearchStore((s) => s.keyword);
 
   const segments = pathname.split('/').filter(Boolean);

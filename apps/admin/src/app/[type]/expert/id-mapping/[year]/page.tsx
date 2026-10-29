@@ -4,7 +4,6 @@ import Folder from '@/src/components/Folder';
 import FolderList from '@/src/components/FolderList';
 import FolderModals from '@/src/components/FolderModals';
 import FolderWrapper from '@/src/components/layout/FolderWrapper';
-import ModalComponent from '@/src/components/ModalComponent';
 import { mapEvaluationPhaseToFolders } from '@/src/features/data/rowMeta';
 import { useCreateEvaluationRound } from '@/src/hooks/evaluation/useCreateEvaluationYear';
 import { useEvaluationYears } from '@/src/hooks/evaluation/useEvaluationYears';
@@ -14,6 +13,7 @@ import {
 } from '@/src/hooks/evaluation/useUpdateSurvey';
 import { useFolderManager } from '@/src/hooks/useFolderManager';
 import { useSubHeaderStore } from '@/src/store/subHeaderStore';
+import { getUserTypeFromPathname } from '@/src/utils/getUserTypeFromPathname';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
@@ -21,7 +21,7 @@ const IndexPage = () => {
   const router = useRouter();
   const pathname = usePathname();
 
-  const type = pathname.startsWith('/industry') ? 'INDUSTRY' : 'VISUAL';
+  const type = getUserTypeFromPathname(pathname);
   const segments = pathname.split('/').filter(Boolean);
   const year = segments[3];
   const {
@@ -166,23 +166,8 @@ const IndexPage = () => {
           onCloseAdd={() => setAdd(false)}
           onCloseEdit={() => setEditName(false)}
           onSubmit={handleSubmit}
+          onEdit={hanleEditName}
         />
-
-        {editName && (
-          <ModalComponent
-            title="폴더 이름"
-            button="저장"
-            editBasicInfo={true}
-            onClose={() => setEditName(false)}
-            onSubmit={hanleEditName}
-          >
-            <input
-              value={editFolderName}
-              onChange={(e) => setEditFolderName(e.target.value)}
-              className="border-1 focus:outline-primary-blue w-full rounded border-[#E9E9E7] p-3 text-lg text-[#3A3A49]"
-            />
-          </ModalComponent>
-        )}
       </div>
     </FolderWrapper>
   );

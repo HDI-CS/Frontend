@@ -13,6 +13,22 @@ export const VisualCategorySchema = z.enum(
   VISUAL_CATEGORY_KEYS as [VisualCategoryKey, ...VisualCategoryKey[]]
 );
 
+// 카테고리별 "추가 스펙(attributes)" 필드 정의. IndustryCategoryFieldSpec과 동일한 패턴.
+export const VisualCategoryFieldSpecSchema = z.object({
+  id: z.number(),
+  fieldKey: z.string(),
+  fieldLabel: z.string(),
+  displayOrder: z.number(),
+});
+
+export const VisualCategoryFieldSpecListSchema = z.array(
+  VisualCategoryFieldSpecSchema
+);
+
+export type VisualCategoryFieldSpec = z.infer<
+  typeof VisualCategoryFieldSpecSchema
+>;
+
 // 연도 스키마
 export const YearFolderSchema = z.object({
   yearId: z.number(),
@@ -27,6 +43,7 @@ export const VisualDataItemSchema = z.object({
   id: z.number(),
   code: z.string(),
   logoImage: z.string().nullable(),
+  attributes: z.record(z.string(), z.string()).nullable().optional(),
   ...buildNullableShape(VISUAL_ITEM_NULLABLE_KEYS),
 });
 
@@ -79,22 +96,11 @@ export const CreateVisualDatasetRequestSchema = z.object({
   code: z.string(),
   name: z.string().nullable(),
   sectorCategory: z.string().nullable(),
-  mainProductCategory: z.string().nullable(),
-  mainProduct: z.string().nullable(),
-  target: z.string().nullable(),
   referenceUrl: z.string().nullable(),
   originalLogoImage: z.string().nullable(),
 
-  // 2026
-  title: z.string().nullable(),
-  country: z.string().nullable(),
-  clientName: z.string().nullable(),
-  contentType: z.string().nullable(),
-  visualType: z.string().nullable(),
-  designDescription: z.string().nullable(),
-  originalDescription: z.string().nullable(),
-
-  releaseYear: z.string().nullable(),
+  // 카테고리마다 다른 스펙 필드 (고정 컬럼이 아닌 key-value)
+  attributes: z.record(z.string(), z.string()).nullable().optional(),
 
   visualDataCategory: VisualCategorySchema.nullable(),
 });
@@ -117,22 +123,9 @@ export const UpdateVisualDatasetRequestSchema = z
     code: z.string(),
     name: z.string().nullable(),
     sectorCategory: z.string().nullable(),
-    mainProductCategory: z.string().nullable(),
-    mainProduct: z.string().nullable(),
-    target: z.string().nullable(),
     referenceUrl: z.string().nullable(),
 
-    // 2026
-
-    title: z.string().nullable(),
-    country: z.string().nullable(),
-    clientName: z.string().nullable(),
-    contentType: z.string().nullable(),
-    visualType: z.string().nullable(),
-    designDescription: z.string().nullable(),
-    originalDescription: z.string().nullable(),
-
-    releaseYear: z.string().nullable(),
+    attributes: z.record(z.string(), z.string()).nullable().optional(),
 
     originalLogoImage: z.string().nullable(), // 빈 값일 땐 널
     visualDataCategory: VisualCategorySchema.nullable(),

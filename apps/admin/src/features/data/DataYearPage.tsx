@@ -10,6 +10,7 @@ import SortModal from '@/src/components/data/SortModal';
 import ViewToggle from '@/src/components/data/ViewToggle';
 import { useIndustryCategoryFieldSpecs } from '@/src/hooks/data/useIndustryCategoryFieldSpecs';
 import { useSearchDatasets } from '@/src/hooks/data/useSearchDatasets';
+import { useVisualCategoryFieldSpecs } from '@/src/hooks/data/useVisualCategoryFieldSpecs';
 import {
   IndustrialDataItem,
   IndustryCategory,
@@ -195,13 +196,14 @@ const DataPage = <T extends 'VISUAL' | 'INDUSTRY'>({
     category: type === 'INDUSTRY' ? (activeCategory as string) : null,
     yearId,
   });
-  const attributeLabelByKey = useMemo(
-    () =>
-      new Map(
-        (industryFieldSpecs ?? []).map((s) => [s.fieldKey, s.fieldLabel])
-      ),
-    [industryFieldSpecs]
-  );
+  const { data: visualFieldSpecs } = useVisualCategoryFieldSpecs({
+    category: type === 'VISUAL' ? (activeCategory as string) : null,
+    yearId,
+  });
+  const attributeLabelByKey = useMemo(() => {
+    const specs = type === 'INDUSTRY' ? industryFieldSpecs : visualFieldSpecs;
+    return new Map((specs ?? []).map((s) => [s.fieldKey, s.fieldLabel]));
+  }, [type, industryFieldSpecs, visualFieldSpecs]);
 
   // 그리드/갤러리/생성모달이 공통으로 쓰는 컬럼 메타 + 상세 필드 목록
   const { rowMeta, fields } = getRowMetaAndFields(

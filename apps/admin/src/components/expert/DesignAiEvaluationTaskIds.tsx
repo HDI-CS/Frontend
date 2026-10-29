@@ -2,6 +2,7 @@ import checkImg from '@/public/expert/blueCheck.svg';
 import noCheck from '@/public/expert/noCheck.svg';
 import { useDatasetCandidate } from '@/src/hooks/expert/useDatasetCandidate';
 import { dataIdsSet } from '@/src/schemas/expert';
+import { getUserTypeFromPathname } from '@/src/utils/getUserTypeFromPathname';
 import clsx from 'clsx';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -21,7 +22,7 @@ const DesignAiEvaluationTaskIds = ({
 }: DesignAiEvaluationTaskIdsProps) => {
   const pathname = usePathname();
 
-  const type = pathname.startsWith('/industry') ? 'INDUSTRY' : 'VISUAL';
+  const type = getUserTypeFromPathname(pathname);
   const segments = pathname.split('/').filter(Boolean);
 
   const year = useMemo(() => {

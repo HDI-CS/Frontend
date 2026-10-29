@@ -12,20 +12,20 @@ import {
   UpdateIdsResponseSchema,
 } from '@/src/schemas/expert';
 
+const assignmentBase = (type: UserType, assessmentRoundId: number) =>
+  `/api/v1/admin/${type}/assignment/assessment/${assessmentRoundId}`;
+
 // 전문가 전체 리스트 조회
 export const getExpertAssignment = async (
   type: UserType,
   assessmentRoundId: number,
   keyword: string
 ) => {
-  const res = await apiClient.get(
-    `/api/v1/admin/${type}/assignment/assessment/${assessmentRoundId}`,
-    {
-      params: {
-        q: keyword,
-      },
-    }
-  );
+  const res = await apiClient.get(assignmentBase(type, assessmentRoundId), {
+    params: {
+      q: keyword,
+    },
+  });
   return ExpertAssignmentResponseShcema.parse(res.data);
 };
 
@@ -36,7 +36,7 @@ export const getOneExpertAssignment = async (
   memberId: number
 ) => {
   const res = await apiClient.get(
-    `/api/v1/admin/${type}/assignment/assessment/${assessmentRoundId}/members/${memberId}`
+    `${assignmentBase(type, assessmentRoundId)}/members/${memberId}`
   );
   return OneExpertAssignmentResponseShcema.parse(res.data);
 };
@@ -48,7 +48,7 @@ export const UpdateExpertMapping = async (
   ids: IdsRequest
 ) => {
   const res = await apiClient.put(
-    `/api/v1/admin/${type}/assignment/assessment/${assessmentRoundId}/members/${memberId}`,
+    `${assignmentBase(type, assessmentRoundId)}/members/${memberId}`,
     ids
   );
   return UpdateIdsResponseSchema.parse(res.data);
@@ -60,7 +60,7 @@ export const createExpertAssignment = async (
   request: CreateExpertAssignmentRequest
 ) => {
   const res = await apiClient.post<CreateExpertAssignmentResponse>(
-    `/api/v1/admin/${type}/assignment/assessment/${assessmentRoundId}`,
+    assignmentBase(type, assessmentRoundId),
     {
       memberId: request.memberId,
       datasetsIds: request.datasetsIds,
@@ -92,7 +92,7 @@ export const importMappingExcel = async ({
   formData.append('file', file);
 
   const res = await apiClient.post(
-    `/api/v1/admin/${type}/assignment/assessment/${assessmentRoundId}/import`,
+    `${assignmentBase(type, assessmentRoundId)}/import`,
     formData,
     {
       headers: {
@@ -111,10 +111,7 @@ export const downloadMappingExcel = async ({
   type: UserType;
   assessmentRoundId: number;
 }) => {
-  return apiClient.get(
-    `/api/v1/admin/${type}/assignment/assessment/${assessmentRoundId}/export`,
-    {
-      responseType: 'blob', // 이건 JSON이 아니라 binary라서 파싱 대상 아님
-    }
-  );
+  return apiClient.get(`${assignmentBase(type, assessmentRoundId)}/export`, {
+    responseType: 'blob', // 이건 JSON이 아니라 binary라서 파싱 대상 아님
+  });
 };
