@@ -1,15 +1,6 @@
 import { z } from 'zod';
 import { BasicResponseWithResultSchema } from './auth';
 
-// 사용자 역할 스키마
-export const UserRoleSchema = z.enum(['USER', 'ADMIN']);
-export const UserTypeSchema = z.enum([
-  'PRODUCT',
-  'BRAND',
-  'VISUAL',
-  'INDUSTRY',
-]);
-
 /**
  * null | undefined → '' 로 정규화
  * UI에서 항상 string으로 쓰기 위한 공통 스키마

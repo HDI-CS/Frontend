@@ -118,7 +118,7 @@ export default function ProductSurvey({
   }, [detail]);
 
   const textSurveyId =
-    detail.result.productSurveyResponse.textResponse?.surveyId;
+    detail.result.productSurveyResponse?.textResponse?.surveyId ?? null;
   // const isSubmitted = detail.result.productSurveyResponse.isSubmitted;
 
   // 서버에서 받아온 데이터를 클라이언트 상태에 반영
@@ -480,7 +480,10 @@ export default function ProductSurvey({
               {productImages.length > 0 && (
                 <div className="space-y-4">
                   {imageMap.map(({ key, label }) => {
-                    const imagePath = product[key as keyof typeof product];
+                    const imagePath =
+                      product[
+                        key as Exclude<keyof typeof product, 'attributes'>
+                      ];
                     if (!imagePath) return null;
                     return (
                       <ProductImage

@@ -4,7 +4,7 @@ import { downloadExcel, downloadImageZip } from '@/src/services/data/common';
 import { useState } from 'react';
 
 /** 브라우저에 blob을 파일로 저장하는 공통 로직 */
-const downloadBlob = (blob: Blob, filename: string) => {
+export const downloadBlob = (blob: Blob, filename: string) => {
   const url = window.URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;

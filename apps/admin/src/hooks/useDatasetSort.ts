@@ -32,7 +32,11 @@ export const compareDatasetRows = (
           orderBy
         );
       case 'MODEL':
-        return sortByString(industryA.modelName, industryB.modelName, orderBy);
+        return sortByString(
+          industryA.attributes?.modelName,
+          industryB.attributes?.modelName,
+          orderBy
+        );
       case 'PRODUCT':
         return sortByString(
           industryA.productName,
@@ -58,11 +62,15 @@ export const compareDatasetRows = (
         orderBy
       );
     case 'MAINPRODUCT':
-      return sortByString(visualA.mainProduct, visualB.mainProduct, orderBy);
+      return sortByString(
+        visualA.attributes?.mainProduct,
+        visualB.attributes?.mainProduct,
+        orderBy
+      );
     case 'MAINCATEGORY':
       return sortByString(
-        visualA.mainProductCategory,
-        visualB.mainProductCategory,
+        visualA.attributes?.mainProductCategory,
+        visualB.attributes?.mainProductCategory,
         orderBy
       );
     default:

@@ -1,5 +1,6 @@
 import useGridManager from '@/src/hooks/useGridManager';
 import { MemberSurveyResult } from '@/src/schemas/evaluation';
+import { getUserTypeFromPathname } from '@/src/utils/getUserTypeFromPathname';
 import { truncateText } from '@/src/utils/truncateText';
 import clsx from 'clsx';
 import { usePathname } from 'next/navigation';
@@ -16,7 +17,7 @@ interface OneExpertGridTableProps {
 
 const OneExpertGridTable = ({ expertData }: OneExpertGridTableProps) => {
   const pathname = usePathname();
-  const type = pathname.startsWith('/industry') ? 'INDUSTRY' : 'VISUAL';
+  const type = getUserTypeFromPathname(pathname);
   const {
     dataId,
     idMenu,

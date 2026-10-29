@@ -17,7 +17,7 @@ export const useSearchDatasets = ({
   category,
 }: useSearchDatasetsParams) => {
   return useQuery<SearchDataResponse>({
-    queryKey: ['search', 'visual', keyword, category],
+    queryKey: ['search', type, keyword, category],
     queryFn: () => {
       if (type === 'VISUAL') {
         return searchVisualDataset({ keyword, category });

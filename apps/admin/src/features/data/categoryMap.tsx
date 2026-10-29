@@ -58,6 +58,20 @@ export const CATEGORY_MAP: Record<
       'MIXER',
     ],
   },
+  // attributes(추가 스펙) 기능 테스트용 임시 연도 폴더.
+  // '2026 3차'와 동일한 카테고리를 그대로 재사용한다.
+  test: {
+    VISUAL: ['PACKAGE'],
+    INDUSTRY: [
+      'COFFEE_MACHINE',
+      'COFFEE_MAKER',
+      'COFFEE_GRINDER',
+      'PRESSURE_RICE_COOKER',
+      'MULTI_COOKER',
+      'AIR_FRYER',
+      'MIXER',
+    ],
+  },
 } as const;
 
 /**
@@ -69,13 +83,15 @@ export const getRowMetaAndFields = <T extends 'VISUAL' | 'INDUSTRY'>(
   type: T,
   yearName: Years | undefined,
   displayRows: WithIndex<VisualRow | IndustrialRow>[],
-  activeCategory: CategoryByType[T] | null
+  activeCategory: CategoryByType[T] | null,
+  attributeLabelByKey?: Map<string, string>
 ) => {
   const rowMeta = getRowMeta(
     type,
     (yearName ?? '2025') as Years,
     displayRows,
-    activeCategory ?? undefined
+    activeCategory ?? undefined,
+    attributeLabelByKey
   );
 
   const fields = buildFieldsFromColumns(

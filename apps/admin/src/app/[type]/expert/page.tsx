@@ -2,15 +2,13 @@
 import FolderList from '@/src/components/FolderList';
 import FolderWrapper from '@/src/components/layout/FolderWrapper';
 import { useFolderManager } from '@/src/hooks/useFolderManager';
-import { UserType } from '@/src/schemas/auth';
+import { getUserTypeFromPathname } from '@/src/utils/getUserTypeFromPathname';
 import { usePathname, useRouter } from 'next/navigation';
 
 const ExpertPage = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const type: UserType = pathname.startsWith('/industry')
-    ? 'INDUSTRY'
-    : 'VISUAL';
+  const type = getUserTypeFromPathname(pathname);
 
   const {
     pressedKey,
